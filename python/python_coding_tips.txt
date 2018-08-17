@@ -1,0 +1,12 @@
+METACLASS:
+https://stackoverflow.com/questions/100003/what-are-metaclasses-in-python
+However, metaclasses actually define the type of a class, not just a factory for it, so you can do much more with them. You can, for instance, define normal methods on the metaclass. These metaclass-methods are like classmethods, in that they can be called on the class without an instance, but they are also not like classmethods in that they cannot be called on an instance of the class.
+
+SPECIAL CLASS METHODS:
+
+__init__():
+python class object constructor method
+
+__setitem()__():
+
+

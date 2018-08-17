@@ -1,5 +1,12 @@
 # REFERENCE: https://docs.python.org/3/reference/datamodel.html
 
+class TestDict(dict):
+    """
+    __missing__() is called when a key does not exist in a dict. You can override this method by creating a child class of dict
+    """
+    def __missing__(self, key):
+        print '-- missing: key={}'.format(key)
+
 
 class TestClass():
     def __init__(self, d):
@@ -64,14 +71,12 @@ if __name__=='__main__':
     # __getattr__
     print tc.x
     
-    
-    
-    # __setattr__
-    #tc.d = {'a':11, 'b':22}
-    # __getattribute__
-    #print 'tc.d={}'.format(tc.d)
-    # __getattr__
-    #print 'tc.d2={}'.format(tc.d2)
+    # __missing__
+    td = TestDict({'a':1, 'b':2})
+    print type(td)
+    print td['a']
+    print td['c']
+   
     
     
     
