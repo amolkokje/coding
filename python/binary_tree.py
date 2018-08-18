@@ -210,8 +210,7 @@ def AreTreesIdentical(n1, n2):
     else:
         return False
         
-            
-# TODO - this one is not working    
+ 
 def ContainsTree(n1, n2):
     """
     checks if tree with root n2 is a subset of tree with root n1
