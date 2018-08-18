@@ -204,7 +204,6 @@ def AreTreesIdentical(n1, n2):
     if (not n1) and (not n2):
         return True
     elif n1 and n2:
-        print 'n1.d={}, n2.d={}'.format(n1.data, n2.data)
         if n1.data != n2.data:
             return False
         return AreTreesIdentical(n1.left, n2.left) and AreTreesIdentical(n1.right, n2.right)
@@ -222,11 +221,9 @@ def ContainsTree(n1, n2):
     elif n1 and (not n2):
         return True # T2 is empty
     elif n1.data == n2.data:
-        print 'c0 ---'
-        return AreTreesIdentical(n1, n2)
-    else:
-        print 'c1 ---'
-        return ContainsTree(n1.left, n2) or ContainsTree(n1.right, n2)
+        if AreTreesIdentical(n1, n2): 
+            return True
+    return ContainsTree(n1.left, n2) or ContainsTree(n1.right, n2)
         
             
     
@@ -243,8 +240,7 @@ if __name__=='__main__':
     bst.AddItem(0)
     bst.AddItem(2)
     bst.AddItem(7)
-    bst.AddItem(5.5)
-        
+            
     find_list = [4,10,7]
     for find in find_list:
         if not bst.FindItem(find):
