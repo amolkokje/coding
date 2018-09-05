@@ -1,3 +1,6 @@
+import sys
+import copy
+
 """
 MagicLeap Onsite - Hardik Shah
 Q:: Given a NxN matrix and a dictionary of words. print all the words in the matrix that exist in the dictionary.
@@ -96,7 +99,7 @@ def main():
     keys = ["the","a","there","anaswe","any",
             "by","their"]
     output = ["Not present in trie",
-              "Present in tire"]
+              "Present in trie"]
  
     # Trie object
     t = Trie()
@@ -128,11 +131,58 @@ def main():
     
     # --------------------------
     # SOLUTION -1
-    # Compare with dict 
-    for i in range(len(matrix)):
-        for j in range(len(matrix[0])):
-            print 'm={}'.format(matrix[i][j])
- 
+    
+    m = len(matrix)  # no of rows
+    n = len(matrix[0])  # no of cols
+    
+    def matrix_search(is_visited, x, y, letter_list):
+        letter_list_local = copy.deepcopy(letter_list)
+        letter_list_local.append(matrix[x][y])
+        
+        is_visited_local = copy.deepcopy(is_visited)
+        is_visited_local[x][y] = True
+        
+        word = ''.join(letter_list_local)
+        #print 'level={}, word at [{},{}] = {}'.format(level, x, y, word)
+        #print is_visited
+        if word in word_dict.keys():
+            print 'Found word = {}'.format(word)
+            
+        if (x-1 >= 0) and (not is_visited_local[x-1][y]):
+            matrix_search(is_visited_local, x-1, y, letter_list_local)
+            
+        if (x+1 < m) and (not is_visited_local[x+1][y]):
+            matrix_search(is_visited_local, x+1, y, letter_list_local)
+            
+        if (y-1 >= 0) and (not is_visited_local[x][y-1]):
+            matrix_search(is_visited_local, x, y-1, letter_list_local)
+            
+        if (y+1 < n) and (not is_visited_local[x][y+1]):
+            matrix_search(is_visited_local, x, y+1, letter_list_local)
+
+        
+        
+    
+    for i in range(m):
+        for j in range(n):
+            # to track if the cell in the matrix has been visited
+            
+            # NOTE: 
+            # The below with not work with mutable types and will give weird behvior. Reference: https://stackoverflow.com/questions/13382774/initialize-list-with-same-bool-value            
+            # mat = [[0]*3]*3
+            # mat[0][0] = 1, will change all cause [[1,0,0], [1,0,0], [1,0,0]] 
+            # Solution -- use comprehension instead, as below
+            is_visited = [[False for _ in range(n)] for _ in range(m)]
+            print 'Starting Search from element [{},{}]'.format(i, j)
+            matrix_search(is_visited, i, j, list())
+            #sys.exit()
+            
+            
+            
+
+
+
+            
 if __name__ == '__main__':
     main()
 
