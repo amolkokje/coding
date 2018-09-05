@@ -13,11 +13,9 @@ Q:: Given a NxN matrix and a dictionary of words. print all the words in the mat
 # Compare with dict 
 
 
-
-
 # SOLUTION -2    
 # Compare by converting dict to trie
-
+#### DONT KNOW HOW TO USE A TRIE HERE??
 
 
 # TRIE IMPLEMENTATION - STUDY IF TIME?
@@ -52,7 +50,8 @@ class Trie:
         Converts key current character into index
         use only 'a' through 'z' and lower case         
         """
-        return ord(ch)-ord('a')  # with reference to 'a' here, but not needed as reference
+        #return ord(ch)-ord('a')  # with reference to 'a' here, but not needed as reference
+        return ord(ch)-ord('a')
  
  
     def insert(self,key):         
@@ -64,7 +63,7 @@ class Trie:
         length = len(key)
         for level in range(length):
             index = self._charToIndex(key[level])
- 
+            
             # if current character is not present
             if not pCrawl.children[index]:
                 pCrawl.children[index] = self.getNode()
@@ -82,6 +81,7 @@ class Trie:
         length = len(key)
         for level in range(length):
             index = self._charToIndex(key[level])
+            
             if not pCrawl.children[index]:
                 return False
             pCrawl = pCrawl.children[index]
@@ -122,12 +122,12 @@ def main():
     words_list = ['GET', 'GATE', 'ATE', 'GAG', 'GOT', 'TAG']
     word_dict = dict()
     for word in words_list:
-        word_dict[word] = 1
+        word_dict[word.lower()] = 1
     # NxM matrix
     matrix = list()
     matrix.append(['G', 'A', 'T'])
     matrix.append(['A', 'E', 'E'])
-    matrix.append(['G', '0', 'T'])
+    matrix.append(['G', 'O', 'T'])
     
     # --------------------------
     # SOLUTION -1
@@ -136,6 +136,42 @@ def main():
     n = len(matrix[0])  # no of cols
     
     def matrix_search(is_visited, x, y, letter_list):
+        
+        """
+        - Python variables are names/aliases to objects, so changing a variable will change the object too.
+        - This is very important to understand when passing "mutable"(list, dict, set) vales to a function as it passes the name/alias to the object, and modifying the variable changes the original object.
+        - So, you only want to use the value, then its okay, but if you want to modify the value and then use it, do a deepcopy to copy the whole object. Shallow copy(default copy using operator =) will create another name/alias for the object.        
+        
+        EXAMPLE-1::
+        a = 5
+        def test(x):
+            x = 4
+        test(a)    
+        print a --> 5  i.e. Fine with immutable objects
+     
+     
+        EXAMPLE-2::
+        ll = ['a', 'b']
+        def test2(x):
+            x = [1,2,3]
+        test3(ll)
+        print ll --> ['a', 'b'] i.e. Fine because here 'x' points to a new object [1,2,3]
+        
+        EXAMPLE-3::
+        ll = ['a', 'b']
+        def test3(x):
+            x.append('c')
+        test3(ll)
+        print ll --> ['a', 'b', 'c'] i.e. Not like other languages, because the object passed gets modified here.
+            
+        """        
+        
+        """
+        NOTE: 
+        - Objects of built-in types like (int, float, bool, str, tuple, unicode) are immutable. 
+        - Objects of built-in types like (list, set, dict) are mutable. 
+        - Custom classes are generally mutable
+        """
         letter_list_local = copy.deepcopy(letter_list)
         letter_list_local.append(matrix[x][y])
         
@@ -143,8 +179,6 @@ def main():
         is_visited_local[x][y] = True
         
         word = ''.join(letter_list_local)
-        #print 'level={}, word at [{},{}] = {}'.format(level, x, y, word)
-        #print is_visited
         if word in word_dict.keys():
             print 'Found word = {}'.format(word)
             
@@ -161,26 +195,20 @@ def main():
             matrix_search(is_visited_local, x, y+1, letter_list_local)
 
         
-        
-    
     for i in range(m):
         for j in range(n):
-            # to track if the cell in the matrix has been visited
-            
-            # NOTE: 
+            ## to track if the cell in the matrix has been visited            
+            """
             # The below with not work with mutable types and will give weird behvior. Reference: https://stackoverflow.com/questions/13382774/initialize-list-with-same-bool-value            
             # mat = [[0]*3]*3
             # mat[0][0] = 1, will change all cause [[1,0,0], [1,0,0], [1,0,0]] 
             # Solution -- use comprehension instead, as below
+            """
             is_visited = [[False for _ in range(n)] for _ in range(m)]
+            
             print 'Starting Search from element [{},{}]'.format(i, j)
             matrix_search(is_visited, i, j, list())
-            #sys.exit()
             
-            
-            
-
-
 
             
 if __name__ == '__main__':
