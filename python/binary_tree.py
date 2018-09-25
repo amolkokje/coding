@@ -55,7 +55,7 @@ def PrintPreOrder(n):
     - Used to get prefix expression on of an expression tree.
     """            
     if n:
-        print n.data, 
+        print n.data 
         PrintPreOrder(n.left)
         PrintPreOrder(n.right)
 
@@ -67,7 +67,7 @@ def PrintInOrder(n):
     """            
     if n:
         PrintInOrder(n.left)
-        print n.data, 
+        print n.data 
         PrintInOrder(n.right)
                 
 def PrintPostOrder(n):
@@ -80,7 +80,7 @@ def PrintPostOrder(n):
     if n:
         PrintPostOrder(n.left)
         PrintPostOrder(n.right)        
-        print n.data, 
+        print n.data 
         
 
 ########################################################################        
