@@ -24,8 +24,7 @@ class Heap:
         """
         removes smallest element i.e. first element from the list, and returns the value
         """
-        temp = self.elements[0]
-        del self.elements[0]
+        temp = self.elements.pop(0)
         self._heapify()
         return temp
     
