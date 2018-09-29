@@ -89,54 +89,16 @@ class Trie:
         return pCrawl != None and pCrawl.isEndOfWord
  
  
-# driver function
-def main():
-    
-    # -------------------------
-    # TRIE code
-    
-    # Input keys (use only 'a' through 'z' and lower case)
-    keys = ["the","a","there","anaswe","any",
-            "by","their"]
-    output = ["Not present in trie",
-              "Present in trie"]
+ # --------------------------
+ # SOLUTION -1
  
-    # Trie object
-    t = Trie()
- 
-    # Construct trie
-    for key in keys:
-        t.insert(key)
- 
-    # Search for different keys
-    print("{} ---- {}".format("the",output[t.search("the")]))
-    print("{} ---- {}".format("these",output[t.search("these")]))
-    print("{} ---- {}".format("their",output[t.search("their")]))
-    print("{} ---- {}".format("thaw",output[t.search("thaw")]))
-    
-    
-    # ---------------------
-    # INPUTS for problem
-    
-    # dict of words
-    words_list = ['GET', 'GATE', 'ATE', 'GAG', 'GOT', 'TAG']
-    word_dict = dict()
-    for word in words_list:
-        word_dict[word.lower()] = 1
-    # NxM matrix
-    matrix = list()
-    matrix.append(['G', 'A', 'T'])
-    matrix.append(['A', 'E', 'E'])
-    matrix.append(['G', 'O', 'T'])
-    
-    # --------------------------
-    # SOLUTION -1
+def search_matrix_words(matrix, word_dict):
+    print 'Searching for words {} in matrix {}'.format(word_dict.keys(), matrix)
     
     m = len(matrix)  # no of rows
     n = len(matrix[0])  # no of cols
     
     def matrix_search(is_visited, x, y, letter_list):
-        
         """
         - Python variables are names/aliases to objects, so changing a variable will change the object too.
         - This is very important to understand when passing "mutable"(list, dict, set) vales to a function as it passes the name/alias to the object, and modifying the variable changes the original object.
@@ -172,6 +134,7 @@ def main():
         - Objects of built-in types like (list, set, dict) are mutable. 
         - Custom classes are generally mutable
         """
+        
         letter_list_local = copy.deepcopy(letter_list)
         letter_list_local.append(matrix[x][y])
         
@@ -208,6 +171,51 @@ def main():
             
             print 'Starting Search from element [{},{}]'.format(i, j)
             matrix_search(is_visited, i, j, list())
+    
+  
+# driver function
+def main():
+    
+    # -------------------------
+    # TRIE code
+    
+    # Input keys (use only 'a' through 'z' and lower case)
+    keys = ["the","a","there","anaswe","any",
+            "by","their"]
+    output = ["Not present in trie",
+              "Present in trie"]
+ 
+    # Trie object
+    t = Trie()
+ 
+    # Construct trie
+    for key in keys:
+        t.insert(key)
+ 
+    # Search for different keys
+    print("{} ---- {}".format("the",output[t.search("the")]))
+    print("{} ---- {}".format("these",output[t.search("these")]))
+    print("{} ---- {}".format("their",output[t.search("their")]))
+    print("{} ---- {}".format("thaw",output[t.search("thaw")]))
+    
+    
+    # ---------------------
+    # INPUTS for problem
+    
+    # dict of words
+    words_list = ['GET', 'GATE', 'ATE', 'GAG', 'GOT', 'TAG']
+    word_dict = dict()
+    for word in words_list:
+        #word_dict[word.lower()] = 1
+        word_dict[word] = 1
+    # NxM matrix
+    matrix = list()
+    matrix.append(['G', 'A', 'T'])
+    matrix.append(['A', 'E', 'E'])
+    matrix.append(['G', 'O', 'T'])
+    
+    search_matrix_words(matrix, word_dict)
+    
             
 
             
