@@ -172,7 +172,65 @@ def search_matrix_words(matrix, word_dict):
             print 'Starting Search from element [{},{}]'.format(i, j)
             matrix_search(is_visited, i, j, list())
     
-  
+
+# ---------------------------------------------
+# SOLUTION-2: Trie    
+
+def search_matrix_words_trie(matrix, word_dict):
+    print 'Searching for words {} in matrix {}, by putting in trie'.format(word_dict.keys(), matrix)
+    
+    m = len(matrix)  # no of rows
+    n = len(matrix[0])  # no of cols
+    
+    words_trie = Trie()
+    for word in word_dict.keys():
+        words_trie.insert(word.lower())
+    print words_trie.__dict__
+    
+    def matrix_search(is_visited, x, y, letter_list):
+                
+        letter_list_local = copy.deepcopy(letter_list)
+        letter_list_local.append(matrix[x][y])
+        
+        is_visited_local = copy.deepcopy(is_visited)
+        is_visited_local[x][y] = True
+        
+        word = ''.join(letter_list_local)
+        if not words_trie.search(word):
+            print 'Word not in Trie, discontinue search in this chain ...'
+            return
+        if word in word_dict.keys():
+            print 'Found word = {}'.format(word)
+            
+        if (x-1 >= 0) and (not is_visited_local[x-1][y]):
+            matrix_search(is_visited_local, x-1, y, letter_list_local)
+            
+        if (x+1 < m) and (not is_visited_local[x+1][y]):
+            matrix_search(is_visited_local, x+1, y, letter_list_local)
+            
+        if (y-1 >= 0) and (not is_visited_local[x][y-1]):
+            matrix_search(is_visited_local, x, y-1, letter_list_local)
+            
+        if (y+1 < n) and (not is_visited_local[x][y+1]):
+            matrix_search(is_visited_local, x, y+1, letter_list_local)
+
+        
+    for i in range(m):
+        for j in range(n):
+            ## to track if the cell in the matrix has been visited            
+            """
+            # The below with not work with mutable types and will give weird behvior. Reference: https://stackoverflow.com/questions/13382774/initialize-list-with-same-bool-value            
+            # mat = [[0]*3]*3
+            # mat[0][0] = 1, will change all cause [[1,0,0], [1,0,0], [1,0,0]] 
+            # Solution -- use comprehension instead, as below
+            """
+            is_visited = [[False for _ in range(n)] for _ in range(m)]
+            
+            print 'Starting Search from element [{},{}]'.format(i, j)
+            matrix_search(is_visited, i, j, list())
+    
+ 
+ 
 # driver function
 def main():
     
@@ -206,8 +264,8 @@ def main():
     words_list = ['GET', 'GATE', 'ATE', 'GAG', 'GOT', 'TAG']
     word_dict = dict()
     for word in words_list:
-        #word_dict[word.lower()] = 1
-        word_dict[word] = 1
+        word_dict[word.lower()] = 1
+        #word_dict[word] = 1
     # NxM matrix
     matrix = list()
     matrix.append(['G', 'A', 'T'])
@@ -216,6 +274,10 @@ def main():
     
     search_matrix_words(matrix, word_dict)
     
+    for i in range(len(matrix)):
+        for j in range(len(matrix[0])):
+            matrix[i][j] = matrix[i][j].lower()
+    search_matrix_words_trie(matrix, word_dict)
             
 
             
