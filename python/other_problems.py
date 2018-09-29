@@ -80,7 +80,49 @@ def unique_paths(stop_x, stop_y, start_x, start_y, m, n, visited_cells_orig):
     
     return no_paths
    
-   
+  
+## Q:: Generate permutations of a list
+
+def generate_permutations(ip_list, take_count):
+    
+    print 'Generating permutations for {}, taking only {} at a time'.format(ip_list, take_count)
+    n = len(ip_list)
+    visited = [None]*n
+    depth = 0
+    word = []
+    
+    def permute(ip_list, word_orig, visited_orig, i):
+        """
+        ip_list --> input list
+        word --> string generated so far
+        visited_ --> list of visited cells
+        i --> index of cell to visit
+        """
+        
+        if visited_orig[i]:
+            return
+        
+        visited = copy.deepcopy(visited_orig)
+        word = copy.deepcopy(word_orig)
+        
+        word.append(ip_list[i])        
+        visited[i] = True
+        
+        if len(word) == take_count:
+            print 'PERMUTATION = {}'.format(''.join(word))
+            return
+            
+        for k in range(n):
+            permute(ip_list, word, visited, k)
+            
+    for i in range(n):
+        permute(ip_list, word, visited, i)
+        
+        
+        
+        
+        
+    
    
 if __name__ == '__main__':
 
@@ -100,3 +142,8 @@ if __name__ == '__main__':
     start_x, start_y = 1, 1
     stop_x, stop_y = 2, 6
     print 'no of paths with matrix {}x{} from ({},{}) to ({},{}) are {}'.format(m,n,start_x,start_y, stop_x,stop_y, unique_paths(stop_x=2, stop_y=6, start_x=1, start_y=1, m=m, n=n, visited_cells_orig=[ [None]*n for _ in range(m) ]))
+
+    # permutations
+    ip_word_list = ["AMOL", "AMI"]
+    for ip_word in ip_word_list:
+        generate_permutations(ip_list=ip_word, take_count=2)
