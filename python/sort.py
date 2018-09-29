@@ -1,6 +1,6 @@
 
 ip_lists = [
-[1,2,3,4,5],
+[8,7,5,2,3,4,1,0],
 [12,2,13,4,25],
 [2,32,4,5,7,8,4,5],
 ]
@@ -17,7 +17,7 @@ def bubbleSort(ip_list):
     list_length = len(ip_list)
     for i in range(list_length):
         for j in range(list_length-1):
-            if ip_list[j] > ip_list[i]:
+            if i > j and ip_list[j] > ip_list[i]:
                 ip_list[i], ip_list[j] = ip_list[j], ip_list[i]
     
 
@@ -39,36 +39,64 @@ def selectionSort(ip_list):
 
 ############################################################
 # merge sort - ascending
+# Merges two subarrays of arr[]. 
+#   First subarray is arr[l..m] 
+#   Second subarray is arr[m+1..r] 
+def merge(arr, l, m, r): 
     
-def mergeSort(ip_list):    
-    mid = len(ip_list)/2
-    lefthalf = ip_list[:mid]
-    righthalf = ip_list[mid:]
-
-    mergeSort(lefthalf)
-    mergeSort(righthalf)
-
-    i=0 # lefthalf
-    j=0 # righthalf
-    k=0
-    while i < len(lefthalf) and j < len(righthalf):
-        if lefthalf[i] < righthalf[j]:
-            ip_list[k]=lefthalf[i]
-            i=i+1
-        else:
-            ip_list[k]=righthalf[j]
-            j=j+1
-        k=k+1
-
-    while i < len(lefthalf):
-        ip_list[k]=lefthalf[i]
-        i=i+1
-        k=k+1
-
-    while j < len(righthalf):
-        ip_list[k]=righthalf[j]
-        j=j+1
-        k=k+1
+    n1 = (m + 1) - l
+    n2 = r - m  
+    
+    # create temp arrays 
+    L = [0] * (n1) 
+    R = [0] * (n2) 
+  
+    # Copy data to temp arrays L[] and R[] 
+    for i in range(0 , n1): 
+        L[i] = arr[l + i] 
+  
+    for j in range(0 , n2): 
+        R[j] = arr[(m + 1) + j] 
+        
+    # Merge the temp arrays back into arr[l..r] 
+    i = 0     # Initial index of first subarray 
+    j = 0     # Initial index of second subarray 
+    k = l     # Initial index of merged subarray 
+  
+    while i < len(L) and j < len(R): 
+        if L[i] <= R[j]: 
+            arr[k] = L[i] 
+            i += 1
+            k += 1
+        else: 
+            arr[k] = R[j] 
+            j += 1
+            k += 1
+    
+    # Copy the remaining elements of L[], if there are any 
+    while i < len(L): 
+        arr[k] = L[i] 
+        i += 1
+        k += 1
+  
+    # Copy the remaining elements of R[], if there are any 
+    while j < len(R):     
+        arr[k] = R[j] 
+        j += 1
+        k += 1
+  
+# l is for left index and r is right index of the 
+# sub-array of arr to be sorted 
+def mergeSort(arr,l,r): 
+    if l < r:   
+        m = (l+r)/2
+  
+        # Sort first and second halves 
+        mergeSort(arr, l, m) 
+        mergeSort(arr, m+1, r) 
+        
+        # merge the sorted halves
+        merge(arr, l, m, r)     
     
     
     
@@ -80,14 +108,19 @@ if __name__=='__main__':
         
         bubbleSort_list = copy.deepcopy(ip_list) 
         bubbleSort(bubbleSort_list)
+        print bubbleSort_list
+        
         
         selectionSort_list = copy.deepcopy(ip_list) 
         selectionSort(selectionSort_list)
+        print selectionSort_list
         
         mergeSort_list = copy.deepcopy(ip_list)
-        mergeSort(mergeSort_list)
+        mergeSort(mergeSort_list, 0, len(mergeSort_list)-1)  
+        print mergeSort_list
         
         ip_list.sort()
+        
         
         assert ip_list == bubbleSort_list == selectionSort_list == mergeSort_list, 'Lists not sorted correctly: ip_list={}, bubble_sort={}, selection_sort={}, mergeSort_list={}'.format(ip_list, bubbleSort_list, selectionSort_list, mergeSort_list)        
         
