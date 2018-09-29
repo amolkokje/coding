@@ -52,10 +52,10 @@ def merge(arr, l, m, r):
     R = [0] * (n2) 
   
     # Copy data to temp arrays L[] and R[] 
-    for i in range(0 , n1): 
+    for i in range(n1): 
         L[i] = arr[l + i] 
   
-    for j in range(0 , n2): 
+    for j in range(n2): 
         R[j] = arr[(m + 1) + j] 
         
     # Merge the temp arrays back into arr[l..r] 
@@ -63,7 +63,7 @@ def merge(arr, l, m, r):
     j = 0     # Initial index of second subarray 
     k = l     # Initial index of merged subarray 
   
-    while i < len(L) and j < len(R): 
+    while i < n1 and j < n2: 
         if L[i] <= R[j]: 
             arr[k] = L[i] 
             i += 1
@@ -74,13 +74,13 @@ def merge(arr, l, m, r):
             k += 1
     
     # Copy the remaining elements of L[], if there are any 
-    while i < len(L): 
+    while i < n1: 
         arr[k] = L[i] 
         i += 1
         k += 1
   
     # Copy the remaining elements of R[], if there are any 
-    while j < len(R):     
+    while j < n2:     
         arr[k] = R[j] 
         j += 1
         k += 1
