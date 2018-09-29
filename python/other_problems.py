@@ -1,4 +1,4 @@
-import sys
+import sys, copy
 
 ## Q:: Calculate the number of 2s in numbers from 0-n
 
@@ -55,8 +55,33 @@ def three_numbers_sum_target(arr, target):
                 if n1 and n2:
                     return i, n1, n2
     
+
+## Q:: Find total unique paths from a point in matrix to another point in matrix    
+   
+def unique_paths(stop_x, stop_y, start_x, start_y, m, n, visited_cells_orig):
+    if stop_x == start_x and stop_y == start_y:
+        return 1
+        
+    visited_cells = copy.deepcopy(visited_cells_orig)
+    visited_cells[stop_x][stop_y] = True
+        
+    no_paths = 0
+    if stop_x-1 >= 0 and not visited_cells[stop_x-1][stop_y]:
+        no_paths += unique_paths(stop_x-1, stop_y, start_x, start_y, m, n, visited_cells)
+
+    if stop_y-1 >= 0 and not visited_cells[stop_x][stop_y-1]:
+        no_paths += unique_paths(stop_x, stop_y-1, start_x, start_y, m, n, visited_cells)        
+        
+    if stop_x+1 < m and not visited_cells[stop_x+1][stop_y]:
+        no_paths += unique_paths(stop_x+1, stop_y, start_x, start_y, m, n, visited_cells)
+
+    if stop_y+1 < n and not visited_cells[stop_x][stop_y+1]:
+        no_paths += unique_paths(stop_x, stop_y+1, start_x, start_y, m, n, visited_cells)            
     
-    
+    return no_paths
+   
+   
+   
 if __name__ == '__main__':
 
     """
@@ -69,3 +94,9 @@ if __name__ == '__main__':
     print two_numbers_sum_target(arr, 5)
     print three_numbers_sum_target(arr, 12)
 
+    # m-rows, n-cols    
+    m = 3
+    n = 7
+    start_x, start_y = 1, 1
+    stop_x, stop_y = 2, 6
+    print 'no of paths with matrix {}x{} from ({},{}) to ({},{}) are {}'.format(m,n,start_x,start_y, stop_x,stop_y, unique_paths(stop_x=2, stop_y=6, start_x=1, start_y=1, m=m, n=n, visited_cells_orig=[ [None]*n for _ in range(m) ]))
