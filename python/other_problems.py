@@ -85,6 +85,16 @@ def unique_paths(stop_x, stop_y, start_x, start_y, m, n, visited_cells_orig):
 
 def generate_permutations(ip_list, take_count):
     
+    """
+    In permutations, order is important. i.e. ABC != CAB
+    """
+    
+    """
+    PYTHON ACTUAL USE ---
+    from itertools import permutations
+    permutations("AMOL", 3) --> will give a list of all permutations, taken 2 at a time
+    """
+    
     print 'Generating permutations for {}, taking only {} at a time'.format(ip_list, take_count)
     n = len(ip_list)
     visited = [None]*n
@@ -119,7 +129,57 @@ def generate_permutations(ip_list, take_count):
         permute(ip_list, word, visited, i)
         
         
+
+def generate_combinations(ip_list, take_count):
+    
+    """
+    In combinations, order is not important. i.e. ABC = CAB  --> SUBSETS of a SET
+    """
+    
+    """
+    PYTHON ACTUAL USE ---
+    from itertools import combinations
+    combinations("AMOL", 3) --> will give a list of all combinations, taken 2 at a time
+    """
+    
+    print 'Generating combinations for {}, taking only {} at a time'.format(ip_list, take_count)
+    n = len(ip_list)
+    visited = [None]*n
+    depth = 0
+    word = []
+    
+    def combine(ip_list, word_orig, visited_orig, i):
+        """
+        ip_list --> input list
+        word --> string generated so far
+        visited_ --> list of visited cells
+        i --> index of cell to visit
+        """
         
+        if visited_orig[i]:
+            return
+        
+        visited = copy.deepcopy(visited_orig)
+        word = copy.deepcopy(word_orig)
+        
+        word.append(ip_list[i])        
+        visited[i] = True
+        
+        if len(word) == take_count:
+            print 'COMBINATION = {}'.format(''.join(word))
+            return
+            
+        # this place is only where there is a difference between permutations and combinations. 
+        # in combinations, we don't want to repeat what is already done, so we only move right-side in the array
+        for k in range(i+1, n):
+            combine(ip_list, word, visited, k)
+            
+    for i in range(n):
+        combine(ip_list, word, visited, i)
+        
+        
+        
+                
         
         
     
@@ -147,3 +207,4 @@ if __name__ == '__main__':
     ip_word_list = ["AMOL", "AMI"]
     for ip_word in ip_word_list:
         generate_permutations(ip_list=ip_word, take_count=2)
+        generate_combinations(ip_list=ip_word, take_count=2)
