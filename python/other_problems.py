@@ -253,6 +253,24 @@ def compress_string(ip_string):
     return ''.join(compressed_string)    
 
     
+## Q: implement without using python Contains() or find()
+
+def does_string_contain_substring(main, sub):
+    """
+    main -> string to look in
+    sub -> string to look for    
+    """
+    
+    m = len(main)
+    s = len(sub)
+    if m == s and main == sub:
+        return True
+    for i in range(m-s):
+        if main[i:i+s-1] == sub:
+            return True
+    return False        
+    
+    
 if __name__ == '__main__':
 
     """
@@ -297,3 +315,10 @@ if __name__ == '__main__':
     string_list = [ "aaabbcccc", "abbccasd" ]
     for s in string_list:
         print 'compressed string for {} is {}'.format(s, compress_string(s)) 
+        
+    print "-------------------------------------------------------"
+    main = "amolkokje"
+    subs = ["amol", "aa", "kok", "molk", "amolkokje"]
+    for s in subs:
+        print '{} is substring of {} --> {}'.format(s, main, does_string_contain_substring(main, s))
+        
