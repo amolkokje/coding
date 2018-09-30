@@ -129,6 +129,7 @@ def generate_permutations(ip_list, take_count):
         permute(ip_list, word, visited, i)
         
         
+## Q:: Generate permutations of a list        
 
 def generate_combinations(ip_list, take_count):
     
@@ -178,12 +179,80 @@ def generate_combinations(ip_list, take_count):
         combine(ip_list, word, visited, i)
         
         
+## Q:: find first non-repeating character by iterating through the length of the string only once and by using constant space.        
+
+def find_first_non_repeating_char(ip_string):
+    print 'Checking string: {}'.format(ip_string)
+    ip_string = list(ip_string)
+    n = len(ip_string)
+    popped_chars = [None]*n
+    for k in range(n):
+        check_char = ip_string.pop(0)        
+        if not check_char in ip_string and not check_char in popped_chars:
+            print '{} is the first char not repeating'.format(check_char)
+            break
+        popped_chars[k] = check_char
         
-                
         
-        
+## Q:: find missing element in an AP        
+
+def ap_find_missing_element(ap):
+    # assumption: AP has length greater than 2
     
-   
+    # this is precaution just in case the second/third element is the missing one
+    diff = min(ap[1]-ap[0], ap[2]-ap[1])
+    for i in range(len(ap)-1):
+        if ap[i+1] - ap[i] > diff:
+            print 'Missing element = {}'.format(ap[i]+diff)
+
+
+## Q:: Find the largest substring palindrome in a given string. ex: input: abbac output: abba            
+
+def string_find_largest_subset_palindrome(ip_string):
+    
+    def is_palindrome(s):
+        return True if s == s[::-1] else False
+
+    if is_palindrome(ip_string):
+        return ip_string
+    
+    n = window = len(ip_string)
+            
+    while window > 1:
+        for i in range(n-window+1):
+            if is_palindrome(ip_string[i:i+window-1]):
+                return ip_string[i:i+window-1]
+        window-=1    
+    
+
+## Q:: Compress aaabbcccc -> a3b2c4
+
+def compress_string(ip_string):
+    n = len(ip_string)
+    compressed_string = []
+    i = 0
+    while i < n:
+        # match found, special case for last char
+        if i+1 < n and ip_string[i] == ip_string[i+1]:
+            ch = ip_string[i]
+            k = 2
+            for j in range(i+2, n):
+                if ip_string[j] != ch:
+                    break
+                k += 1
+            
+            # append compress chars
+            compressed_string += (ch + str(k))
+            # move index forward
+            i += k            
+        else:
+            # match not found to compress
+            compressed_string += ip_string[i]  
+            i += 1 
+        
+    return ''.join(compressed_string)    
+
+    
 if __name__ == '__main__':
 
     """
@@ -193,9 +262,13 @@ if __name__ == '__main__':
 
     arr = [2,3,4,5,6,7]
     arr.sort()
+    print "-------------------------------------------------------"
     print two_numbers_sum_target(arr, 5)
+    
+    print "-------------------------------------------------------"
     print three_numbers_sum_target(arr, 12)
 
+    print "-------------------------------------------------------"
     # m-rows, n-cols    
     m = 3
     n = 7
@@ -203,8 +276,24 @@ if __name__ == '__main__':
     stop_x, stop_y = 2, 6
     print 'no of paths with matrix {}x{} from ({},{}) to ({},{}) are {}'.format(m,n,start_x,start_y, stop_x,stop_y, unique_paths(stop_x=2, stop_y=6, start_x=1, start_y=1, m=m, n=n, visited_cells_orig=[ [None]*n for _ in range(m) ]))
 
+    print "-------------------------------------------------------"
     # permutations
     ip_word_list = ["AMOL", "AMI"]
     for ip_word in ip_word_list:
         generate_permutations(ip_list=ip_word, take_count=2)
         generate_combinations(ip_list=ip_word, take_count=2)
+        
+    print "-------------------------------------------------------"    
+    find_first_non_repeating_char("molamol") 
+    
+    print "-------------------------------------------------------"
+    ap_find_missing_element([1, 3, 5, 7, 9, 13, 15])
+    
+    print "-------------------------------------------------------"
+    s = "abba"
+    print 'largest subset palindrome in string {} is {}'.format(s, string_find_largest_subset_palindrome(s))
+    
+    print "-------------------------------------------------------"
+    string_list = [ "aaabbcccc", "abbccasd" ]
+    for s in string_list:
+        print 'compressed string for {} is {}'.format(s, compress_string(s)) 
