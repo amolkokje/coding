@@ -263,12 +263,44 @@ def does_string_contain_substring(main, sub):
     
     m = len(main)
     s = len(sub)
+    
     if m == s and main == sub:
         return True
+       
     for i in range(m-s):
-        if main[i:i+s-1] == sub:
+        if main[i:i+s] == sub:
             return True
+    
     return False        
+    
+    
+## Q: Next closest bigger number with the same digits. You have to create a function that takes a positive integer number and 
+## returns the next bigger number formed by the same digits:
+#next_bigger(12)==21
+#next_bigger(513)==531
+#next_bigger(2017)==2071
+#next_bigger(4132)==4213
+## If no bigger number can be composed using those digits, return -1:
+#next_bigger(9)==-1
+#next_bigger(111)==-1
+#next_bigger(531)==-1
+
+def next_bigger(num):
+    # create a backup for comparison later
+    check_num = copy.deepcopy(num)
+    
+    # convert num to string -> get permutations -> convert back to numbers
+    from itertools import permutations
+    # get string permutations
+    perm = permutations(str(num))
+    # convert each back to int
+    perm = [ int(''.join(n)) for n in perm ]
+    
+    perm.sort()
+    for i in range(len(perm)):
+        if perm[i] > check_num:
+            return perm[i]
+    return -1        
     
     
 if __name__ == '__main__':
@@ -322,3 +354,7 @@ if __name__ == '__main__':
     for s in subs:
         print '{} is substring of {} --> {}'.format(s, main, does_string_contain_substring(main, s))
         
+    print "-------------------------------------------------------" 
+    num_list = [ 12, 513, 2017, 4132, 9, 111, 531 ]
+    for num in num_list:
+        print 'next closest bigger permutation of {} is {}'.format(num, next_bigger(num))
