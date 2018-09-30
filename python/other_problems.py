@@ -253,7 +253,7 @@ def compress_string(ip_string):
     return ''.join(compressed_string)    
 
     
-## Q: implement without using python Contains() or find()
+## Q:: implement without using python Contains() or find()
 
 def does_string_contain_substring(main, sub):
     """
@@ -274,7 +274,7 @@ def does_string_contain_substring(main, sub):
     return False        
     
     
-## Q: Next closest bigger number with the same digits. You have to create a function that takes a positive integer number and 
+## Q:: Next closest bigger number with the same digits. You have to create a function that takes a positive integer number and 
 ## returns the next bigger number formed by the same digits:
 #next_bigger(12)==21
 #next_bigger(513)==531
@@ -302,6 +302,65 @@ def next_bigger(num):
             return perm[i]
     return -1        
     
+    
+## Q:: Given a sorted array with duplicates and a number, find the range in the form of (startIndex, endIndex) of that number. For example,
+# find_range({0 2 3 3 3 10 10},  3) should return (2,4).
+# find_range({0 2 3 3 3 10 10},  6) should return (-1,-1).
+# The array and the number of duplicates can be large.
+
+def find_range(arr, n):
+    from binary_search import binarySearch_First, binarySearch_Last
+    return binarySearch_First(arr, n), binarySearch_Last(arr, n)
+    
+    
+## Q:: You are given an unsorted array. Write an algorithm to extract the highest 'k' elements from the array.    
+# Python Heap: https://docs.python.org/2/library/heapq.html
+
+# to make it work with all cases, use Sort
+def get_highest_elements(ip_list, k):    
+    # sorted(arr) --> returns a sorted list
+    # arr.sort() --> sorts list in place
+    return sorted(ip_list)[-k:]
+    
+
+## Q:: Given an array of elements, find the maximum possible sum of a contiguous subarray
+# length -> min=1, max=n-1
+
+def arr_max_sum_contiguous_elements(arr):
+    n = len(arr)
+    start = stop = 0
+    max_sum = 0
+    
+    for i in range(n-1):
+        # first element also part of the sum
+        sum = arr[i]
+        
+        for j in range(i+1, n):            
+            sum += arr[j]
+            
+            # if sum till then becomes less than zero, it will anyways not work, so break early
+            if sum < 0:
+                break
+                
+            if sum > max_sum:
+                start = i
+                stop = j
+                max_sum = sum
+                
+    return max_sum, start, stop            
+    
+
+## Q:: You are given an array of size 99. 98 elements are duplicate-pairs, leaving one that is unique. How would you find it?
+
+def find_unique_element(arr):
+    while arr:
+        e = arr.pop(0)
+        if e not in arr:
+            return e
+        
+           
+        
+        
     
 if __name__ == '__main__':
 
@@ -358,3 +417,32 @@ if __name__ == '__main__':
     num_list = [ 12, 513, 2017, 4132, 9, 111, 531 ]
     for num in num_list:
         print 'next closest bigger permutation of {} is {}'.format(num, next_bigger(num))
+                
+    print "-------------------------------------------------------"     
+    arr = [0, 2, 3, 3, 3, 10, 10]
+    print 'arr={}, n={}, range={}'.format(arr, 3, find_range(arr, 3))
+    print 'arr={}, n={}, range={}'.format(arr, 10, find_range(arr, 10))
+    print 'arr={}, n={}, range={}'.format(arr, 6, find_range(arr, 6))
+    print 'arr={}, n={}, range={}'.format(arr, 2, find_range(arr, 2))
+    
+    print "-------------------------------------------------------"     
+    arr = [4,5,6,7,2,3,1]
+    k = 3
+    print '{} highest elements of unsorted array {} --> {}'.format(k, arr, get_highest_elements(arr, k))
+    
+    print "-------------------------------------------------------"     
+    list_arr = [
+    [2, -1, 2, 3, 4, -5],
+    [2, -5, 2, 3, 4, -1],
+    [2, 3, 4, 5, 6, 7],
+    [2, 5, 7, 3, 2, 4],
+    [4, 5, 7, 3, -2, 3]        
+    ]
+    for arr in list_arr:
+        print 'arr={}, max contiguous sum={}'.format(arr, arr_max_sum_contiguous_elements(arr))
+        
+    print "-------------------------------------------------------"         
+    arr = [ 4,3,2,1,4,2,1 ]
+    print 'Unique element in {} is {}'.format(arr, find_unique_element(arr))
+    
+    
