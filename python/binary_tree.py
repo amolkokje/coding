@@ -170,7 +170,7 @@ def GetBSTLCA(node, v1, v2):
             return GetBSTLCA(node.right, v1, v2)
         elif node.data > v1 and node.data > v2:
             return GetBSTLCA(node.left, v1, v2)            
-        elif node.data >= v1 and node.data <= v2:
+        elif v1 <= node.data <= v2:
             return node
         
 def GetLCA(node, v1, v2):
