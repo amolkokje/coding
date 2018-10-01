@@ -122,21 +122,15 @@ def PrintLevel(node, print_height, height=0):
 
 ########################################################################
 
-def GetTreeHeight(node, height=0):    
+def GetTreeHeight(node, height=-1):    
     """
     takes tree root node and returns height of the tree
     """
     if node:
-        left_height = right_height = height
-        if node.left:
-            left_height = GetTreeHeight(node.left, height+1)
-        if node.right:
-            right_height = GetTreeHeight(node.right, height+1)
-        
-        if left_height >= right_height:
-            return left_height
-        else:
-            return right_height
+        height += 1
+        return max(GetTreeHeight(node.left, height), GetTreeHeight(node.right, height))        
+    else:
+        return height
             
             
 ########################################################################
