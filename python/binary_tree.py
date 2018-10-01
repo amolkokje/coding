@@ -219,10 +219,10 @@ def ContainsTree(n1, n2):
         return False
     elif n1 and (not n2):
         return True # T2 is empty
-    elif n1.data == n2.data:
-        if AreTreesIdentical(n1, n2): 
-            return True
-    return ContainsTree(n1.left, n2) or ContainsTree(n1.right, n2)
+    elif n1.data == n2.data and AreTreesIdentical(n1, n2): 
+        return True
+    else:    
+        return ContainsTree(n1.left, n2) or ContainsTree(n1.right, n2)
         
             
     
