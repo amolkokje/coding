@@ -105,6 +105,97 @@ def get_hits(actual, guess):
                 psi.append(i)                        
     
     return 'hits={}, pseudo-hits={}'.format(h, ph)
+
+# 17.6 --> Given an array of integers, write a method to find indices m and n such that if you sorted elements m through n, 
+# the entire array would be sorted. Minimize n - m (that is, find the smallest such sequence).
+## --> UNABLE TO UNDERSTAND HOW TO SOLVE
+
+
+# 17.7 --> Given any integer, print an English phrase that describes the integer (e.g., "One Thousand, Two Hundred Thirty Four").
+
+def print_num_string(num):
+	
+    num_map = {
+        1: 'one',
+        2: 'two',
+        3: 'three',
+        4: 'four',
+        5: 'five',
+        6: 'six',
+        7: 'seven',
+        8: 'eight',
+        9: 'nine',
+        11: 'eleven',
+        12: 'twelve',
+        13: 'thirteen',
+        14: 'fourteen',
+        15: 'fifteen',
+        16: 'sixteen',
+        17: 'seventeen',
+        18: 'eighteen',
+        19: 'nineteen',
+        20: 'twenty',
+        30: 'thirty',
+        40: 'forty',
+        50: 'fifty',
+        60: 'sixty',
+        70: 'seventy',
+        80: 'eighty',
+        90: 'ninety',
+    }
+    
+    num_str = str(num)
+    num_arr = [ num_str[i] for i in range(len(num_str)) ]
+    print num_arr
+    
+    def get_tens(num_arr):
+        # 10 <= num < 100
+        print 'get_tens = {}'.format(num_arr)
+        num_string = []
+        if int(num_arr[0]) == 1:
+            return num_map[int(''.join(num_arr))]
+        else:
+            num_string.append(num_map[int(num_arr[0])*10])
+            num_string.append(num_map[int(num_arr[1])])
+            return num_string
+            
+    def get_hundreds(num_arr):
+        # 100 <= num < 1000
+        print 'get_hundreds = {}'.format(num_arr)
+        num_string = []
+        num_string.append(num_map[int(num_arr[0])])
+        num_string.append(' hundred, ')
+        return num_string + get_tens(num_arr[1:])
+        
+    def get_thousands(num_arr):
+        # 1000 <= num < 10000
+        print 'get_thousands = {}'.format(num_arr)
+        num_string = []
+        n = len(num_arr)
+        print 'n={}'.format(n)
+        if n == 4: # 3,456
+            num_string.append(num_map[int(num_arr[0])])
+        elif n == 5: # 33,456     
+            num_string.append(get_tens(num_arr[0:2]))
+        elif n == 6:
+            num_string.append(get_hundreds(num_arr[0:3]))
+            
+        num_string.append(' thousand, ')
+        if n == 5:
+            return num_string + get_hundreds(num_arr[2:])
+        elif n == 6:
+            return num_string + get_hundreds(num_arr[3:])
+        
+    num_string = []
+    if num < 10:
+        return num_map[int(num)]
+    elif 10 <= num < 100:
+        return get_tens(num_arr)
+    elif 100 <= num < 1000:
+        return get_hundreds(num_arr)
+    elif 1000 <= num:
+        return get_thousands(num_arr)    
+	
     
 if __name__ == '__main__':
     swap_nums(2, 4)
@@ -124,3 +215,8 @@ if __name__ == '__main__':
     actual = 'RGBY'
     guess = 'GGRR'
     print 'MM actual={}, guess={}, {}'.format(actual, guess, get_hits(actual, guess))
+    
+    print '---------------------------------------------------'
+    num_list = [3, 24, 23, 123, 223, 3445, 33456, 333456]
+    for num in num_list:
+        print 'Number={}, String={}'.format(num, print_num_string(num))
