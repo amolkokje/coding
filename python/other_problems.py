@@ -358,9 +358,30 @@ def find_unique_element(arr):
         if e not in arr:
             return e
         
-           
+
+## Q:: You are given a list which represents Amazon's stock price each day. The values are the price of the Amazon stock. return the best profit that can be 
+# made from 1 purchase and 1 sale of Amazon stock.
+# [2, 5, 4, 9, 1] --> Max profix is 7 by buying when the price is 2 and selling when the price is 9
+# [2, 5, 4, 9, 1, 9] --> Max profix is 8 by buying when the price is 1 and selling when the price is 9        
+  
+def max_profit(sp):
+    """
+    speed --> O(N)
+    space --> O(1)
+    """
+    n = len(sp)
+    minv = sp[0]
+    max = None
+    
+    for i in range(n):
+        if sp[i] < minv:
+            minv = sp[i]            
         
+        diff = sp[i] - minv     
+        if diff > max:
+            max = diff
         
+    return max         
     
 if __name__ == '__main__':
 
@@ -445,4 +466,8 @@ if __name__ == '__main__':
     arr = [ 4,3,2,1,4,2,1 ]
     print 'Unique element in {} is {}'.format(arr, find_unique_element(arr))
     
+    print "-------------------------------------------------------"         
+    arrlist = [ [2, 5, 4, 9, 1], [2, 5, 4, 9, 1, 9] ]
+    for arr in arrlist:
+        print 'max profit for {} is {}'.format(arr, max_profit(arr))
     
