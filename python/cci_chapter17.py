@@ -210,29 +210,35 @@ def get_contiguous_sequence_max_sum(arr):
     sum = 0
     max = None  
     
-    for i in range(len(arr)-1):
-        sum += arr[i]
+    for i in range(len(arr)):
+        # sum is never 0, unless explicitly set
+        if sum == 0:
+            start = i
         
-        if sum < 0:
-            sum = 0
-            tstart = tstop = i+1
-            
-        elif sum > max:            
+        sum += arr[i]        
+        
+        if sum > max:
+            stop = i
             max = sum
-            tstop = i
-            start, stop = tstart, tstop
+        
+        # if sum<0, then we are decreasing, so start again
+        elif sum < 0:
+            sum = 0
             
     return arr[start:stop+1]        
 
+# 17.9 ->  Design a method to find the frequency of occurrences of any given word in a book
+# simple dict, so skip
+    
     
 if __name__ == '__main__':
     swap_nums(2, 4)
     
     print '---------------------------------------------------'
     mat = []
-    mat.append([None, 1, 1])
+    mat.append([None,1,1])
     mat.append([1,1,None])
-    mat.append([1, None, None])
+    mat.append([1,None,None])
     print have_winner(mat)
     
     print '---------------------------------------------------'
@@ -250,6 +256,6 @@ if __name__ == '__main__':
         print 'Number={}, String={}'.format(num, print_num_string(num) )
         
     print '---------------------------------------------------'
-    arrlist = [[2, -8, 3, -2, 4, -10]]
+    arrlist = [ [2,-8,3,-2,4,-10], [2,3,-8,-1,2,4,-2,3], [2,3,-8,8], [2,3,0,4] ]
     for arr in arrlist:
         print 'Contiguous sequence with max sum for {} is {}'.format(arr, get_contiguous_sequence_max_sum(arr))
