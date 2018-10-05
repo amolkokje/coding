@@ -164,7 +164,7 @@ def print_num_string(num):
         print 'get_hundreds = {}'.format(num_arr)
         num_string = []
         num_string.append(num_map[int(num_arr[0])])
-        num_string.append(' hundred, ')
+        num_string.append('hundred')
         return num_string + get_tens(num_arr[1:])
         
     def get_thousands(num_arr):
@@ -174,13 +174,13 @@ def print_num_string(num):
         n = len(num_arr)
         print 'n={}'.format(n)
         if n == 4: # 3,456
-            num_string.append(num_map[int(num_arr[0])])
+            num_string += num_map[int(num_arr[0])]
         elif n == 5: # 33,456     
-            num_string.append(get_tens(num_arr[0:2]))
+            num_string +=  get_tens(num_arr[0:2])
         elif n == 6:
-            num_string.append(get_hundreds(num_arr[0:3]))
+            num_string += get_hundreds(num_arr[0:3])
             
-        num_string.append(' thousand, ')
+        num_string.append('thousand,')
         if n == 5:
             return num_string + get_hundreds(num_arr[2:])
         elif n == 6:
@@ -196,6 +196,34 @@ def print_num_string(num):
     elif 1000 <= num:
         return get_thousands(num_arr)    
 	
+    
+    
+# 17.8 --> You are given an array of integers (both positive and negative). Find the contiguous sequence with the largest sum. Return the sum. EXAMPLE
+# Input: 2, -8, 3, -2, 4, -10
+# Output 5 i.e. {3, -2, 4}
+
+
+def get_contiguous_sequence_max_sum(arr):
+    
+    start = stop = 0 # final
+    tstart = tstop = 0 # temp current values
+    sum = 0
+    max = None  
+    
+    for i in range(len(arr)-1):
+        sum += arr[i]
+        
+        if sum < 0:
+            sum = 0
+            tstart = tstop = i+1
+            
+        elif sum > max:            
+            max = sum
+            tstop = i
+            start, stop = tstart, tstop
+            
+    return arr[start:stop+1]        
+
     
 if __name__ == '__main__':
     swap_nums(2, 4)
@@ -219,4 +247,9 @@ if __name__ == '__main__':
     print '---------------------------------------------------'
     num_list = [3, 24, 23, 123, 223, 3445, 33456, 333456]
     for num in num_list:
-        print 'Number={}, String={}'.format(num, print_num_string(num))
+        print 'Number={}, String={}'.format(num, print_num_string(num) )
+        
+    print '---------------------------------------------------'
+    arrlist = [[2, -8, 3, -2, 4, -10]]
+    for arr in arrlist:
+        print 'Contiguous sequence with max sum for {} is {}'.format(arr, get_contiguous_sequence_max_sum(arr))
