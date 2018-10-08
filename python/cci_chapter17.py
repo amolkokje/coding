@@ -229,8 +229,151 @@ def get_contiguous_sequence_max_sum(arr):
 
 # 17.9 ->  Design a method to find the frequency of occurrences of any given word in a book
 # simple dict, so skip
+
+
+# 17.10 -> For example, the following XML might be converted into the compressed string below (assuming a mapping off family -> l, person ->2, frstName -> 3, LastName -> 4, state -> 5).
+# <family lastName="McDowell" state="CA"> 
+#     <person firstName="Gayle">Some Message</person> 
+# </family>
+# Becomes:
+# 1 4 McDowell 5 CA 0 2 3 Gayle 0 Some Message 0 0
+# Write code to print the encoded version of an XML element (passed in E Lament and Attribute objects).
+  
+## AMOL -> UNABLE TO FIGURE OUT THE PYTHON LIB
+  
+import xml.etree.ElementTree as ET
+   
+def encode_xml_string(xml):
+    encoded_string = []
     
+    map_attr = {
+        'family':1,
+        'person':2,
+        'firstName':3, 
+        'lastName':4,
+        'state':5       
+    }
     
+    et = ET.fromstring(xml)
+    
+   # for item in et.items():
+   #     print item.tail
+        
+    for item in et:
+        print item.tag, item.attrib, item.tail
+    
+    for tag in et.items():
+        encoded_string.append('{} {}'.format(map_attr[tag[0]],tag[1]))
+        encoded_string.append('0')
+        
+       # print encoded_string
+    # split by >< to get xml tags
+    
+    # encode attributes and values within each tags
+    
+
+# 17.11 -> Implement a method rand70 given randSQ- That is, given a method that generates a random number between 0 and 4 (inclusive), write a method that generates a random number between 0 and 6 (inclusive).
+# NOTE: the solution is not the same as its in the book, but I think this one is property
+
+import random
+
+def rand7():
+    
+    def rand5():
+        return random.randint(0, 5)
+        
+    return (rand5()*7)/5
+    
+ 
+# 17.12 ->  Design an algorithm to find all pairs of integers within an array which sum to a specified values
+
+def bs_val(arr, v):
+    """
+    binary search to find a value
+    """
+    
+    def bsr(arr, v, l, r):
+        if l < r:
+            m = (l+r)/2
+            if arr[m] == v:
+                return True
+            elif arr[m] > v:
+                return bsr(arr, v, l, m-1)
+            else:
+                return bsr(arr, v, m+1, r)
+
+    return bsr(arr, v, 0, len(arr)) 
+    
+                
+def find_pairs_sum(arr, sum):
+    found_pairs = []    
+    arr.sort()
+    
+    for i in range(len(arr)):
+        
+        element_find = sum - arr[i]
+        
+        if bs_val(arr, element_find):
+            pair = [arr[i], element_find]
+            pair.sort()
+            
+            if not pair in found_pairs:  
+                found_pairs.append(pair)
+                
+    return found_pairs            
+ 
+
+# 17.13 -> Consider a simple node-like data structure called BiNode, which has pointers to two other nodes. The data structure BiNode could be used to represent both a binary tree (where nodel is the left node and node2 is the right node) or a doubly linked list (where nodel is the previous node and node2 is the next node). Implement a method to convert a binary search tree (implemented with BiNode) into a doubly linked list. The values should be kept in order and the operation should be performed in place (that is, on the original data structure). 
+## AMOL - SEEMS TOO COMPLEX
+
+
+# 17.4 ->  Oh, no! You have just completed a lengthy document when you have an unfortunate Find/Replace mishap. You have accidentally removed all spaces, punctuation, and capitalization in the document. A sentence like "I reset the computer. It still didn't boot!" would become "iresetthecomputeritstilldidntboot". You figure that you can add back in the punctation and capitalization later, once you get the individual words properly separated. Most of the words will be in a dictionary, but some strings, like proper names, will not.
+# Given a dictionary (a list of words), design an algorithm to find the optimal way of "unconcatenating" a sequence of words. In this case, "optimal" is defined to be the parsing which minimizes the number of unrecognized sequences of characters.
+# For example, the string "jesslookedjustliketimherbrother" would be optimally parsed as "JESS looked just like TIM her brother". This parsing has seven unrecognized characters, which we have capitalized for clarity.
+
+
+
+def add_spaces(olds, word_dictionary):
+    news = []
+    n = len(olds)
+    
+    def get_word_end(i, j, word_dictionary):
+        w = (j-i)-1 # window size
+        while w > 0:
+            word = olds[j-w:j]
+            if word in word_dictionary:
+                return word
+            w -= 1    
+
+    i = 0        
+    while i < n:
+        print 'i={}'.format(i)
+    
+        j = i+1
+        while i+1 <= j <= n:  ## NOTE: range(min, max) --> index from [min:max-1] i.e. last is not included
+            word = olds[i:j]  ## NOTE: Here, last is included
+            print 'i={}:j={}: word={}'.format(i, j, word)
+            
+            if word in word_dictionary:
+                print 'START={}'.format(word)
+                news.append(word)
+                i += (j-i)
+
+            word_end = get_word_end(i, j, word_dictionary)
+            if word_end:
+                print 'END={} in word={}'.format(word_end, word)
+                news.append(word.split(word_end)[0].upper())
+                news.append(word_end)
+                i += (j-i)
+            
+            j += 1
+            
+        i += 1        
+                
+    return news            
+                
+                
+ 
 if __name__ == '__main__':
     swap_nums(2, 4)
     
@@ -259,3 +402,32 @@ if __name__ == '__main__':
     arrlist = [ [2,-8,3,-2,4,-10], [2,3,-8,-1,2,4,-2,3], [2,3,-8,8], [2,3,0,4] ]
     for arr in arrlist:
         print 'Contiguous sequence with max sum for {} is {}'.format(arr, get_contiguous_sequence_max_sum(arr))
+        
+    print '---------------------------------------------------'    
+    ss = """
+    <family lastName="McDowell" state="CA"> 
+        <person firstName="Gayle">Some Message</person> 
+    </family>
+    """ 
+    ##encode_xml_string(ss)
+    
+    print '---------------------------------------------------'    
+    rand7list = []
+    for _ in range(20):
+        rand7list.append(rand7())
+    print rand7list    
+    
+    print '---------------------------------------------------'    
+    arrlist = [ [-2,-1,0,3,5,6,7,9,13,14] ]
+    sum = 5
+    for arr in arrlist:
+        print '{}: pairs with sum={} are: {}'.format(arr, sum, find_pairs_sum(arr, sum))
+        
+    print '---------------------------------------------------'        
+    word_dictionary = [ 'looked', 'just', 'like', 'her', 'brother', 'I', 'reset', 'computer', 'It', 'still', 'didn\'t', 'boot' ]
+    sentence = 'jesslookedjustliketimherbrother'
+    print 'original={}, with_spaces={}'.format(sentence, add_spaces(sentence, word_dictionary))
+    
+    word_dictionary =  [ 'i', 'reset', 'the', 'computer', 'it', 'still', 'didnt', 'boot' ]
+    sentence = 'iresetthecomputeritstilldidntboot'
+    print 'original={}, with_spaces={}'.format(sentence, add_spaces(sentence, word_dictionary))
