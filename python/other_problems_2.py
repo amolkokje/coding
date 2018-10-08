@@ -158,6 +158,46 @@ def is_sudoku_valid(board):
     
     return True
 
+    
+# Q: Given a string, find the length of the longest substring without repeating characters.
+
+def length_longest_substring(s):
+        
+    def are_chars_repeating(ss):
+        d = dict()
+        for i in range(len(ss)):
+            if ss[i] in d.keys():
+                return False
+            else:
+                d[ss[i]] = 1
+        return True
+
+    w = n = len(s) 
+    while w > 0:
+        print w
+        for i in range(n-w+1):
+            if are_chars_repeating(s[i:i+w]):
+                return w
+        w -= 1        
+                
+    
+# Q: There are two sorted arrays nums1 and nums2 of size m and n respectively.
+# Find the median of the two sorted arrays. The overall run time complexity should be O(log (m+n)).
+# You may assume nums1 and nums2 cannot be both empty.    
+   
+def median_sorted_arrays(nums1, nums2):
+    merged = sorted(nums1 + nums2)   # this part will take O(log (m+n))
+    n = len(merged)
+    mid = n/2  # will default to int i.e. 7/2=3
+    if n%2 == 0:          
+        return float(merged[mid] + merged[mid+1])/2
+    else:
+        return merged[mid]
+        
+
+   
+
+   
 if __name__ == '__main__':
     
     print '--------------------------------------------------------------'
@@ -240,4 +280,16 @@ if __name__ == '__main__':
         print 'is_sudoku_valid={}'.format(is_sudoku_valid(board))
         
         
+    print '--------------------------------------------------------------'
+    arrlist = [ "abcabcbb" , "bbbbb", "pwwkew"] 
+    for arr in arrlist:
+        print 's={}, length of longest substring={}'.format(arr, length_longest_substring(arr))
+        
+    print '--------------------------------------------------------------'
+    nums1 = [1, 3]
+    nums2 = [2]
+    print 'nums1={}, nums2={}, median={}'.format(nums1, nums2, median_sorted_arrays(nums1, nums2))     
+    nums1 = [1, 2]
+    nums2 = [3, 4]
+    print 'nums1={}, nums2={}, median={}'.format(nums1, nums2, median_sorted_arrays(nums1, nums2))     
         
