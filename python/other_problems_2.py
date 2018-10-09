@@ -194,9 +194,50 @@ def median_sorted_arrays(nums1, nums2):
     else:
         return merged[mid]
         
+# Q: The string "PAYPALISHIRING" is written in a zigzag pattern on a given number of rows like this: (you may want to display this pattern in a fixed font for better legibility); And then read line by line: "PAHNAPLSIIGYIR".
+# ----------------
+# Example 1:
+# Input: s = "PAYPALISHIRING", numRows = 3
+# Output: "PAHNAPLSIIGYIR"
+# ----------------
+# Example 2:
+# Input: s = "PAYPALISHIRING", numRows = 4
+# Output: "PINALSIGYAHRPI"
+# Explanation:
+# P     I    N
+# A   L S  I G
+# Y A   H R
+# P     I
 
+def convert(s, num_rows):
+    print 's={}, numRows={}'.format(s, num_rows)
+    
+    going_down = False  # as the first condition will turn it to true
+    n = len(s)
+    
+    mat = [ [] for _ in range(num_rows) ]
+    current_row = 0    
+    for i in range(n):
+        if current_row == 0 or current_row == (num_rows-1):
+            going_down = not going_down
+       
+        mat[current_row].append(s[i])
+        
+        if going_down:
+            current_row += 1
+        else:    
+            current_row -= 1
+
+    return reduce(lambda x,y:x+y, mat)
    
+# Q: Given a 32-bit signed integer, reverse digits of an integer.
 
+def reverse_int(n):
+    sn = str(n)
+    if sn[0] == '-':
+        return int(sn[0] + sn[:0:-1])
+    else:    
+        return int(str(n)[::-1])
    
 if __name__ == '__main__':
     
@@ -292,4 +333,15 @@ if __name__ == '__main__':
     nums1 = [1, 2]
     nums2 = [3, 4]
     print 'nums1={}, nums2={}, median={}'.format(nums1, nums2, median_sorted_arrays(nums1, nums2))     
+        
+    print '--------------------------------------------------------------'
+    arrlist = [ ("PAYPALISHIRING",3), ("PAYPALISHIRING",4)]
+    for arr in arrlist:
+        print ''.join(convert(arr[0], arr[1]))
+        
+    print '--------------------------------------------------------------'
+    nlist = [ 123, -123, 120]
+    for n in nlist:
+        print 'n={}, reverse={}'.format(n, reverse_int(n))
+        
         
