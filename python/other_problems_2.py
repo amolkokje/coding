@@ -239,6 +239,36 @@ def reverse_int(n):
     else:    
         return int(str(n)[::-1])
    
+# Q: Implement atoi which converts a string to an integer.
+# The function first discards as many whitespace characters as necessary until the first non-whitespace character is found. Then, starting from this character, takes an optional initial plus or minus sign followed by as many numerical digits as possible, and interprets them as a numerical value.
+# The string can contain additional characters after those that form the integral number, which are ignored and have no effect on the behavior of this function.
+# If the first sequence of non-whitespace characters in str is not a valid integral number, or if no such sequence exists because either str is empty or it contains only whitespace characters, no conversion is performed.
+# If no valid conversion could be performed, a zero value is returned.   
+import re, sys
+def atoi(ints):
+    
+    def ret_value(n):
+        n = int(n)
+        if n > sys.maxint:
+            return sys.maxint
+        elif n < -sys.maxint:
+            return -sys.maxint
+        else:
+            return n
+            
+    ints = ints.replace(' ','')
+    #print "**{}**".format(ints)
+    match = re.match("\d+", ints)
+    if match:
+        return ret_value(match.group(0))
+        
+    match = re.match("-\d+", ints)
+    if match:
+        return ret_value(match.group(0))    
+    
+    return 0
+    
+   
 if __name__ == '__main__':
     
     print '--------------------------------------------------------------'
@@ -344,4 +374,8 @@ if __name__ == '__main__':
     for n in nlist:
         print 'n={}, reverse={}'.format(n, reverse_int(n))
         
+    print '--------------------------------------------------------------'
+    nlist = [ "42", "   -42", "4193 with words", "words and 987", "-91283472332"]
+    for n in nlist:
+        print 'n={}, atoi={}'.format(n, atoi(n))
         
