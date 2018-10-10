@@ -11,10 +11,7 @@ def have_winner(mat):
     """
     None -> no value in cell
     """
-    print mat
-    
-    n = len(mat) # rows
-    m = len(mat[0]) # cols
+    n = len(mat) # rows=cols
     
     def are_equal(arr):
         for k in range(1,len(arr)):
@@ -25,12 +22,12 @@ def have_winner(mat):
     # check rows, cols
     for i in range(n):
         if are_equal(mat[i]) or \
-        are_equal([mat[i][x] for x in range(n)]):
+        are_equal([mat[j][i] for j in range(n)]):
             return True
     
     # check diagonals
     if are_equal([mat[i][i] for i in range(n)]) \
-    or are_equal([mat[i][x-i] for i in range(n)]):
+    or are_equal([mat[i][(n-1)-i] for i in range(n)]):  # because n=3, but max index=2
         return True
     
     return False
@@ -382,7 +379,7 @@ if __name__ == '__main__':
     mat.append([None,1,1])
     mat.append([1,1,None])
     mat.append([1,None,None])
-    print have_winner(mat)
+    print 'mat={}, have_winner={}'.format(mat, have_winner(mat))
     
     print '---------------------------------------------------'
     a = 50
