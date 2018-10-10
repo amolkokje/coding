@@ -102,12 +102,17 @@ def get_hits(actual, guess):
     n = len(actual)
     h = 0
     ph = 0
+    
+    hits = pseudo_hits = dict()
+    
     # hits
     for i in range(n):
         if actual[i] == guess[i]:
-            hi.append(i)
-            h += 1
-        
+            #hi.append(i)
+            #h += 1        
+            hits[i] = actual[i]
+    print hits
+    
     # pseudo-hits        
     psi = []
     for i in range(n):
@@ -116,13 +121,21 @@ def get_hits(actual, guess):
         # 2- element in guess exists in actual
         # 3- get the index of the guess element in the actual. And see if it is already not hit
         # 4- get the index of the first element in guess which is the same value, and see if it is already not covered in pseudo-hits
-        if (not i in hi) and (guess[i] in actual):
-            if (not actual.index(guess[i]) in hi) and (not guess.index(guess[i]) in psi):
-                ph += 1
-                psi.append(i)                        
+        #
+        #if (not i in hi) and (guess[i] in actual):
+        #    if (not actual.index(guess[i]) in hi) and (not guess.index(guess[i]) in psi):
+        
+        if not i in hits.keys() and guess[i] in actual:
+            pseudo_hits[i] = guess[i]
+        
+        #if (not i in hits.keys()):
+        #    for k,v in hits.iteritems():
+        #        if v == g[i] and k != i:                
+        #            ph += 1
+        #            #psi.append(i)                        
     
-    return 'hits={}, pseudo-hits={}'.format(h, ph)
-
+    return 'hits={}, pseudo-hits={}'.format(len(hits), len(pseudo_hits))
+    
 # 17.6 --> Given an array of integers, write a method to find indices m and n such that if you sorted elements m through n, 
 # the entire array would be sorted. Minimize n - m (that is, find the smallest such sequence).
 ## --> UNABLE TO UNDERSTAND HOW TO SOLVE
@@ -408,6 +421,9 @@ if __name__ == '__main__':
     
     print '---------------------------------------------------'
     actual = 'RGBY'
+    guess = 'GGRR'
+    print 'MM actual={}, guess={}, {}'.format(actual, guess, get_hits(actual, guess))
+    actual = 'RGGY'
     guess = 'GGRR'
     print 'MM actual={}, guess={}, {}'.format(actual, guess, get_hits(actual, guess))
     
