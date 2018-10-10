@@ -36,40 +36,60 @@ def have_winner(mat):
 # 17.3 --> Write an algo that counts the number of trailing zeroes in a factorial    
 # every time there is a multiplication by 10, or 5*2, then there is a 0.
 # so, count_10 + min(count_2, count_5) = count_0s
-## PROBLEM --> still off, come back later - IMPORTANT!
 
+# EXPLANATION - https://www.geeksforgeeks.org/count-trailing-zeroes-factorial-number/
 def count_num_zeroes_fact(num):
-    c5 = 0
-    c2 = 0
-    c10 = 0 # 5*2
     
-    def find_factors(num, factors_of):
+    def find_factors_5(x):
         c = 0
-        while num > 0:
-            #print num, c
-            if num % factors_of == 0:
+        while x > 0:
+            if x%5 == 0:
                 c += 1
-                num = num/5
+                x = x/5
             else:
-                return c
-        return c    
+                return c        
         
-    
-    while num > 0:
-        if num%10 == 0:
-            c10 += 1
-        
-        elif num%5 == 0:
-            c5 += find_factors(num, 5)
+    c0 = 0
+    while num > 1:
+        c0 += find_factors_5(num)
+        num -= 1
                 
-        elif num%2 == 0:
-            c2 += find_factors(num, 2)
-        
-        #print num, count_2, count_5, count_10
-        num -= 1    
+    return c0  
+            
+
+def memoize(func):    
+
+    class mdict(dict):
+        def __missing__(self, key):
+            self[key] = func(key)
+            return self[key]
+      
+    return mdict().__getitem__
+
+@memoize    
+def find_fact_trailing_zeros(n):
     
-    return c10 + min(c5, c2)
+    @memoize
+    def fact(x):
+        if x == 0 or x == 1:
+            return 1
+        else:
+            return x*fact(x-1)    
         
+    factn = str(fact(n))
+    i = len(factn)-1
+    c = 0
+    while i > 0:
+        if int(factn[i]) != 0:
+            return c
+        else:
+            c += 1
+        i -= 1    
+    
+    return c    
+            
+    
+ 
 # 17.4 --> find max of two numbers without using comparison operator
 # bitwise operation - try later
 
@@ -382,8 +402,9 @@ if __name__ == '__main__':
     print 'mat={}, have_winner={}'.format(mat, have_winner(mat))
     
     print '---------------------------------------------------'
-    a = 50
-    print 'Num of zeroes in fact of {} are {}'.format(a, count_num_zeroes_fact(a))
+    alist = [6, 15, 50, 70]
+    for a in alist:
+        print 'Num of zeroes in fact of {} are {}, {}'.format(a, find_fact_trailing_zeros(a), count_num_zeroes_fact(a))
     
     print '---------------------------------------------------'
     actual = 'RGBY'
