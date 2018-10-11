@@ -182,16 +182,21 @@ def generate_combinations(ip_list, take_count):
 ## Q:: find first non-repeating character by iterating through the length of the string only once and by using constant space.        
 
 def find_first_non_repeating_char(ip_string):
-    print 'Checking string: {}'.format(ip_string)
-    ip_string = list(ip_string)
+    # create dict first, space - Constant
+    chard = dict()
+    # constant space
+    for i in range(ord('z')):
+        chard[i] = 0
+    
+    # navigate through array -> N 
     n = len(ip_string)
-    popped_chars = [None]*n
     for k in range(n):
-        check_char = ip_string.pop(0)        
-        if not check_char in ip_string and not check_char in popped_chars:
-            print '{} is the first char not repeating'.format(check_char)
-            break
-        popped_chars[k] = check_char
+        chard[ord(ip_string[k])] += 1
+    
+    # navigate through array -> N 
+    for k in range(n):    
+        if chard[ord(ip_string[k])] == 1:
+            return ip_string[k]
         
         
 ## Q:: find missing element in an AP        
@@ -414,7 +419,8 @@ if __name__ == '__main__':
         generate_combinations(ip_list=ip_word, take_count=2)
         
     print "-------------------------------------------------------"    
-    find_first_non_repeating_char("molamol") 
+    s = "molamol"
+    print "first non repeating char in '{}' is '{}'".format(s, find_first_non_repeating_char(s)) 
     
     print "-------------------------------------------------------"
     ap_find_missing_element([1, 3, 5, 7, 9, 13, 15])
