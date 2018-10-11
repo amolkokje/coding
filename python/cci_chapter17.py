@@ -236,40 +236,50 @@ def get_contiguous_sequence_max_sum(arr):
 # 1 4 McDowell 5 CA 0 2 3 Gayle 0 Some Message 0 0
 # Write code to print the encoded version of an XML element (passed in E Lament and Attribute objects).
   
-## AMOL -> UNABLE TO FIGURE OUT THE PYTHON LIB
+## AMOL -> SOME THING IS WEIRD!
   
 import xml.etree.ElementTree as ET
    
 def encode_xml_string(xml):
+    print xml
     encoded_string = []
     
-    map_attr = {
+    map = {
         'family':1,
         'person':2,
         'firstName':3, 
         'lastName':4,
         'state':5       
     }
-    
-    et = ET.fromstring(xml)
-    
-   # for item in et.items():
-   #     print item.tail
         
-    for item in et:
-        print item.tag, item.attrib, item.tail
-    
-    for tag in et.items():
-        encoded_string.append('{} {}'.format(map_attr[tag[0]],tag[1]))
-        encoded_string.append('0')
+    def get_children(ele):
+        return ele.__children
         
-       # print encoded_string
-    # split by >< to get xml tags
     
-    # encode attributes and values within each tags
+    def encode_tag(ele):
+        print ele
+        if not ele:
+            encoded_string += ' {}'.format(map[ele.tag])
+            for attr, val in ele.attrib:
+                encoded_string += ' {}'.format(map[attr])
+            encoded_string += ' 0 '    
+            print encoded_string
+            
     
-
-# 17.11 -> Implement a method rand70 given randSQ- That is, given a method that generates a random number between 0 and 4 (inclusive), write a method that generates a random number between 0 and 6 (inclusive).
+    root = ET.fromstring(xml)
+    queue = [root]
+    while not queue:
+        print queue
+        ele = queue.pop(0)
+        if ele:
+            encode_tag(ele)
+            for child in get_children(ele):
+                queue.append(child)
+                
+    print encoded_string            
+    
+    
+# 17.11 -> Implement a method rand7 given rand5 - That is, given a method that generates a random number between 0 and 4 (inclusive), write a method that generates a random number between 0 and 6 (inclusive).
 # NOTE: the solution is not the same as its in the book, but I think this one is property
 
 import random
@@ -410,7 +420,7 @@ if __name__ == '__main__':
         <person firstName="Gayle">Some Message</person> 
     </family>
     """ 
-    ##encode_xml_string(ss)
+    encode_xml_string(ss)
     
     print '---------------------------------------------------'    
     rand7list = []
