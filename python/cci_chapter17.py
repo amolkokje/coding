@@ -97,43 +97,31 @@ def find_fact_trailing_zeros(n):
 # 17.5 --> Master Mind game hits and pseudo-hits
 
 def get_hits(actual, guess):
-    hi = []
     # length of actual and guess will always be the same
     n = len(actual)
-    h = 0
-    ph = 0
     
-    hits = pseudo_hits = dict()
+    hits = {}
+    pseudo_hits = {}
     
     # hits
     for i in range(n):
         if actual[i] == guess[i]:
-            #hi.append(i)
-            #h += 1        
             hits[i] = actual[i]
     print hits
     
     # pseudo-hits        
-    psi = []
     for i in range(n):
         # Check 4 conditions:
         # 1- index already not hit
         # 2- element in guess exists in actual
         # 3- get the index of the guess element in the actual. And see if it is already not hit
         # 4- get the index of the first element in guess which is the same value, and see if it is already not covered in pseudo-hits
-        #
-        #if (not i in hi) and (guess[i] in actual):
-        #    if (not actual.index(guess[i]) in hi) and (not guess.index(guess[i]) in psi):
-        
-        if not i in hits.keys() and guess[i] in actual:
-            pseudo_hits[i] = guess[i]
-        
-        #if (not i in hits.keys()):
-        #    for k,v in hits.iteritems():
-        #        if v == g[i] and k != i:                
-        #            ph += 1
-        #            #psi.append(i)                        
-    
+       
+        if (not i in hits.keys()) and (not i in pseudo_hits.keys()):
+            for j in range(n):
+                if (guess[i] == actual[j]) and (not j in hits.keys()) and (not i in pseudo_hits.keys()):
+                    pseudo_hits[j] = guess[i]
+       
     return 'hits={}, pseudo-hits={}'.format(len(hits), len(pseudo_hits))
     
 # 17.6 --> Given an array of integers, write a method to find indices m and n such that if you sorted elements m through n, 
@@ -143,9 +131,7 @@ def get_hits(actual, guess):
 
 # 17.7 --> Given any integer, print an English phrase that describes the integer (e.g., "One Thousand, Two Hundred Thirty Four").
 
-def print_num_string(num):
-	
-    num_map = {
+num_map = {
         1: 'one',
         2: 'two',
         3: 'three',
@@ -173,60 +159,41 @@ def print_num_string(num):
         80: 'eighty',
         90: 'ninety',
     }
+
     
-    num_str = str(num)
-    num_arr = [ num_str[i] for i in range(len(num_str)) ]
-    print num_arr
+def num_string(num):
     
-    def get_tens(num_arr):
-        # 10 <= num < 100
-        print 'get_tens = {}'.format(num_arr)
-        num_string = []
-        if int(num_arr[0]) == 1:
-            return num_map[int(''.join(num_arr))]
+    def get_tens(n):
+        ns = str(n)
+        if int(ns[-1]) == 0:
+            return num_map[num]
         else:
-            num_string.append(num_map[int(num_arr[0])*10])
-            num_string.append(num_map[int(num_arr[1])])
-            return num_string
-            
-    def get_hundreds(num_arr):
-        # 100 <= num < 1000
-        print 'get_hundreds = {}'.format(num_arr)
-        num_string = []
-        num_string.append(num_map[int(num_arr[0])])
-        num_string.append('hundred')
-        return num_string + get_tens(num_arr[1:])
-        
-    def get_thousands(num_arr):
-        # 1000 <= num < 10000
-        print 'get_thousands = {}'.format(num_arr)
-        num_string = []
-        n = len(num_arr)
-        print 'n={}'.format(n)
-        if n == 4: # 3,456
-            num_string += num_map[int(num_arr[0])]
-        elif n == 5: # 33,456     
-            num_string +=  get_tens(num_arr[0:2])
-        elif n == 6:
-            num_string += get_hundreds(num_arr[0:3])
-            
-        num_string.append('thousand,')
-        if n == 5:
-            return num_string + get_hundreds(num_arr[2:])
-        elif n == 6:
-            return num_string + get_hundreds(num_arr[3:])
-        
-    num_string = []
-    if num < 10:
-        return num_map[int(num)]
-    elif 10 <= num < 100:
-        return get_tens(num_arr)
-    elif 100 <= num < 1000:
-        return get_hundreds(num_arr)
-    elif 1000 <= num:
-        return get_thousands(num_arr)    
-	
+            return num_map[int(ns[0])*10] + num_map[int(ns[1])]
     
+    def get_hundreds(n):
+        ns = str(n)
+        if int(ns[-2:]) == 0:
+            return num_map[int(ns[0])] + ' hundred '
+        else:
+            return num_map[int(ns[0])] + ' hundred ' + get_tens(int(ns[1:]))
+            
+    def get_thousands(n):
+        ns = str(n)
+        if int(ns[-3:]) == 0:
+            return num_map[int(ns[0])] + ' thousand '
+        else:
+            return num_map[int(ns[0])] + ' thousand ' + get_hundreds(int(ns[1:]))
+    
+    if num < 20:
+        return num_map[num]
+    elif 20 <= num < 100:
+        return get_tens(num)
+    elif 100 <= num < 1000:
+        return get_hundreds(num)
+    elif num >= 1000:    
+        return get_thousands(num)
+ 
+ 
     
 # 17.8 --> You are given an array of integers (both positive and negative). Find the contiguous sequence with the largest sum. Return the sum. EXAMPLE
 # Input: 2, -8, 3, -2, 4, -10
@@ -430,7 +397,7 @@ if __name__ == '__main__':
     print '---------------------------------------------------'
     num_list = [3, 24, 23, 123, 223, 3445, 33456, 333456]
     for num in num_list:
-        print 'Number={}, String={}'.format(num, print_num_string(num) )
+        print 'Number={}, String={}'.format(num, num_string(num) )
         
     print '---------------------------------------------------'
     arrlist = [ [2,-8,3,-2,4,-10], [2,3,-8,-1,2,4,-2,3], [2,3,-8,8], [2,3,0,4] ]
