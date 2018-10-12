@@ -6,14 +6,7 @@ def removeDuplicates(nums):
         :type nums: List[int]
         :rtype: int
         """
-        i = 1
-        while i < len(nums):
-            if nums[i] == nums[i-1]:
-                nums.pop(i)
-            else:
-                i += 1
-                
-        return len(nums)
+        return list(set(nums))
         
 
 # Q: Say you have an array for which the ith element is the price of a given stock on day i.
@@ -83,9 +76,28 @@ def single_number(nums):
 # Follow up:
 #  What if the given array is already sorted? How would you optimize your algorithm?
 #  What if nums1's size is small compared to nums2's size? Which algorithm is better?
-#  What if elements of nums2 are stored on disk, and the memory is limited such that you cannot load all elements into the memory at once?
+#  What if elements of nums2 are stored on disk, and the memory is limited such that you cannot load all elements into the memory at once? --> HOW TO DO LAST PART?
 
 def intersection(nums1, nums2):
+    
+    # OTHER SOLUTION:
+    # if dont want to sort, then put elements of both in a dict with values as total occurance    
+    """
+    d1 = d2 = {}
+    for n in nums1:
+        if not d1.get(n):
+            d1[n] = 1
+        else:
+            d1[n] += 1    
+    -- same to generate d2        
+    -- use the smaller dict to start
+    intersection = []
+    for k in d1.keys():
+        if d2.get(k):
+            count = min(d1[k], d2[k])
+            intersection.append(k) for _ in range(c)            
+    """
+    
     nums1.sort()
     nums2.sort()   
     
@@ -108,7 +120,7 @@ def intersection(nums1, nums2):
 # Q: Given a non-empty array of digits representing a non-negative integer, plus one to the integer.
 # The digits are stored such that the most significant digit is at the head of the list, and each element in the array contain a single digit.
 # You may assume the integer does not contain any leading zero, except the number 0 itself.
-        
+## NOTE: combining the array to create number may cause overflow if the number is very huge, if its some other language like Java, etc. where the types are static        
 def plus_one(digits):
     if digits[-1] < 9:
         digits[-1] += 1
@@ -124,10 +136,12 @@ def move_zeros(nums):
     n = len(nums)    
     i = 0
     
-    while i < n:  # length of array will not change here    
+    while i < n:
         if nums[i] == 0:            
             nums.append(nums.pop(i))
+            n -= 1 # need to go till one less as the last one will be zero
         i += 1
+    
     
 # Q: Determine if a 9x9 Sudoku board is valid. Only the filled cells need to be validated according to the following rules:
 #  Each row must contain the digits 1-9 without repetition.
