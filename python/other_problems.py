@@ -101,9 +101,8 @@ def generate_permutations(ip_list, take_count):
     depth = 0
     word = []
     
-    def permute(ip_list, word_orig, visited_orig, i):
-        """
-        ip_list --> input list
+    def permute(word_orig, visited_orig, i):
+        """        
         word --> string generated so far
         visited_ --> list of visited cells
         i --> index of cell to visit
@@ -123,10 +122,10 @@ def generate_permutations(ip_list, take_count):
             return
             
         for k in range(n):
-            permute(ip_list, word, visited, k)
+            permute(word, visited, k)
             
     for i in range(n):
-        permute(ip_list, word, visited, i)
+        permute(word, visited, i)
         
         
 ## Q:: Generate permutations of a list        
@@ -149,7 +148,7 @@ def generate_combinations(ip_list, take_count):
     depth = 0
     word = []
     
-    def combine(ip_list, word_orig, visited_orig, i):
+    def combine(word_orig, visited_orig, i):
         """
         ip_list --> input list
         word --> string generated so far
@@ -173,10 +172,10 @@ def generate_combinations(ip_list, take_count):
         # this place is only where there is a difference between permutations and combinations. 
         # in combinations, we don't want to repeat what is already done, so we only move right-side in the array
         for k in range(i+1, n):
-            combine(ip_list, word, visited, k)
+            combine(word, visited, k)
             
     for i in range(n):
-        combine(ip_list, word, visited, i)
+        combine(word, visited, i)
         
         
 ## Q:: find first non-repeating character by iterating through the length of the string only once and by using constant space.        
@@ -235,6 +234,7 @@ def string_find_largest_subset_palindrome(ip_string):
 def compress_string(ip_string):
     n = len(ip_string)
     compressed_string = []
+    
     i = 0
     while i < n:
         # match found, special case for last char
@@ -264,15 +264,14 @@ def does_string_contain_substring(main, sub):
     """
     main -> string to look in
     sub -> string to look for    
-    """
-    
+    """    
     m = len(main)
     s = len(sub)
     
     if m == s and main == sub:
         return True
        
-    for i in range(m-s):
+    for i in range(m-s+1):
         if main[i:i+s] == sub:
             return True
     
@@ -321,11 +320,22 @@ def find_range(arr, n):
 ## Q:: You are given an unsorted array. Write an algorithm to extract the highest 'k' elements from the array.    
 # Python Heap: https://docs.python.org/2/library/heapq.html
 
-# to make it work with all cases, use Sort
+import heapq
+
 def get_highest_elements(ip_list, k):    
     # sorted(arr) --> returns a sorted list
     # arr.sort() --> sorts list in place
-    return sorted(ip_list)[-k:]
+    
+    n = len(ip_list)
+    hlist = [] # to use as a heap
+
+    # python only has a min heap implementation
+    # to convert to a max heap, multiply by -1 when storing, and also multiply by -1 when retreiving
+    
+    for i in range(n):
+        heapq.heappush(hlist, -1*ip_list[i])
+        
+    return [ -1*heapq.heappop(hlist) for _ in range(k)]    
     
 
 ## Q:: Given an array of elements, find the maximum possible sum of a contiguous subarray
@@ -334,23 +344,21 @@ def get_highest_elements(ip_list, k):
 def arr_max_sum_contiguous_elements(arr):
     n = len(arr)
     start = stop = 0
-    max_sum = 0
+    sum = max_sum = 0
     
-    for i in range(n-1):
-        # first element also part of the sum
-        sum = arr[i]
+    for j in range(n):            
+        if sum == 0:
+            start = j
+    
+        sum += arr[j]
         
-        for j in range(i+1, n):            
-            sum += arr[j]
-            
-            # if sum till then becomes less than zero, it will anyways not work, so break early
-            if sum < 0:
-                break
-                
-            if sum > max_sum:
-                start = i
-                stop = j
-                max_sum = sum
+        # if sum till then becomes less than zero, it will anyways not work, so break early
+        if sum < 0:
+            sum = 0            
+        
+        elif sum > max_sum:
+            stop = j
+            max_sum = sum
                 
     return max_sum, start, stop            
     
@@ -358,17 +366,17 @@ def arr_max_sum_contiguous_elements(arr):
 ## Q:: You are given an array of size 99. 98 elements are duplicate-pairs, leaving one that is unique. How would you find it?
 
 def find_unique_element(arr):
-    while arr:
-        e = arr.pop(0)
-        if e not in arr:
-            return e
-        
+    return reduce(lambda x,y:x^y, arr)
+    # XOR of any value with itself is 0. 4^4 = 0    
+    # XOR of 0 with any value is that value. 4^0 = 4
+    
 
 ## Q:: You are given a list which represents Amazon's stock price each day. The values are the price of the Amazon stock. return the best profit that can be 
 # made from 1 purchase and 1 sale of Amazon stock.
 # [2, 5, 4, 9, 1] --> Max profix is 7 by buying when the price is 2 and selling when the price is 9
 # [2, 5, 4, 9, 1, 9] --> Max profix is 8 by buying when the price is 1 and selling when the price is 9        
-  
+
+
 def max_profit(sp):
     """
     speed --> O(N)
@@ -376,16 +384,21 @@ def max_profit(sp):
     """
     n = len(sp)
     minv = sp[0]
-    max = None
+    max = 0
+    
+    start = stop = 0
     
     for i in range(n):
         if sp[i] < minv:
-            minv = sp[i]            
-        
+            minv = sp[i]                        
+            
         diff = sp[i] - minv     
         if diff > max:
             max = diff
-        
+            start = sp.index(minv)
+            stop = i
+            
+    print 'range=({},{})'.format(start, stop)    
     return max         
     
 if __name__ == '__main__':
@@ -436,7 +449,7 @@ if __name__ == '__main__':
         
     print "-------------------------------------------------------"
     main = "amolkokje"
-    subs = ["amol", "aa", "kok", "molk", "amolkokje"]
+    subs = ["amol", "aa", "kok", "molk", "amolkokje", "kje"]
     for s in subs:
         print '{} is substring of {} --> {}'.format(s, main, does_string_contain_substring(main, s))
         
