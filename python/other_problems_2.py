@@ -268,6 +268,119 @@ def atoi(ints):
     
     return 0
     
+# Q: Given an input string (s) and a pattern (p), implement regular expression matching with support for '.' and '*'.
+# '.' Matches any single character.
+# '*' Matches zero or more of the preceding element.   
+# NOT WORKING !!
+  
+def regex_match(s, p):
+    ns = len(s)
+    np = len(p)
+    print s, p
+    
+    cs = cp = 0
+    while cp < np:
+        if p[cp] == '.':
+            print '. START --> cp={}, cs={}'.format(cp, cs)
+            while cs < ns:                
+                if s[cs] != s[cs-1]:
+                    break
+                cs += 1
+            print '. END --> cs={}'.format(cs)
+
+        elif p[cp] == '*':
+            print '* START --> cp={}, cs={}'.format(cp, cs)
+            while cs < ns:                
+                if s[cs] != s[cs-1]:
+                    break
+                cs += 1
+            print '* END --> cs={}'.format(cs)
+                
+        
+        elif p[cp] != s[cs]:
+            print cp, cs
+            return False
+        
+        cp += 1
+    
+    print cs, cp
+    if cs == ns:
+        return True
+    else:
+        return False
+            
+        
+# Suppose we have some input data describing a graph of relationships between parents and children over multiple generations. The data is formatted as a list of (parent, child) pairs, where each individual is assigned a unique integer identifier.
+
+# For example, in this diagram, 3 is a child of 1 and 2, and 5 is a child of 4:
+            
+# 1   2   4
+#  \ /   / \
+#   3   5   8
+#    \ / \   \
+#     6   7   9
+
+
+# Q:: Write a function that, for two given individuals in our dataset, returns true if and only if they share at least one ancestor.
+# Sample input and output:
+# parentChildPairs, 3, 8 => false
+# parentChildPairs, 5, 8 => true
+# parentChildPairs, 6, 8 => true
+def have_common_ancestor(pairs, n1, n2):
+    # build ancestor map
+    ancestor_map = dict()
+    for parent, child in pairs:
+        if not ancestor_map.get(child):
+            ancestor_map[child] = [parent]
+        else:
+            ancestor_map[child].append(parent)
+    #print ancestor_map        
+            
+    def get_ancestors_tree(child):
+        ancestors_tree = list()
+        queue = [ child ]        
+        while queue:
+            x = queue.pop(0)
+            if ancestor_map.get(x):
+                queue += ancestor_map[x]
+            ancestors_tree.append(x)
+        # first element is the node itself, so remove it
+        return ancestors_tree[1:] 
+
+    n1_ancestors = get_ancestors_tree(n1)
+    n2_ancestors = get_ancestors_tree(n2)
+    for n in n1_ancestors:
+        if n in n2_ancestors:
+            return True
+    return False
+                
+
+# Q: Find out individuals that have 0 and 1 parents.
+def get_node_parent_counts_01(pairs):
+    """
+    pairs -> parent child pairs
+    """
+    node_parents = dict()
+    for pair in pairs:
+        # add nodes to the dict, if they do not exist already
+        if not node_parents.get(pair[0]):
+            node_parents[pair[0]] = 0
+            
+        if not node_parents.get(pair[1]):
+            node_parents[pair[1]] = 0    
+            
+        node_parents[pair[1]] += 1
+    
+    output = [ [], [] ]
+    for node, parent_count in node_parents.iteritems():
+        if parent_count == 0:
+            output[0].append(node)
+        elif parent_count == 1:
+            output[1].append(node)
+            
+    return output
+
+
    
 if __name__ == '__main__':
     
@@ -378,4 +491,21 @@ if __name__ == '__main__':
     nlist = [ "42", "   -42", "4193 with words", "words and 987", "-91283472332"]
     for n in nlist:
         print 'n={}, atoi={}'.format(n, atoi(n))
-        
+
+    """ NOT WORKING !    
+    print '--------------------------------------------------------------'
+    iplist = [ ("aa","a"), ("aa","a*"), ("ab",".*"), ("aab","c*a*b"), ("mississippi","mis*is*p*.")]
+    for ip in iplist:
+        print 'regex.match({},{}) = {}'.format(ip[0], ip[1], regex_match(ip[0],ip[1]))
+    """    
+                
+    print '--------------------------------------------------------------'
+    parent_child_pairs = [
+        (1, 3), (2, 3), (3, 6), (5, 6),
+        (5, 7), (4, 5), (4, 8), (8, 9)
+    ]
+    print 'Children with 0 or 1 parents = {}'.format(get_node_parent_counts_01(parent_child_pairs))
+    pairs = [ (3,8), (5,8), (6,8) ]
+    for pair in pairs:
+        print '{} and {} have common ancestor = {}'.format(pair[0], pair[1], have_common_ancestor(parent_child_pairs, pair[0], pair[1]))
+    
