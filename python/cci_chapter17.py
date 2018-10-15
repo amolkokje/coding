@@ -11,10 +11,7 @@ def have_winner(mat):
     """
     None -> no value in cell
     """
-    print mat
-    
-    n = len(mat) # rows
-    m = len(mat[0]) # cols
+    n = len(mat) # rows=cols
     
     def are_equal(arr):
         for k in range(1,len(arr)):
@@ -25,12 +22,12 @@ def have_winner(mat):
     # check rows, cols
     for i in range(n):
         if are_equal(mat[i]) or \
-        are_equal([mat[i][x] for x in range(n)]):
+        are_equal([mat[j][i] for j in range(n)]):
             return True
     
     # check diagonals
     if are_equal([mat[i][i] for i in range(n)]) \
-    or are_equal([mat[i][x-i] for i in range(n)]):
+    or are_equal([mat[i][(n-1)-i] for i in range(n)]):  # because n=3, but max index=2
         return True
     
     return False
@@ -39,40 +36,60 @@ def have_winner(mat):
 # 17.3 --> Write an algo that counts the number of trailing zeroes in a factorial    
 # every time there is a multiplication by 10, or 5*2, then there is a 0.
 # so, count_10 + min(count_2, count_5) = count_0s
-## PROBLEM --> still off, come back later - IMPORTANT!
 
+# EXPLANATION - https://www.geeksforgeeks.org/count-trailing-zeroes-factorial-number/
 def count_num_zeroes_fact(num):
-    c5 = 0
-    c2 = 0
-    c10 = 0 # 5*2
     
-    def find_factors(num, factors_of):
+    def find_factors_5(x):
         c = 0
-        while num > 0:
-            #print num, c
-            if num % factors_of == 0:
+        while x > 0:
+            if x%5 == 0:
                 c += 1
-                num = num/5
+                x = x/5
             else:
-                return c
-        return c    
+                return c        
         
-    
-    while num > 0:
-        if num%10 == 0:
-            c10 += 1
-        
-        elif num%5 == 0:
-            c5 += find_factors(num, 5)
+    c0 = 0
+    while num > 1:
+        c0 += find_factors_5(num)
+        num -= 1
                 
-        elif num%2 == 0:
-            c2 += find_factors(num, 2)
-        
-        #print num, count_2, count_5, count_10
-        num -= 1    
+    return c0  
+            
+
+def memoize(func):    
+
+    class mdict(dict):
+        def __missing__(self, key):
+            self[key] = func(key)
+            return self[key]
+      
+    return mdict().__getitem__
+
+@memoize    
+def find_fact_trailing_zeros(n):
     
-    return c10 + min(c5, c2)
+    @memoize
+    def fact(x):
+        if x == 0 or x == 1:
+            return 1
+        else:
+            return x*fact(x-1)    
         
+    factn = str(fact(n))
+    i = len(factn)-1
+    c = 0
+    while i > 0:
+        if int(factn[i]) != 0:
+            return c
+        else:
+            c += 1
+        i -= 1    
+    
+    return c    
+            
+    
+ 
 # 17.4 --> find max of two numbers without using comparison operator
 # bitwise operation - try later
 
@@ -80,32 +97,33 @@ def count_num_zeroes_fact(num):
 # 17.5 --> Master Mind game hits and pseudo-hits
 
 def get_hits(actual, guess):
-    hi = []
     # length of actual and guess will always be the same
     n = len(actual)
-    h = 0
-    ph = 0
+    
+    hits = {}
+    pseudo_hits = {}
+    
     # hits
     for i in range(n):
         if actual[i] == guess[i]:
-            hi.append(i)
-            h += 1
-        
+            hits[i] = actual[i]
+    print hits
+    
     # pseudo-hits        
-    psi = []
     for i in range(n):
         # Check 4 conditions:
         # 1- index already not hit
         # 2- element in guess exists in actual
         # 3- get the index of the guess element in the actual. And see if it is already not hit
         # 4- get the index of the first element in guess which is the same value, and see if it is already not covered in pseudo-hits
-        if (not i in hi) and (guess[i] in actual):
-            if (not actual.index(guess[i]) in hi) and (not guess.index(guess[i]) in psi):
-                ph += 1
-                psi.append(i)                        
+       
+        if (not i in hits.keys()) and (not i in pseudo_hits.keys()):
+            for j in range(n):
+                if (guess[i] == actual[j]) and (not j in hits.keys()) and (not i in pseudo_hits.keys()):
+                    pseudo_hits[j] = guess[i]
+       
+    return 'hits={}, pseudo-hits={}'.format(len(hits), len(pseudo_hits))
     
-    return 'hits={}, pseudo-hits={}'.format(h, ph)
-
 # 17.6 --> Given an array of integers, write a method to find indices m and n such that if you sorted elements m through n, 
 # the entire array would be sorted. Minimize n - m (that is, find the smallest such sequence).
 ## --> UNABLE TO UNDERSTAND HOW TO SOLVE
@@ -113,9 +131,7 @@ def get_hits(actual, guess):
 
 # 17.7 --> Given any integer, print an English phrase that describes the integer (e.g., "One Thousand, Two Hundred Thirty Four").
 
-def print_num_string(num):
-	
-    num_map = {
+num_map = {
         1: 'one',
         2: 'two',
         3: 'three',
@@ -143,60 +159,41 @@ def print_num_string(num):
         80: 'eighty',
         90: 'ninety',
     }
+
     
-    num_str = str(num)
-    num_arr = [ num_str[i] for i in range(len(num_str)) ]
-    print num_arr
+def num_string(num):
     
-    def get_tens(num_arr):
-        # 10 <= num < 100
-        print 'get_tens = {}'.format(num_arr)
-        num_string = []
-        if int(num_arr[0]) == 1:
-            return num_map[int(''.join(num_arr))]
+    def get_tens(n):
+        ns = str(n)
+        if int(ns[-1]) == 0:
+            return num_map[num]
         else:
-            num_string.append(num_map[int(num_arr[0])*10])
-            num_string.append(num_map[int(num_arr[1])])
-            return num_string
-            
-    def get_hundreds(num_arr):
-        # 100 <= num < 1000
-        print 'get_hundreds = {}'.format(num_arr)
-        num_string = []
-        num_string.append(num_map[int(num_arr[0])])
-        num_string.append('hundred')
-        return num_string + get_tens(num_arr[1:])
-        
-    def get_thousands(num_arr):
-        # 1000 <= num < 10000
-        print 'get_thousands = {}'.format(num_arr)
-        num_string = []
-        n = len(num_arr)
-        print 'n={}'.format(n)
-        if n == 4: # 3,456
-            num_string += num_map[int(num_arr[0])]
-        elif n == 5: # 33,456     
-            num_string +=  get_tens(num_arr[0:2])
-        elif n == 6:
-            num_string += get_hundreds(num_arr[0:3])
-            
-        num_string.append('thousand,')
-        if n == 5:
-            return num_string + get_hundreds(num_arr[2:])
-        elif n == 6:
-            return num_string + get_hundreds(num_arr[3:])
-        
-    num_string = []
-    if num < 10:
-        return num_map[int(num)]
-    elif 10 <= num < 100:
-        return get_tens(num_arr)
-    elif 100 <= num < 1000:
-        return get_hundreds(num_arr)
-    elif 1000 <= num:
-        return get_thousands(num_arr)    
-	
+            return num_map[int(ns[0])*10] + num_map[int(ns[1])]
     
+    def get_hundreds(n):
+        ns = str(n)
+        if int(ns[-2:]) == 0:
+            return num_map[int(ns[0])] + ' hundred '
+        else:
+            return num_map[int(ns[0])] + ' hundred ' + get_tens(int(ns[1:]))
+            
+    def get_thousands(n):
+        ns = str(n)
+        if int(ns[-3:]) == 0:
+            return num_map[int(ns[0])] + ' thousand '
+        else:
+            return num_map[int(ns[0])] + ' thousand ' + get_hundreds(int(ns[1:]))
+    
+    if num < 20:
+        return num_map[num]
+    elif 20 <= num < 100:
+        return get_tens(num)
+    elif 100 <= num < 1000:
+        return get_hundreds(num)
+    elif num >= 1000:    
+        return get_thousands(num)
+ 
+ 
     
 # 17.8 --> You are given an array of integers (both positive and negative). Find the contiguous sequence with the largest sum. Return the sum. EXAMPLE
 # Input: 2, -8, 3, -2, 4, -10
@@ -239,40 +236,50 @@ def get_contiguous_sequence_max_sum(arr):
 # 1 4 McDowell 5 CA 0 2 3 Gayle 0 Some Message 0 0
 # Write code to print the encoded version of an XML element (passed in E Lament and Attribute objects).
   
-## AMOL -> UNABLE TO FIGURE OUT THE PYTHON LIB
+## AMOL -> SOME THING IS WEIRD!
   
 import xml.etree.ElementTree as ET
    
 def encode_xml_string(xml):
+    print xml
     encoded_string = []
     
-    map_attr = {
+    map = {
         'family':1,
         'person':2,
         'firstName':3, 
         'lastName':4,
         'state':5       
     }
-    
-    et = ET.fromstring(xml)
-    
-   # for item in et.items():
-   #     print item.tail
         
-    for item in et:
-        print item.tag, item.attrib, item.tail
-    
-    for tag in et.items():
-        encoded_string.append('{} {}'.format(map_attr[tag[0]],tag[1]))
-        encoded_string.append('0')
+    def get_children(ele):
+        return ele.__children
         
-       # print encoded_string
-    # split by >< to get xml tags
     
-    # encode attributes and values within each tags
+    def encode_tag(ele):
+        print ele
+        if not ele:
+            encoded_string += ' {}'.format(map[ele.tag])
+            for attr, val in ele.attrib:
+                encoded_string += ' {}'.format(map[attr])
+            encoded_string += ' 0 '    
+            print encoded_string
+            
     
-
-# 17.11 -> Implement a method rand70 given randSQ- That is, given a method that generates a random number between 0 and 4 (inclusive), write a method that generates a random number between 0 and 6 (inclusive).
+    root = ET.fromstring(xml)
+    queue = [root]
+    while not queue:
+        print queue
+        ele = queue.pop(0)
+        if ele:
+            encode_tag(ele)
+            for child in get_children(ele):
+                queue.append(child)
+                
+    print encoded_string            
+    
+    
+# 17.11 -> Implement a method rand7 given rand5 - That is, given a method that generates a random number between 0 and 4 (inclusive), write a method that generates a random number between 0 and 6 (inclusive).
 # NOTE: the solution is not the same as its in the book, but I think this one is property
 
 import random
@@ -382,21 +389,25 @@ if __name__ == '__main__':
     mat.append([None,1,1])
     mat.append([1,1,None])
     mat.append([1,None,None])
-    print have_winner(mat)
+    print 'mat={}, have_winner={}'.format(mat, have_winner(mat))
     
     print '---------------------------------------------------'
-    a = 50
-    print 'Num of zeroes in fact of {} are {}'.format(a, count_num_zeroes_fact(a))
+    alist = [6, 15, 50, 70]
+    for a in alist:
+        print 'Num of zeroes in fact of {} are {}, {}'.format(a, find_fact_trailing_zeros(a), count_num_zeroes_fact(a))
     
     print '---------------------------------------------------'
     actual = 'RGBY'
+    guess = 'GGRR'
+    print 'MM actual={}, guess={}, {}'.format(actual, guess, get_hits(actual, guess))
+    actual = 'RGGY'
     guess = 'GGRR'
     print 'MM actual={}, guess={}, {}'.format(actual, guess, get_hits(actual, guess))
     
     print '---------------------------------------------------'
     num_list = [3, 24, 23, 123, 223, 3445, 33456, 333456]
     for num in num_list:
-        print 'Number={}, String={}'.format(num, print_num_string(num) )
+        print 'Number={}, String={}'.format(num, num_string(num) )
         
     print '---------------------------------------------------'
     arrlist = [ [2,-8,3,-2,4,-10], [2,3,-8,-1,2,4,-2,3], [2,3,-8,8], [2,3,0,4] ]
@@ -409,7 +420,7 @@ if __name__ == '__main__':
         <person firstName="Gayle">Some Message</person> 
     </family>
     """ 
-    ##encode_xml_string(ss)
+    encode_xml_string(ss)
     
     print '---------------------------------------------------'    
     rand7list = []
