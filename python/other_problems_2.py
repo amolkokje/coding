@@ -426,8 +426,51 @@ def search_rotated_array(nums, target):
             else:
                 high = mid - 1
 
-    return -1    
-   
+    return -1 
+
+# Q: Given an unsorted integer array, find the smallest missing positive integer.
+def first_missing_positive(nums):
+    m = 1
+    while True:
+        if not m in nums:
+            return m
+        m += 1     
+
+# https://leetcode.com/problems/trapping-rain-water/
+# class Solution(object):
+#    def trap(self, height):
+#        """
+#        :type height: List[int]
+#        :rtype: int
+#        """
+#        
+#        total_units = 0
+#        start = None
+#        n = len(height)
+#        units = 0
+#        for i in range(n-1):
+#            if not start and ( 0 < height[i] <= max(height[i+1:n]) ):
+#                start = i
+#                units = 0
+#                print 'start={}'.format(start)
+#            
+#            
+#            if start:
+#                print height[i]
+#                if height[i] <= height[start]:
+#                    units += height[start]-height[i]+1
+#                    print 'u={}'.format(units)
+#                else:
+#                    total_units += units
+#                    units = 0
+#                    start = None
+#                    print 'total_units={}'.format(total_units)
+#                    
+#
+#                
+#        return total_units
+                
+        
 if __name__ == '__main__':
     
     print '--------------------------------------------------------------'
@@ -560,3 +603,8 @@ if __name__ == '__main__':
     alist = [ ([4,5,6,7,0,1,2],0), ([4,5,6,7,8,1,2,3],8) ]    
     for arr in alist:
         print 'search_rotated_array input={}, output={}'.format(arr, search_rotated_array(arr[0], arr[1]))
+        
+    print '--------------------------------------------------------------'
+    alist = [ [1,2,0], [3,4,-1,1], [7,8,9,11,12] ]    
+    for arr in alist:
+        print 'first_missing_positive input={}, output={}'.format(arr, first_missing_positive(arr))
