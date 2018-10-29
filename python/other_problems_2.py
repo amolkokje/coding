@@ -125,7 +125,7 @@ def plus_one(digits):
     if digits[-1] < 9:
         digits[-1] += 1
     else:
-        digits[-1] += 0
+        digits[-1] = 0
         digits[-2] += 1
     return digits
     
@@ -511,7 +511,7 @@ if __name__ == '__main__':
     print '-- intersection={}'.format(intersection(nums1, nums2))
     
     print '--------------------------------------------------------------'
-    arrlist = [[1,2,3], [4,3,2,1]] 
+    arrlist = [[1,2,3], [4,3,2,1], [1,9], [1,0]] 
     for arr in arrlist:
         print 'digits={}'.format(arr) 
         print '-- plus_one={}'.format(plus_one(arr)) 
