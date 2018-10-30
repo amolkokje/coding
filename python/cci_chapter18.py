@@ -94,6 +94,35 @@ def find_smallest(arr, m):
         smallest.append(heapq.heappop(arr_heap))
     return smallest
     
+    
+# 18.7: Given a list of words, write a program to find the longest word made of other two words in the list
+
+def find_longest(words):
+    
+    n = len(words)
+    
+    def sort_by_length(wlist):        
+        def greater_than(w1, w2):
+            return True if len(w1) >= len(w2) else False        
+        
+        # fastest is merge sort, using bubble sort here for simplicity        
+        for _ in range(n):
+            for i in range(n-1):
+                # descending order of length
+                if greater_than(wlist[i+1], wlist[i]):
+                    wlist[i], wlist[i+1] = wlist[i+1], wlist[i]
+                    
+    sort_by_length(words)
+    for word in words:
+        x = len(word)
+        for i in range(2, x):
+            if (word[:i] in words) and (word[i:] in words):
+                print '{} + {} = {}'.format(word[:i], word[i:], word)
+                return
+        
+
+                
+    
 if __name__ == '__main__':
 
     print '---------------------------------------------------'
@@ -123,3 +152,6 @@ if __name__ == '__main__':
     for ws in warr:        
         print 'w1={}, w2={}, min_distance={}'.format(ws[0], ws[1], find_min_distance(book, ws[0], ws[1]))
     
+    print '---------------------------------------------------'
+    words = [ 'sam', 'tim', 'jackson', 'nolan', 'samjackson4', 'timnolan' ]
+    find_longest(words)
