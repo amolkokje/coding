@@ -28,10 +28,29 @@ def choose(arr, m):
         
 
 # 18.4:  Write a method to count the number of 2s between 0 and
+# brute force with memoization. Book has number manipulation method, which is not very self-explanatory
 
+def memoize(func):
+    class memodict(dict):
+        def __missing__(self, key):
+            self[key] = func(key)
+            return self[key]
+            
+    return memodict().__getitem__        
+
+def count_twos(x):
+    return len(filter(lambda y:y=='2', [ch for ch in str(x)] ) )  
+    
+@memoize    
 def count_twos_in_range(num):
+    if num == 2:
+        return 1
+    else:
+        return count_twos(num) + count_twos_in_range(num-1)
     
         
+        
+    
 if __name__ == '__main__':
 
     print '---------------------------------------------------'
@@ -43,3 +62,8 @@ if __name__ == '__main__':
     arr = range(10)
     m = 4
     print 'arr={}, m={}, chosen={}'.format(arr, m, choose(arr, m))
+    
+    print '---------------------------------------------------'
+    arr = [ 4, 10, 12, 22, 222 ]
+    for a in arr:
+        print 'a={}, count_2 in range={}'.format(a, count_twos_in_range(a)) 
