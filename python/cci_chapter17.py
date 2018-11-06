@@ -14,6 +14,8 @@ def have_winner(mat):
     n = len(mat) # rows=cols
     
     def are_equal(arr):
+        # if no value is a number and not None
+        #return True if reduce( lambda x,y:x^y, arr) == 0 else False
         for k in range(1,len(arr)):
             if arr[0] != arr[k]:
                 return False
@@ -42,15 +44,18 @@ def count_num_zeroes_fact(num):
     
     def find_factors_5(x):
         c = 0
-        while x > 0:
+        # going only till 5, as no factors of 5 below that
+        while x > 4:
             if x%5 == 0:
                 c += 1
                 x = x/5
-            else:
-                return c        
+            else: 
+                break
+        return c        
         
     c0 = 0
-    while num > 1:
+    # going only till 5, as no factors of 5 below that. If some other case, go lower
+    while num > 4:
         c0 += find_factors_5(num)
         num -= 1
                 
@@ -107,28 +112,58 @@ def get_hits(actual, guess):
     for i in range(n):
         if actual[i] == guess[i]:
             hits[i] = actual[i]
-    print hits
     
-    # pseudo-hits        
-    for i in range(n):
-        # Check 4 conditions:
-        # 1- index already not hit
-        # 2- element in guess exists in actual
-        # 3- get the index of the guess element in the actual. And see if it is already not hit
-        # 4- get the index of the first element in guess which is the same value, and see if it is already not covered in pseudo-hits
-       
-        if (not i in hits.keys()) and (not i in pseudo_hits.keys()):
-            for j in range(n):
-                if (guess[i] == actual[j]) and (not j in hits.keys()) and (not i in pseudo_hits.keys()):
-                    pseudo_hits[j] = guess[i]
-       
+    # guess loop
+    for g in range(n):
+        # actual loop
+        for a in range(n):
+            # pseudo hit --> value equal, but index not; not already hit/pseudo_hit
+            if g != a and guess[g] == actual[a] and a not in hits.keys() and a not in pseudo_hits.keys():
+                pseudo_hits[a] = actual[a]
+                    
     return 'hits={}, pseudo-hits={}'.format(len(hits), len(pseudo_hits))
     
 # 17.6 --> Given an array of integers, write a method to find indices m and n such that if you sorted elements m through n, 
 # the entire array would be sorted. Minimize n - m (that is, find the smallest such sequence).
-## --> UNABLE TO UNDERSTAND HOW TO SOLVE
+# e.g. [1, 2, 4, 7, 10, 11, 7, 12, 6, 7, 16, 18, 19] --> m=3, n=10
 
+def find_index_to_sort(arr):
+    n = len(arr)
+    
+    def find_left():
+        for i in range(n-1):
+            if arr[i] > arr[i+1]:
+                return i+1
+    
+    def find_right():
+        for i in range(n-1, 1, -1):
+            if arr[i] < arr[i-1]:
+                return i-1           
 
+    def shrink_left(left, right):
+        while left >= 0:
+            left_max = max(arr[:left+1])
+            middle_min = min(arr[left:right])
+            if left_max <= middle_min:
+                return left
+            else:
+                left -= 1
+    
+    def shrink_right(left, right):
+        while right < n:
+            right_min = min(arr[right:])
+            middle_max = max(arr[left:right])
+            if right_min >= middle_max:
+                return right
+            else:
+                right += 1
+
+    left = find_left() 
+    right = find_right()  
+    m = shrink_left( left, right ) 
+    n = shrink_right( left, right )
+    print 'arr={}, Sort from m={} to n={}'.format(arr, m, n)
+    
 # 17.7 --> Given any integer, print an English phrase that describes the integer (e.g., "One Thousand, Two Hundred Thirty Four").
 
 num_map = {
@@ -395,7 +430,7 @@ if __name__ == '__main__':
     print '---------------------------------------------------'
     alist = [6, 15, 50, 70]
     for a in alist:
-        print 'Num of zeroes in fact of {} are {}, {}'.format(a, find_fact_trailing_zeros(a), count_num_zeroes_fact(a))
+        print 'Num of trailing zeroes in fact of {} are {}, {}'.format(a, find_fact_trailing_zeros(a), count_num_zeroes_fact(a))
     
     print '---------------------------------------------------'
     actual = 'RGBY'
@@ -443,3 +478,7 @@ if __name__ == '__main__':
     word_dictionary =  [ 'i', 'reset', 'the', 'computer', 'it', 'still', 'didnt', 'boot' ]
     sentence = 'iresetthecomputeritstilldidntboot'
     print 'original={}, with_spaces={}'.format(sentence, add_spaces(sentence, word_dictionary))
+
+    print '---------------------------------------------------'        
+    arr = [ 1, 2, 4, 7, 10, 11, 7, 12, 6, 7, 16, 18, 19 ]
+    print find_index_to_sort(arr)
