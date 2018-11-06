@@ -44,10 +44,7 @@ class Heap:
         """
         for _ in range(len(self.elements)):
             for i in range(len(self.elements)-1, 0, -1):
-                if i%2 == 0:
-                    parentPosition = (i-2)/2
-                else:
-                    parentPosition = (i-1)/2
+                parentPosition = (i-1)/2 # defaults to int i.e. 7/2=3, and 6/2=3
                 if parentPosition < 0:
                     parentPosition = 0
                 
