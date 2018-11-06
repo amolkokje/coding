@@ -414,7 +414,7 @@ def search_rotated_array(nums, target):
             return mid
                 
         if nums[low] <= nums[mid]:
-            # if RIGHT side is not rotated, and the target exists, search there, else the other side
+            # if LEFT side is not rotated, and the target exists, search there, else the other side
             if nums[low] <= target <= nums[mid]:
                 high = mid - 1
             else:
