@@ -114,7 +114,8 @@ def PrintLevelOrder(node):
 def PrintLevel(node, print_height, height=0):
     if node: 
         if height == print_height:
-            print node.data, 
+            print node.data
+            return  # because if you have reached that level, going further will only change the level number
         PrintLevel(node.left, print_height, height+1)
         PrintLevel(node.right, print_height, height+1)
             
