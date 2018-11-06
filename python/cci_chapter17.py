@@ -238,19 +238,20 @@ def num_string(num):
 def get_contiguous_sequence_max_sum(arr):
     
     start = stop = 0 # final
-    tstart = tstop = 0 # temp current values
+    tstart = 0 # temp current values
     sum = 0
     max = None  
     
     for i in range(len(arr)):
         # sum is never 0, unless explicitly set
         if sum == 0:
-            start = i
-        
+            tstart = i
+                
         sum += arr[i]        
         
         if sum > max:
             stop = i
+            start = tstart
             max = sum
         
         # if sum<0, then we are decreasing, so start again
@@ -270,7 +271,18 @@ def get_contiguous_sequence_max_sum(arr):
 # Becomes:
 # 1 4 McDowell 5 CA 0 2 3 Gayle 0 Some Message 0 0
 # Write code to print the encoded version of an XML element (passed in E Lament and Attribute objects).
-  
+"""
+PSEUDO-CODE:
+def print_tag(tag):
+    print tag.Name
+    print_attributes(tag)
+    if tag.Children:
+        for child in tag.Children:
+            print_tag(child)
+    print ' 0 '
+    
+print_tag( xmltree(xml_file).root )            
+""" 
 ## AMOL -> SOME THING IS WEIRD!
   
 import xml.etree.ElementTree as ET
@@ -367,12 +379,12 @@ def find_pairs_sum(arr, sum):
 
 # 17.13 -> Consider a simple node-like data structure called BiNode, which has pointers to two other nodes. The data structure BiNode could be used to represent both a binary tree (where nodel is the left node and node2 is the right node) or a doubly linked list (where nodel is the previous node and node2 is the next node). Implement a method to convert a binary search tree (implemented with BiNode) into a doubly linked list. The values should be kept in order and the operation should be performed in place (that is, on the original data structure). 
 ## AMOL - SEEMS TOO COMPLEX
-
+    
 
 # 17.4 ->  Oh, no! You have just completed a lengthy document when you have an unfortunate Find/Replace mishap. You have accidentally removed all spaces, punctuation, and capitalization in the document. A sentence like "I reset the computer. It still didn't boot!" would become "iresetthecomputeritstilldidntboot". You figure that you can add back in the punctation and capitalization later, once you get the individual words properly separated. Most of the words will be in a dictionary, but some strings, like proper names, will not.
 # Given a dictionary (a list of words), design an algorithm to find the optimal way of "unconcatenating" a sequence of words. In this case, "optimal" is defined to be the parsing which minimizes the number of unrecognized sequences of characters.
 # For example, the string "jesslookedjustliketimherbrother" would be optimally parsed as "JESS looked just like TIM her brother". This parsing has seven unrecognized characters, which we have capitalized for clarity.
-## AMOL - not optimal, maybe incorrect??
+## AMOL - not optimal, INCORRECT?? - TRY TO UNDERSTAND BOOK SOLUTION!
 
 
 def add_spaces(olds, word_dictionary):
@@ -393,11 +405,11 @@ def add_spaces(olds, word_dictionary):
     
         j = i+1
         while i+1 <= j <= n:  ## NOTE: range(min, max) --> index from [min:max-1] i.e. last is not included
-            word = olds[i:j]  ## NOTE: Here, last is included
-            print 'i={}:j={}: word={}'.format(i, j, word)
+            word = olds[i:j]  ## NOTE: Here, last is not included
+            #print 'i={}:j={}: word={}'.format(i, j, word)
             
             if word in word_dictionary:
-                print 'START={}'.format(word)
+                #print 'START={}'.format(word)
                 news.append(word)
                 i += (j-i)
 
@@ -415,7 +427,11 @@ def add_spaces(olds, word_dictionary):
                 
     return news            
                 
-                
+ 
+# Q: Google Sample Question --> Given an array and a number, check if there are two elements in the array that sum to the number
+# [ 1, 2, 3, 4 ], Sum=8 --> No
+# [ 1, 2, 4, 4 ], Sum=8 --> Yes
+# Reference: https://youtu.be/XKu_SEDAykw
  
 if __name__ == '__main__':
     swap_nums(2, 4)
@@ -446,7 +462,7 @@ if __name__ == '__main__':
         print 'Number={}, String={}'.format(num, num_string(num) )
         
     print '---------------------------------------------------'
-    arrlist = [ [2,-8,3,-2,4,-10], [2,3,-8,-1,2,4,-2,3], [2,3,-8,8], [2,3,0,4] ]
+    arrlist = [ [2,-8,3,-2,4,-10], [2,3,-8,-1,2,4,-2,3], [2,3,-8,8], [2,3,0,4], [ 2, 2, 2, -8, 1, 1, 1 ] ]
     for arr in arrlist:
         print 'Contiguous sequence with max sum for {} is {}'.format(arr, get_contiguous_sequence_max_sum(arr))
         
