@@ -10,12 +10,12 @@ def removeDuplicates(nums):
         
 
 # Q: Say you have an array for which the ith element is the price of a given stock on day i.
-# Design an algorithm to find the maximum profit. You may complete as many transactions as you like (i.e., buy one and sell one share of the stock multiple times).        
+# Design an algorithm to find the maximum profit. You may complete as many transactions as you like (i.e., buy one and sell one share of the stock multiple times). 
 
 def max_profit(prices):
     n = len(prices)
     max = 0
-    
+   
     minv = prices[0]
     i = 1
     
@@ -176,21 +176,14 @@ def is_sudoku_valid(board):
 # Q: Given a string, find the length of the longest substring without repeating characters.
 
 def length_longest_substring(s):
-        
-    def are_chars_repeating(ss):
-        d = dict()
-        for i in range(len(ss)):
-            if ss[i] in d.keys():
-                return False
-            else:
-                d[ss[i]] = 1
-        return True
-
+    
+    def are_chars_repeating(s):
+        return False if len(list(set(s)))==len(s) else True
+    
     w = n = len(s) 
     while w > 0:
-        print w
         for i in range(n-w+1):
-            if are_chars_repeating(s[i:i+w]):
+            if not are_chars_repeating(s[i:i+w]):
                 return w
         w -= 1        
                 
