@@ -16,28 +16,38 @@ def calculate_twos(x):
 ## Q:: O(logN) solution to find 2 numbers in an array that sum up to a target value
 
 def two_numbers_sum_target(arr, target):
-    """    
-    Binary Search approach only works with sorted array and non-repeating elements
-    """
+        
+    ## O(N) approach - for any type of elements
+    d = dict()
+    for a in arr:
+        # if 'target-element' exists in dict, then the 2 elements are found
+        if d.get(target-a):
+            return a, target-a 
+            
+        elif not d.get(a):
+            # store as 'element': 'target-element', if does not already exist
+            d[a] = target-a
     
-    def _helper(i, left, right, target):
-        if left < right:
-            mid = (left+right)/2
-            sum = arr[i]+arr[mid]
-            if (mid != i) and (sum == target):
-                return mid
-            if sum > target:
-                right=right-1
-            elif sum < target:
-                left=left+1
-            return _helper(i, left, right, target)    
-
-    print 'arr={}, target={}'.format(arr, target)            
-    arr_len = len(arr)   
-    for i in range(arr_len):
-        found = _helper(i, 0, arr_len, target)
-        if found:
-            return i, found
+    
+    ## O(logN) approach - only for sorted, non-repeating arrays
+    #def _helper(i, left, right, target):
+    #    if left < right:
+    #        mid = (left+right)/2
+    #        sum = arr[i]+arr[mid]
+    #        if (mid != i) and (sum == target):
+    #            return mid
+    #        if sum > target:
+    #            right=right-1
+    #        elif sum < target:
+    #            left=left+1
+    #        return _helper(i, left, right, target)    
+    #
+    #print 'arr={}, target={}'.format(arr, target)            
+    #arr_len = len(arr)   
+    #for i in range(arr_len):
+    #    found = _helper(i, 0, arr_len, target)
+    #    if found:
+    #        return i, found
         
     
 ## Q:: O(logN) solution to find 3 numbers in an array that sum up to a target value    
