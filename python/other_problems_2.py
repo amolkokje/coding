@@ -427,11 +427,19 @@ def search_rotated_array(nums, target):
 
 # Q: Given an unsorted integer array, find the smallest missing positive integer.
 def first_missing_positive(nums):
+    # linear method that will be acceptable to all, add all elments to min heap
+    import heapq
+    num_heap = []
+    for n in nums:
+        heapq.heappush( numh, n )
+    return numh[0]    
+    """
     m = 1
     while True:
-        if not m in nums:
+        if not m in nums:   # this check could be flagged
             return m
         m += 1     
+    """      
 
 # https://leetcode.com/problems/trapping-rain-water/
 # class Solution(object):
