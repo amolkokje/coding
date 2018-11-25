@@ -188,7 +188,7 @@ def length_longest_substring(s):
     while w > 0:
         for i in range(n-w+1):
             if not are_chars_repeating(s[i:i+w]):
-                return w
+                return s[i:i+w]
         w -= 1        
                 
     
