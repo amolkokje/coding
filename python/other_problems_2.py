@@ -122,6 +122,10 @@ def intersection(nums1, nums2):
 # You may assume the integer does not contain any leading zero, except the number 0 itself.
 ## NOTE: combining the array to create number may cause overflow if the number is very huge, if its some other language like Java, etc. where the types are static        
 def plus_one(digits):
+    """
+    # possible one line pythonic solution
+    return str( int( ''.join(digits) ) + 1 )
+    """
     if digits[-1] < 9:
         digits[-1] += 1
     else:
