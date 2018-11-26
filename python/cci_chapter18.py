@@ -99,28 +99,45 @@ def find_smallest(arr, m):
 
 def find_longest(words):
     
-    n = len(words)
-    
-    def sort_by_length(wlist):        
-        def greater_than(w1, w2):
-            return True if len(w1) >= len(w2) else False        
+    ## O(logN) + O(N)
+    #n = len(words)
+    #
+    #def sort_by_length(wlist):        
+    #    def greater_than(w1, w2):
+    #        return True if len(w1) >= len(w2) else False        
+    #    
+    #    # fastest is merge sort, using bubble sort here for simplicity        
+    #    for _ in range(n):
+    #        for i in range(n-1):
+    #            # descending order of length
+    #            if greater_than(wlist[i+1], wlist[i]):
+    #                wlist[i], wlist[i+1] = wlist[i+1], wlist[i]
+    #            
+    #sort_by_length(words)        
+    #for word in words:
+    #    x = len(word)
+    #    for i in range(2, x):
+    #        if (word[:i] in words) and (word[i:] in words):
+    #            print '{} + {} = {}'.format(word[:i], word[i:], word)
+    #            break
         
-        # fastest is merge sort, using bubble sort here for simplicity        
-        for _ in range(n):
-            for i in range(n-1):
-                # descending order of length
-                if greater_than(wlist[i+1], wlist[i]):
-                    wlist[i], wlist[i+1] = wlist[i+1], wlist[i]
-                    
-    sort_by_length(words)
+    ## O(N) = O(2N)
+    word_dict = dict()
+    max_len = 0
+    ret = None
     for word in words:
-        x = len(word)
-        for i in range(2, x):
-            if (word[:i] in words) and (word[i:] in words):
-                print '{} + {} = {}'.format(word[:i], word[i:], word)
-                return
+        word_dict[word] = 1
         
-
+    for word in words:
+        n = len(word)
+        for i in range(1,n):
+            if word_dict.get(word[:i]) and word_dict.get(word[i:]) and n > max_len:
+                max_len = n
+                ret = [ word[:i], word[i:], n ]
+                print '{} + {} = {}, length={}'.format(word[:i], word[i:], word, n)
+                break
+            
+        
                 
     
 if __name__ == '__main__':
