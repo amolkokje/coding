@@ -340,41 +340,15 @@ def rand7():
     
  
 # 17.12 ->  Design an algorithm to find all pairs of integers within an array which sum to a specified values
-
-def bs_val(arr, v):
-    """
-    binary search to find a value
-    """
-    
-    def bsr(arr, v, l, r):
-        if l < r:
-            m = (l+r)/2
-            if arr[m] == v:
-                return True
-            elif arr[m] > v:
-                return bsr(arr, v, l, m-1)
-            else:
-                return bsr(arr, v, m+1, r)
-
-    return bsr(arr, v, 0, len(arr)) 
-    
-                
-def find_pairs_sum(arr, sum):
-    found_pairs = []    
-    arr.sort()
-    
-    for i in range(len(arr)):
-        
-        element_find = sum - arr[i]
-        
-        if bs_val(arr, element_find):
-            pair = [arr[i], element_find]
-            pair.sort()
             
-            if not pair in found_pairs:  
-                found_pairs.append(pair)
-                
-    return found_pairs            
+def find_pairs_sum(arr, sum):
+    # O(N)
+    found_map = dict()
+    for a in arr:
+        if not found_map.get(sum-a):
+            found_map[a] = [a, sum-a]
+    return found_map.values()           
+    
  
 
 # 17.13 -> Consider a simple node-like data structure called BiNode, which has pointers to two other nodes. The data structure BiNode could be used to represent both a binary tree (where nodel is the left node and node2 is the right node) or a doubly linked list (where nodel is the previous node and node2 is the next node). Implement a method to convert a binary search tree (implemented with BiNode) into a doubly linked list. The values should be kept in order and the operation should be performed in place (that is, on the original data structure). 
@@ -432,6 +406,17 @@ def add_spaces(olds, word_dictionary):
 # [ 1, 2, 3, 4 ], Sum=8 --> No
 # [ 1, 2, 4, 4 ], Sum=8 --> Yes
 # Reference: https://youtu.be/XKu_SEDAykw
+
+def sum_exists(arr, sum):
+    sum_map = dict()
+    for a in arr:
+        if sum_map.get(sum-a):
+            return True
+        else:
+            sum_map[a] = sum-a
+    return False
+ 
+ 
  
 if __name__ == '__main__':
     swap_nums(2, 4)
@@ -498,3 +483,9 @@ if __name__ == '__main__':
     print '---------------------------------------------------'        
     arr = [ 1, 2, 4, 7, 10, 11, 7, 12, 6, 7, 16, 18, 19 ]
     print find_index_to_sort(arr)
+    
+    print '---------------------------------------------------'        
+    arrlist = [ [1,2,3,4], [1,2,4,4] ]
+    sum = 8
+    for arr in arrlist:
+        print 'sum={}, arr={}, sum_exists={}'.format(sum, arr, sum_exists(arr, sum))
