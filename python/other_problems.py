@@ -61,6 +61,7 @@ def three_numbers_sum_target(arr, target):
         
         for j in range(arr_len):
             if j != i:
+                # will be O(N^2) or O(N.LogN) based on two_numbers_sum_target()
                 n1, n2 = two_numbers_sum_target(arr, two_sum_target)
                 if n1 and n2:
                     return i, n1, n2
@@ -189,6 +190,8 @@ def generate_combinations(ip_list, take_count):
         
         
 ## Q:: find first non-repeating character by iterating through the length of the string only once and by using constant space.        
+# below approach goes through the string 2 times
+# for one time, also store position of first occurance in the dict. And then, at end, run through the dict elements instead of the list to find the element with count=1 that occurs first. Reference:https://www.geeksforgeeks.org/given-a-string-find-its-first-non-repeating-character/ 
 
 def find_first_non_repeating_char(ip_string):
     # create dict first, space - Constant
@@ -411,6 +414,37 @@ def max_profit(sp):
     print 'range=({},{})'.format(start, stop)    
     return max         
     
+    
+## Q: Function to check if 2 strings are permutations of each other
+
+def is_perm(s1, s2):
+    d = dict()
+    
+    # if lengths are not equal, they cannot be permutations
+    if not ( len(s1) == len(s2)):
+        return False
+    else:
+        # store all elements from s1 in the dict
+        for s in s1:
+            if d.get(s):
+                d[s] += 1
+            else:
+                d[s] = 1
+
+        # go through all elements in s2, and remove them from the dict as they are found            
+        for s in s2:
+            if d.get(s):
+                if d[s] == 1:
+                    del d[s]
+                else:
+                    d[s] -= 1
+            else:
+                return False
+                
+    return True if not d else False
+                
+                    
+    
 if __name__ == '__main__':
 
     """
@@ -500,3 +534,8 @@ if __name__ == '__main__':
     for arr in arrlist:
         print 'max profit for {} is {}'.format(arr, max_profit(arr))
     
+    
+    print "-------------------------------------------------------"         
+    iplist = [('abc', 'cba'), ('abc', 'cbb')]
+    for ip in iplist:
+        print 's1={}, s2={}, is_perm={}'.format(ip[0], ip[1], is_perm(ip[0], ip[1]))
