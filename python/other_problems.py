@@ -306,19 +306,45 @@ def next_bigger(num):
     # create a backup for comparison later
     check_num = copy.deepcopy(num)
     
-    # convert num to string -> get permutations -> convert back to numbers
-    from itertools import permutations
-    # get string permutations
-    perm = permutations(str(num))
-    # convert each back to int
-    perm = [ int(''.join(n)) for n in perm ]
+    ## BRUTE-FORCE: convert num to string -> get permutations -> convert back to numbers
+    #from itertools import permutations
+    #perm = [ int(''.join(n)) for n in permutations(str(num)) ]  ## TIME CONSUMING!
+    #perm.sort()
+    #for i in range(len(perm)):
+    #    if perm[i] > check_num:
+    #        return perm[i]
+    #return -1        
     
-    perm.sort()
-    for i in range(len(perm)):
-        if perm[i] > check_num:
-            return perm[i]
-    return -1        
+    ## Reference: https://www.geeksforgeeks.org/find-next-greater-number-set-digits/
+    number = [ int(n) for n in str(num) ] # convert num to array of integers
+    n = len(number)
+    # Start from the right most digit and find the first digit that is smaller than the digit next to it 
+    i = n-1
+    while i > 0: 
+        if number[i] > number[i-1]: 
+            break
+        i -= 1    
+              
+    # If no such digit found, then all numbers are in descending order, no greater number is possible 
+    if i == 0: 
+        return -1
+          
+    # Find the smallest digit on the right side of (i-1)'th digit that is greater than number[i-1] 
+    x = number[i-1] 
+    smallest = i 
+    for j in range(i+1,n): 
+        if number[j] > x and number[j] < number[smallest]: 
+            smallest = j 
+          
+    # Swapping the above found smallest digit with (i-1)'th 
+    number[smallest], number[i-1] = number[i-1], number[smallest] 
     
+    # Sort the number from i+1 onwards, so that get the least possible there
+    number = number[:i+1] + sorted(number[i+1:])
+    
+    # convert the array of numbers back to a number
+    return int( ''.join( [ str(n) for n in number ] ) ) 
+
     
 ## Q:: Given a sorted array with duplicates and a number, find the range in the form of (startIndex, endIndex) of that number. For example,
 # find_range({0 2 3 3 3 10 10},  3) should return (2,4).
