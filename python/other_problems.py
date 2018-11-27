@@ -470,6 +470,34 @@ def is_perm(s1, s2):
     return True if not d else False
                 
                     
+# Q: Write a function that takes 2 input strings, and returns True if a permutation of the first string exists in the second string.
+
+def perm_exists(s1, s2):
+    """
+    check if permutation of s1 exists in s2
+    """
+    d = dict()
+    
+    # store all elements of s2 in dict
+    for s in s2:
+        if not d.get(s):
+            d[s] = 1
+        else:
+            d[s] += 1
+            
+    # check if all elements of s1 are in the dict
+    for s in s1:
+        if d.get(s):
+            if d[s] == 1:
+                del d[s]
+            else:
+                d[s] -= 1
+        else:
+            # element does not exist in dict
+            return False
+                
+    return True 
+
     
 if __name__ == '__main__':
 
@@ -559,9 +587,13 @@ if __name__ == '__main__':
     arrlist = [ [2, 5, 4, 9, 1], [2, 5, 4, 9, 1, 9] ]
     for arr in arrlist:
         print 'max profit for {} is {}'.format(arr, max_profit(arr))
-    
-    
+        
     print "-------------------------------------------------------"         
     iplist = [('abc', 'cba'), ('abc', 'cbb')]
     for ip in iplist:
         print 's1={}, s2={}, is_perm={}'.format(ip[0], ip[1], is_perm(ip[0], ip[1]))
+        
+    print "-------------------------------------------------------"         
+    iplist = [ ['abc', 'bac'], ['abc', 'bacc'], ['abc', 'ab'] ]
+    for ip in iplist:
+        print 's1={}, s2={}, perm_exists={}'.format(ip[0], ip[1], perm_exists(ip[0], ip[1]))
