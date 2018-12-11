@@ -194,22 +194,18 @@ def generate_combinations(ip_list, take_count):
 # for one time, also store position of first occurance in the dict. And then, at end, run through the dict elements instead of the list to find the element with count=1 that occurs first. Reference:https://www.geeksforgeeks.org/given-a-string-find-its-first-non-repeating-character/ 
 
 def find_first_non_repeating_char(ip_string):
-    # create dict first, space - Constant
-    chard = dict()
-    # constant space
-    for i in range(ord('z')):
-        chard[i] = 0
+    # populate array with 0 for all possible chars
+    arr = [ 0 for _ in range( ord('z') ) ]
     
-    # navigate through array -> N 
-    n = len(ip_string)
-    for k in range(n):
-        chard[ord(ip_string[k])] += 1
-    
-    # navigate through array -> N 
-    for k in range(n):    
-        if chard[ord(ip_string[k])] == 1:
-            return ip_string[k]
-        
+    # if a char is found in string, increment the counter
+    for s in ip_string:
+        arr[ ord(s) ] += 1
+
+    # if char is found only once, return that char        
+    for s in ip_string:
+        if arr[ ord(s) ] == 1:
+            return s
+      
         
 ## Q:: find missing element in an AP        
 
