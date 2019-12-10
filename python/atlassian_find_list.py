@@ -24,13 +24,17 @@
 def contains_list_index(main, sub):
     m = len(main)    
     s = len(sub)
-    
-    if m == s and main == sub:
+
+    if s > m:
+        return -1
+
+    elif m == s and main == sub:
         return 0
-    
-    for i in range(m-s+1):
-        if main[i:i+s] == sub:
-            return i
+
+    else:
+        for i in range(m-s+1):
+            if main[i:i+s] == sub:
+                return i
           
     return -1    
         
