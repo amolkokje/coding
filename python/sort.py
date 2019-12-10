@@ -30,12 +30,12 @@ def selectionSort(arr):
     """
     n = len(arr)
     for i in range(n-1):
-        mi = i
-        # find index for min value
+        mi = arr[i]  # index for min value
         for j in range(i+1, n):
-            if arr[j] < arr[mi]: 
-               mi = j
-        # swap with index of min value    
+            if arr[j] < arr[mi]:
+               mi = j  # update the index for min value
+
+        # swap with index of min value
         if mi != i:
             arr[mi], arr[i] = arr[i], arr[mi]
                 

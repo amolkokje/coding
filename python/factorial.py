@@ -23,8 +23,9 @@ def factorialRecursive(x):
     
 ############################################################
 # factorial recursive method, with cache - whole numbers i.e. >=0
-# Memoization - In computing, memoization or memoisation is an optimization technique used primarily to speed up computer programs by storing the results of expensive function calls and returning the cached result when the same inputs occur again
-# 
+# Memoization - In computing, memoization or memoisation is an optimization technique used primarily to speed up
+# computer programs by storing the results of expensive function calls and returning the cached result when the same
+# inputs occur again
 
 def memoize(func):
     class memodict(dict):
@@ -42,7 +43,7 @@ def memoizefunc(func):
     
     def wrapper(x):
         # this will add to the existing object in memory
-        if x not in cache:
+        if x not in cache.keys():
             print 'caching {}'.format(x)
             cache[x] = func(x)
         return cache[x]    

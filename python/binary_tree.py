@@ -76,6 +76,7 @@ def PrintPostOrder(n):
     USES:
     - used for deletion of node or subtree. 
         - as this goes till the child node of interest, we can delete it there
+    - use to get subtree until a node since it starts from the lowest points
     """            
     if n:
         PrintPostOrder(n.left)
@@ -89,6 +90,7 @@ def PrintPostOrder(n):
 def PrintLevelOrder(node):
     """
     takes the root node of BST as input and prints BST in Level Order starting from root
+    PRE-ORDER
     """ 
     if not node:
         return
@@ -112,6 +114,10 @@ def PrintLevelOrder(node):
 # Print a particular level in the tree            
             
 def PrintLevel(node, print_height, height=0):
+    """
+    takes root node of a tree and prints the nodes at the specified level
+    PRE-ORDER
+    """
     if node: 
         if height == print_height:
             print node.data
@@ -126,6 +132,7 @@ def PrintLevel(node, print_height, height=0):
 def GetTreeHeight(node, height=-1):    
     """
     takes tree root node and returns height of the tree
+    PRE-ORDER
     """
     if node:
         height += 1
@@ -138,7 +145,7 @@ def GetTreeHeight(node, height=-1):
 # Binary Tree balanced
 # Balanced Tree - A binary tree is balanced if for each node it holds that the number of inner nodes in the left subtree and the number of inner nodes in the right subtree differ by at most 1
 
-def IsTreeBalanced(node, height=0):
+def IsTreeBalanced(node):
     """
     takes tree root node and returns if the tree is balanced
     """
@@ -214,7 +221,7 @@ def ContainsTree(n1, n2):
         return False
     elif n1 and (not n2):
         return True # T2 is empty
-    elif n1.data == n2.data and AreTreesIdentical(n1, n2): 
+    elif n1.data == n2.data and AreTreesIdentical(n1, n2):
         return True
     else:    
         return ContainsTree(n1.left, n2) or ContainsTree(n1.right, n2)
