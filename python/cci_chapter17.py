@@ -236,35 +236,41 @@ def num_string(num):
 
 
 def get_contiguous_sequence_max_sum(arr):
-    
-    start = stop = 0 # final
-    tstart = 0 # temp current values
-    sum = 0
-    max = None  
-    
-    for i in range(len(arr)):
-        # sum is never 0, unless explicitly set
-        if sum == 0:
-            tstart = i
-                
-        sum += arr[i]        
-        
-        if sum > max:
-            stop = i
-            start = tstart
-            max = sum
-        
-        # if sum<0, then we are decreasing, so start again
-        elif sum < 0:
+    tstart = 0  # temp var to store start
+    sum = 0  # temp var to store sum
+
+    # final values
+    start = 0
+    stop = 0
+    maxsum = 0
+
+    n = len(arr)
+
+    for i in range(n):
+        sum += arr[i]
+
+        # if =0 means starting fresh, so reset
+        # if <0 means decreasing, so reset
+        if sum <= 0:
             sum = 0
-            
-    return arr[start:stop+1]        
+            if i+1 < n:
+                tstart = i+1  # reset start pointer
+
+        # if sum crosses max, use temp var to update the final values
+        if sum > maxsum:
+            start = tstart
+            stop = i
+            maxsum = sum
+
+    return arr[start:stop+1]
+
 
 # 17.9 ->  Design a method to find the frequency of occurrences of any given word in a book
 # simple dict, so skip
 
 
-# 17.10 -> For example, the following XML might be converted into the compressed string below (assuming a mapping off family -> l, person ->2, frstName -> 3, LastName -> 4, state -> 5).
+# 17.10 -> For example, the following XML might be converted into the compressed string below
+# (assuming a mapping off family -> l, person ->2, firstName -> 3, LastName -> 4, state -> 5).
 # <family lastName="McDowell" state="CA"> 
 #     <person firstName="Gayle">Some Message</person> 
 # </family>
@@ -273,15 +279,38 @@ def get_contiguous_sequence_max_sum(arr):
 # Write code to print the encoded version of an XML element (passed in E Lament and Attribute objects).
 """
 PSEUDO-CODE:
-def print_tag(tag):
-    print tag.Name
-    print_attributes(tag)
-    if tag.Children:
-        for child in tag.Children:
-            print_tag(child)
-    print ' 0 '
-    
-print_tag( xmltree(xml_file).root )            
+
+TAG = {
+    'family': 1,
+    'person': 2
+}
+
+ATT = {
+    'firstName': 3,
+    'lastName': 4,
+    'state': 5
+}
+
+def process_atts(att_name_val_dict):
+    out = ''
+    for name, val for att_name_val_dict.iteritems():
+        out += '{} {}'.format(ATT[name], val)
+    return out    
+
+def process_line(out, line):
+    tag, atts = get_tag_atts(line)
+    if tag:
+        out += process_tag(tag)
+    if atts:
+        out += process_atts(atts)
+    if tag and tag_has_closing(line):
+        out += ' 0'            
+    return out
+
+# MAIN
+out = ''
+for line in xml_file_line:
+    process_line(out, line)  
 """ 
 ## AMOL -> SOME THING IS WEIRD!
   
@@ -343,21 +372,35 @@ def rand7():
             
 def find_pairs_sum(arr, sum):
     # O(N)
-    found_map = dict()
+    pairs_list = list()
+    sum_dict = dict()
     for a in arr:
-        if not found_map.get(sum-a):
-            found_map[a] = [a, sum-a]
-    return found_map.values()           
+        if sum_dict.get(sum-a) and ([a, sum-a] not in pairs_list) and ([sum-a, a] not in pairs_list):
+            pairs_list.append([a, sum-a])
+        else:
+            sum_dict[a] = sum-a
+    return pairs_list
     
  
 
-# 17.13 -> Consider a simple node-like data structure called BiNode, which has pointers to two other nodes. The data structure BiNode could be used to represent both a binary tree (where nodel is the left node and node2 is the right node) or a doubly linked list (where nodel is the previous node and node2 is the next node). Implement a method to convert a binary search tree (implemented with BiNode) into a doubly linked list. The values should be kept in order and the operation should be performed in place (that is, on the original data structure). 
+# 17.13 -> Consider a simple node-like data structure called BiNode, which has pointers to two other nodes.
+# The data structure BiNode could be used to represent both a binary tree (where node1 is the left node and node2
+# is the right node) or a doubly linked list (where node1 is the previous node and node2 is the next node). Implement
+# a method to convert a binary search tree (implemented with BiNode) into a doubly linked list. The values should be
+# kept in order and the operation should be performed in place (that is, on the original data structure).
 ## AMOL - SEEMS TOO COMPLEX
     
 
-# 17.4 ->  Oh, no! You have just completed a lengthy document when you have an unfortunate Find/Replace mishap. You have accidentally removed all spaces, punctuation, and capitalization in the document. A sentence like "I reset the computer. It still didn't boot!" would become "iresetthecomputeritstilldidntboot". You figure that you can add back in the punctation and capitalization later, once you get the individual words properly separated. Most of the words will be in a dictionary, but some strings, like proper names, will not.
-# Given a dictionary (a list of words), design an algorithm to find the optimal way of "unconcatenating" a sequence of words. In this case, "optimal" is defined to be the parsing which minimizes the number of unrecognized sequences of characters.
-# For example, the string "jesslookedjustliketimherbrother" would be optimally parsed as "JESS looked just like TIM her brother". This parsing has seven unrecognized characters, which we have capitalized for clarity.
+# 17.4 ->  Oh, no! You have just completed a lengthy document when you have an unfortunate Find/Replace mishap. You
+# have accidentally removed all spaces, punctuation, and capitalization in the document. A sentence like "I reset the
+# computer. It still didn't boot!" would become "iresetthecomputeritstilldidntboot". You figure that you can add back
+# in the punctation and capitalization later, once you get the individual words properly separated. Most of the words
+# will be in a dictionary, but some strings, like proper names, will not.
+# Given a dictionary (a list of words), design an algorithm to find the optimal way of "unconcatenating" a sequence of
+# words. In this case, "optimal" is defined to be the parsing which minimizes the number of unrecognized sequences of
+# characters.
+# For example, the string "jesslookedjustliketimherbrother" would be optimally parsed as "JESS looked just like TIM
+# her brother". This parsing has seven unrecognized characters, which we have capitalized for clarity.
 ## AMOL - not optimal, INCORRECT?? - TRY TO UNDERSTAND BOOK SOLUTION!
 
 
@@ -402,7 +445,8 @@ def add_spaces(olds, word_dictionary):
     return news            
                 
  
-# Q: Google Sample Question --> Given an array and a number, check if there are two elements in the array that sum to the number
+# Q: Google Sample Question --> Given an array and a number, check if there are two elements in the array that sum to
+# the number
 # [ 1, 2, 3, 4 ], Sum=8 --> No
 # [ 1, 2, 4, 4 ], Sum=8 --> Yes
 # Reference: https://youtu.be/XKu_SEDAykw
