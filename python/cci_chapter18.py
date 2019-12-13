@@ -1,6 +1,7 @@
 # 18.1 --> digit manipulation
 
-# 18.2: Write a method to shuffle a deck of cards. It must be a perfect shuffle: in other words, each of the 52! permutations of the deck has to be equally likely. Assume that you are given a random number generator which is perfect.
+# 18.2: Write a method to shuffle a deck of cards. It must be a perfect shuffle: in other words, each of the 52!
+# permutations of the deck has to be equally likely. Assume that you are given a random number generator which is perfect.
 
 import random
 def shuffle(deck):
@@ -11,7 +12,8 @@ def shuffle(deck):
             r = random.randint(0, n-1)
             deck[i], deck[r] = deck[r], deck[i]
         
-# 18.3: Write a method to randomly generate a set of m integers from an array of size n. Each element must have equal probability of being chosen.
+# 18.3: Write a method to randomly generate a set of m integers from an array of size n. Each element must have equal
+# probability of being chosen.
 # NOTE: different solution in the book, same as deck shuffle
         
 def choose(arr, m):        
@@ -49,9 +51,12 @@ def count_twos_in_range(num):
         return count_twos(num) + count_twos_in_range(num-1)
     
     
-# 18.5: You have a large text file containing words. Given any two words, find the shortest distance (in terms of number of words) between them in the file. If the operation will be repeated many times for the same file (but different pairs of words), can you optimize your solution?   
+# 18.5: You have a large text file containing words. Given any two words, find the shortest distance (in terms of
+#  number of words) between them in the file. If the operation will be repeated many times for the same file (but
+# different pairs of words), can you optimize your solution?
 
-# if you have to search distance multiple times, then store all locations for each word in a dict, and then iterate over the values for keys word-1 and word-2 to see which have min difference
+# if you have to search distance multiple times, then store all locations for each word in a dict, and then iterate
+# over the values for keys word-1 and word-2 to see which have min difference
 # if do not need to search multiple times, then use approach below
 
 def find_min_distance(book, word1, word2):
@@ -80,8 +85,10 @@ def find_min_distance(book, word1, word2):
             
     
         
-# 18.6: Describe an algorithm to find the smallest one million numbers in one billion numbers. Assume that the computer memory can hold all one billion numbers
-# Book's fastest solution is selection rank algorithm, a special quik-sort case. Python: http://www.ardendertat.com/2011/10/27/programming-interview-questions-10-kth-largest-element-in-array/ -> SDE
+# 18.6: Describe an algorithm to find the smallest one million numbers in one billion numbers. Assume that the computer
+#  memory can hold all one billion numbers
+# Book's fastest solution is selection rank algorithm, a special quik-sort case.
+# Python: http://www.ardendertat.com/2011/10/27/programming-interview-questions-10-kth-largest-element-in-array/ -> SDE
 
 import heapq
 def find_smallest(arr, m):
@@ -99,7 +106,7 @@ def find_smallest(arr, m):
 
 def find_longest(words):
     
-    ## O(logN) + O(N)
+    ## O(logN) + O(N^2) --> with Merge Sort
     #n = len(words)
     #
     #def sort_by_length(wlist):        
@@ -113,30 +120,30 @@ def find_longest(words):
     #            if greater_than(wlist[i+1], wlist[i]):
     #                wlist[i], wlist[i+1] = wlist[i+1], wlist[i]
     #            
-    #sort_by_length(words)        
-    #for word in words:
+    #sort_by_length(words)   ## logN
+    #for word in words:    ## N
     #    x = len(word)
-    #    for i in range(2, x):
+    #    for i in range(2, x):   ## xN
     #        if (word[:i] in words) and (word[i:] in words):
     #            print '{} + {} = {}'.format(word[:i], word[i:], word)
     #            break
         
-    ## O(N) = O(2N)
+    ## O(N + N^2)
     word_dict = dict()
     max_len = 0
     ret = None
-    for word in words:
+    for word in words:   ## N
         word_dict[word] = 1
         
-    for word in words:
+    for word in words:   ## N
         n = len(word)
-        for i in range(1,n):
+        for i in range(1,n):   ## xN
             if word_dict.get(word[:i]) and word_dict.get(word[i:]) and n > max_len:
                 max_len = n
                 ret = [ word[:i], word[i:], n ]
                 print '{} + {} = {}, length={}'.format(word[:i], word[i:], word, n)
                 break
-            
+    return ret
         
                 
     
