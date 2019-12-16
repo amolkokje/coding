@@ -76,7 +76,7 @@ def three_numbers_sum_target(arr, target):
                     return i, n1, n2
 
 
-## Q:: Find total unique paths from a point in matrix to another point in matrix    
+## Q:: Find total unique paths from a point in matrix to another point in matrix  --> SEE memoize.py
 
 def unique_paths(stop_x, stop_y, start_x, start_y, m, n, visited_cells_orig):
     if stop_x == start_x and stop_y == start_y:
@@ -198,8 +198,11 @@ def generate_combinations(ip_list, take_count):
 
 ## Q:: find first non-repeating character by iterating through the length of the string only once and by using constant space.        
 # below approach goes through the string 2 times
-# for one time, also store position of first occurance in the dict. And then, at end, run through the dict elements instead of the list to find the element with count=1 that occurs first. Reference:https://www.geeksforgeeks.org/given-a-string-find-its-first-non-repeating-character/ 
+# for one time, also store position of first occurence in the dict. And then, at end, run through the dict elements
+# instead of the list to find the element with count=1 that occurs first.
+# Reference:https://www.geeksforgeeks.org/given-a-string-find-its-first-non-repeating-character/
 
+## CONSTANT SPACE
 def find_first_non_repeating_char(ip_string):
     # populate array with 0 for all possible chars
     arr = [0 for _ in range(ord('z'))]
@@ -214,6 +217,17 @@ def find_first_non_repeating_char(ip_string):
             return s
 
 
+## SPACE DEPENDS ON CHARS IN THE STRING - Pythonic
+def find_first_non_repeating_char_2(ipstring):
+    found_once_list = list()
+    for c in ipstring:
+        if c in found_once_list:
+            found_once_list.pop(found_once_list.index(c))
+        else:
+            found_once_list.append(c)
+    return found_once_list[0]
+
+
 ## Q:: find missing element in an AP        
 
 def ap_find_missing_element(ap):
@@ -222,56 +236,67 @@ def ap_find_missing_element(ap):
     # this is precaution just in case the second/third element is the missing one
     diff = min(ap[1] - ap[0], ap[2] - ap[1])
     for i in range(len(ap) - 1):
-        if ap[i + 1] - ap[i] > diff:
-            print 'Missing element = {}'.format(ap[i] + diff)
+        if ap[i + 1] - ap[i] != diff:
+            missing_element = ap[i] + diff
+            print 'Missing element = {}'.format(missing_element)
+            return missing_element
 
 
-## Q:: Find the largest substring palindrome in a given string. ex: input: abbac output: abba            
+## Q:: Find the largest substring palindrome in a given string. ex: input: abbac output: abba
 
 def string_find_largest_subset_palindrome(ip_string):
-    def is_palindrome(s):
+    def _is_palindrome(s):
         return True if s == s[::-1] else False
-
-    if is_palindrome(ip_string):
-        return ip_string
 
     n = window = len(ip_string)
 
     while window > 1:
-        for i in range(n - window + 1):
-            if is_palindrome(ip_string[i:i + window - 1]):
-                return ip_string[i:i + window - 1]
+        for i in range(n - window + 1):  # does not include the last value
+            s = ip_string[i:i + window]  # does not include the last value
+            if _is_palindrome(s):
+                return s
         window -= 1
 
 
-    ## Q:: Compress aaabbcccc -> a3b2c4
-
+## Q:: Compress aaabbcccc -> a3b2c4
 
 def compress_string(ip_string):
     n = len(ip_string)
-    compressed_string = []
-
+    compresssed = ''
     i = 0
-    while i < n:
-        # match found, special case for last char
-        if i + 1 < n and ip_string[i] == ip_string[i + 1]:
-            ch = ip_string[i]
-            k = 2
-            for j in range(i + 2, n):
-                if ip_string[j] != ch:
-                    break
-                k += 1
 
-            # append compress chars
-            compressed_string += (ch + str(k))
-            # move index forward
-            i += k
+    def _compress_str(append_to, chr, count):
+        """ helper method to generate compressed string """
+        if count > 1:
+            return append_to + chr + str(count)
         else:
-            # match not found to compress
-            compressed_string += ip_string[i]
-            i += 1
+            return append_to + chr
 
-    return ''.join(compressed_string)
+    while i < n - 1:
+        c = 1  # to maintain compress count
+        j = i + 1  # index to navigate successive places to determine degree of compression
+
+        while j < n:
+            if ip_string[j] == ip_string[i]:
+                # if there is a match, increment and continue
+                c += 1
+                j += 1
+                if j == n:  # special case when the index 'j' reaches end of string
+                    # if reached end of string, return whatever has been reached so far
+                    return _compress_str(compresssed, ip_string[i], c)
+
+            else:
+                # if there is no match, compress and move the index forward
+                compresssed = _compress_str(compresssed, ip_string[i], c)
+                i += c
+                break
+
+    if i == n - 1:
+        # this case is reached when index 'n' and 'n-1' are not the same
+        return compresssed + ip_string[i]
+    else:
+        # this case is reached when 'n' and 'n-1' are the same
+        return compresssed
 
 
 ## Q:: implement without using python Contains() or find()
@@ -328,7 +353,7 @@ def next_bigger(num):
             break
         i -= 1
 
-        # If no such digit found, then all numbers are in descending order, no greater number is possible
+    # If no such digit found, then all numbers are in descending order, no greater number is possible
     if i == 0:
         return -1
 
@@ -339,11 +364,13 @@ def next_bigger(num):
         if number[j] > x and number[j] < number[smallest]:
             smallest = j
 
-            # Swapping the above found smallest digit with (i-1)'th
+    # Swapping the above found smallest digit with (i-1)'th
     number[smallest], number[i - 1] = number[i - 1], number[smallest]
 
     # Sort the number from i+1 onwards, so that get the least possible there
     number = number[:i + 1] + sorted(number[i + 1:])
+    ## NOTE: If the ask is to find smallest by swapping only one digit, then replace the sorted() with a function that
+    # finds the index on the right with smallest value and swaps with it
 
     # convert the array of numbers back to a number
     return int(''.join([str(n) for n in number]))
@@ -537,7 +564,9 @@ if __name__ == '__main__':
 
     print "-------------------------------------------------------"
     s = "molamol"
-    print "first non repeating char in '{}' is '{}'".format(s, find_first_non_repeating_char(s))
+    print "first non repeating char in '{}' is '{}'. " \
+          "find_first_non_repeating_char_2='{}'".format(s, find_first_non_repeating_char(s),
+                                                        find_first_non_repeating_char_2(s))
 
     print "-------------------------------------------------------"
     ap_find_missing_element([1, 3, 5, 7, 9, 13, 15])
