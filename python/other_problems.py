@@ -196,8 +196,8 @@ def generate_combinations(ip_list, take_count):
         combine(word, visited, i)
 
 
-## Q:: find first non-repeating character by iterating through the length of the string only once and by using constant space.        
-# below approach goes through the string 2 times
+## Q:: find first non-repeating character by iterating through the length of the string only once and by using constant
+# space. Below approach goes through the string 2 times
 # for one time, also store position of first occurence in the dict. And then, at end, run through the dict elements
 # instead of the list to find the element with count=1 that occurs first.
 # Reference:https://www.geeksforgeeks.org/given-a-string-find-its-first-non-repeating-character/
@@ -219,12 +219,21 @@ def find_first_non_repeating_char(ip_string):
 
 ## SPACE DEPENDS ON CHARS IN THE STRING - Pythonic
 def find_first_non_repeating_char_2(ipstring):
+    found_more_list = list()
     found_once_list = list()
+
     for c in ipstring:
         if c in found_once_list:
+            # if found already, moved to 'more' list
+            if c not in found_more_list:
+                found_more_list.append(c)
             found_once_list.pop(found_once_list.index(c))
         else:
-            found_once_list.append(c)
+            # if not found once or more, add to 'once' list
+            if c not in found_more_list:
+                found_once_list.append(c)
+
+    # return first found
     return found_once_list[0]
 
 
@@ -294,9 +303,6 @@ def compress_string(ip_string):
     if i == n - 1:
         # this case is reached when index 'n' and 'n-1' are not the same
         return compresssed + ip_string[i]
-    else:
-        # this case is reached when 'n' and 'n-1' are the same
-        return compresssed
 
 
 ## Q:: implement without using python Contains() or find()
@@ -376,7 +382,8 @@ def next_bigger(num):
     return int(''.join([str(n) for n in number]))
 
 
-## Q:: Given a sorted array with duplicates and a number, find the range in the form of (startIndex, endIndex) of that number. For example,
+## Q:: Given a sorted array with duplicates and a number, find the range in the form of (startIndex, endIndex) of that
+#  number. For example,
 # find_range({0 2 3 3 3 10 10},  3) should return (2,4).
 # find_range({0 2 3 3 3 10 10},  6) should return (-1,-1).
 # The array and the number of duplicates can be large.
@@ -433,7 +440,8 @@ def arr_max_sum_contiguous_elements(arr):
     return max_sum, start, stop
 
 
-## Q:: You are given an array of size 99. 98 elements are duplicate-pairs, leaving one that is unique. How would you find it?
+## Q:: You are given an array of size 99. 98 elements are duplicate-pairs, leaving one that is unique.
+# How would you find it?
 
 def find_unique_element(arr):
     return reduce(lambda x, y: x ^ y, arr)
@@ -441,11 +449,11 @@ def find_unique_element(arr):
     # XOR of 0 with any value is that value. 4^0 = 4
 
 
-## Q:: You are given a list which represents Amazon's stock price each day. The values are the price of the Amazon stock. return the best profit that can be 
-# made from 1 purchase and 1 sale of Amazon stock.
+## Q:: You are given a list which represents Amazon's stock price each day. The values are the price of the Amazon
+# stock. return the best profit that can be made from 1 purchase and 1 sale of Amazon stock.
 # [2, 5, 4, 9, 1] --> Max profix is 7 by buying when the price is 2 and selling when the price is 9
 # [2, 5, 4, 9, 1, 9] --> Max profix is 8 by buying when the price is 1 and selling when the price is 9        
-
+# [2, 1, 4, 10, 1, 9]
 
 def max_profit(sp):
     """
@@ -455,20 +463,20 @@ def max_profit(sp):
     n = len(sp)
     minv = sp[0]
     max = 0
-
-    start = stop = 0
+    tstart = start = stop = 0
 
     for i in range(n):
         if sp[i] < minv:
             minv = sp[i]
+            tstart = i
 
         diff = sp[i] - minv
         if diff > max:
             max = diff
-            start = sp.index(minv)
+            start = tstart
             stop = i
 
-    print 'range=({},{})'.format(start, stop)
+    print 'range=({},{}), max={}'.format(start, stop, max)
     return max
 
 
@@ -501,7 +509,8 @@ def is_perm(s1, s2):
     return True if not d else False
 
 
-# Q: Write a function that takes 2 input strings, and returns True if a permutation of the first string exists in the second string.
+# Q: Write a function that takes 2 input strings, and returns True if a permutation of the first string exists in
+# the second string.
 
 def perm_exists(s1, s2):
     """
@@ -576,7 +585,10 @@ if __name__ == '__main__':
     print 'largest subset palindrome in string {} is {}'.format(s, string_find_largest_subset_palindrome(s))
 
     print "-------------------------------------------------------"
-    string_list = ["aaabbcccc", "abbccasd"]
+    string_list = ["aaabbcccc",
+                   "abbccasd",
+                   "abbccdd"
+                   ]
     for s in string_list:
         print 'compressed string for {} is {}'.format(s, compress_string(s))
 
@@ -619,7 +631,10 @@ if __name__ == '__main__':
     print 'Unique element in {} is {}'.format(arr, find_unique_element(arr))
 
     print "-------------------------------------------------------"
-    arrlist = [[2, 5, 4, 9, 1], [2, 5, 4, 9, 1, 9]]
+    arrlist = [[2, 5, 4, 9, 1],
+               [2, 5, 4, 9, 1, 9],
+               [5, 3, 4, 12, 1, 9]
+               ]
     for arr in arrlist:
         print 'max profit for {} is {}'.format(arr, max_profit(arr))
 

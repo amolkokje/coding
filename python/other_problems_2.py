@@ -1,16 +1,19 @@
 
-# Q: Given a sorted array nums, remove the duplicates in-place such that each element appear only once and return the new length.
+# Q: Given a sorted array nums, remove the duplicates in-place such that each element appear only once and return
+# the new length.
 
 def removeDuplicates(nums):
         """
         :type nums: List[int]
         :rtype: int
         """
+        # NOTE: in absence of python set, put them in a dict with values as counts. Return only the dict.keys()
         return list(set(nums))
         
 
 # Q: Say you have an array for which the ith element is the price of a given stock on day i.
-# Design an algorithm to find the maximum profit. You may complete as many transactions as you like (i.e., buy one and sell one share of the stock multiple times). 
+# Design an algorithm to find the maximum profit. You may complete as many transactions as you like (i.e., buy one and
+# sell one share of the stock multiple times).
 
 def max_profit(prices):
     n = len(prices)
@@ -46,7 +49,8 @@ def rotate_array(nums, k):
     
     
 # Q: Given an array of integers, find if the array contains any duplicates.
-# Your function should return true if any value appears at least twice in the array, and it should return false if every element is distinct.    
+# Your function should return true if any value appears at least twice in the array, and it should return false if
+# every element is distinct.
 
 def contains_duplicates(arr):
     return False if len(set(arr)) == len(arr) else True
@@ -72,11 +76,13 @@ def single_number(nums):
     return reduce(lambda x, y: x ^ y, nums)
     
  
-# Q: Given two arrays, write a function to compute their intersection. Each element in the result should appear as many times as it shows in both arrays. The result can be in any order.
+# Q: Given two arrays, write a function to compute their intersection. Each element in the result should appear as many
+#  times as it shows in both arrays. The result can be in any order.
 # Follow up:
-#  What if the given array is already sorted? How would you optimize your algorithm?
-#  What if nums1's size is small compared to nums2's size? Which algorithm is better?
-#  What if elements of nums2 are stored on disk, and the memory is limited such that you cannot load all elements into the memory at once? --> HOW TO DO LAST PART?
+#  ** What if the given array is already sorted? How would you optimize your algorithm?
+#  ** What if nums1's size is small compared to nums2's size? Which algorithm is better?
+#  ** What if elements of nums2 are stored on disk, and the memory is limited such that you cannot load all elements
+# into the memory at once? --> HOW TO DO LAST PART?
 
 def intersection(nums1, nums2):
     
@@ -118,23 +124,40 @@ def intersection(nums1, nums2):
 
 
 # Q: Given a non-empty array of digits representing a non-negative integer, plus one to the integer.
-# The digits are stored such that the most significant digit is at the head of the list, and each element in the array contain a single digit.
+# The digits are stored such that the most significant digit is at the head of the list, and each element in the array
+# contain a single digit.
 # You may assume the integer does not contain any leading zero, except the number 0 itself.
-## NOTE: combining the array to create number may cause overflow if the number is very huge, if its some other language like Java, etc. where the types are static        
+## NOTE: combining the array to create number may cause overflow if the number is very huge, if its some other language
+#  like Java, etc. where the types are static
 def plus_one(digits):
-    """
-    # possible one line pythonic solution
-    return str( int( ''.join(digits) ) + 1 )
-    """
-    if digits[-1] < 9:
-        digits[-1] += 1
+    n = len(digits)
+
+    if digits[n-1] < 9:
+        # if last digit is less than 9, just add +1 to it and return
+        return digits[:n-1] + [ digits[n-1]+1 ]
     else:
-        digits[-1] = 0
-        digits[-2] += 1
+        # if last digit is 9, then adding +1 to it will make it 0, and carry forward a +1 to the next significant digit
+        # carry forward needs to happen until there are no longer any 9
+        last_inc = n-1
+        while last_inc > 0:
+            if digits[last_inc] == 9:
+                digits[last_inc] = 0
+                last_inc -= 1
+            else:
+                digits[last_inc] = digits[last_inc]+1
+                break
+
+        # always reaches here, because loop only goes till >0
+        if digits[0] == 9:
+            # if the first digit also overflows, then need another digit in the array
+            return [1] + [0] + digits[1:]
+        else:
+            digits[0] = digits[0] + 1
     return digits
     
     
-# Q: Given an array nums, write a function to move all 0's to the end of it while maintaining the relative order of the non-zero elements.
+# Q: Given an array nums, write a function to move all 0's to the end of it while maintaining the relative order of
+# the non-zero elements.
 
 def move_zeros(nums):
     n = len(nums)    
@@ -205,7 +228,9 @@ def median_sorted_arrays(nums1, nums2):
     else:
         return merged[mid]
         
-# Q: The string "PAYPALISHIRING" is written in a zigzag pattern on a given number of rows like this: (you may want to display this pattern in a fixed font for better legibility); And then read line by line: "PAHNAPLSIIGYIR".
+# Q: The string "PAYPALISHIRING" is written in a zigzag pattern on a given number of rows like this:
+# (you may want to display this pattern in a fixed font for better legibility);
+# And then read line by line: "PAHNAPLSIIGYIR".
 # ----------------
 # Example 1:
 # Input: s = "PAYPALISHIRING", numRows = 3
@@ -251,9 +276,13 @@ def reverse_int(n):
         return int(str(n)[::-1])
    
 # Q: Implement atoi which converts a string to an integer.
-# The function first discards as many whitespace characters as necessary until the first non-whitespace character is found. Then, starting from this character, takes an optional initial plus or minus sign followed by as many numerical digits as possible, and interprets them as a numerical value.
-# The string can contain additional characters after those that form the integral number, which are ignored and have no effect on the behavior of this function.
-# If the first sequence of non-whitespace characters in str is not a valid integral number, or if no such sequence exists because either str is empty or it contains only whitespace characters, no conversion is performed.
+# The function first discards as many whitespace characters as necessary until the first non-whitespace character is
+# found. Then, starting from this character, takes an optional initial plus or minus sign followed by as many numerical
+#  digits as possible, and interprets them as a numerical value.
+# The string can contain additional characters after those that form the integral number, which are ignored and have no
+#  effect on the behavior of this function.
+# If the first sequence of non-whitespace characters in str is not a valid integral number, or if no such sequence
+# exists because either str is empty or it contains only whitespace characters, no conversion is performed.
 # If no valid conversion could be performed, a zero value is returned.   
 import re, sys
 def atoi(ints):
@@ -321,7 +350,9 @@ def regex_match(s, p):
         return False
             
         
-# Suppose we have some input data describing a graph of relationships between parents and children over multiple generations. The data is formatted as a list of (parent, child) pairs, where each individual is assigned a unique integer identifier.
+# Suppose we have some input data describing a graph of relationships between parents and children over multiple
+#  generations. The data is formatted as a list of (parent, child) pairs, where each individual is assigned a unique
+#  integer identifier.
 
 # For example, in this diagram, 3 is a child of 1 and 2, and 5 is a child of 4:
             
@@ -332,39 +363,44 @@ def regex_match(s, p):
 #     6   7   9
 
 
-# Q:: Write a function that, for two given individuals in our dataset, returns true if and only if they share at least one ancestor.
+# Q:: Write a function that, for two given individuals in our dataset, returns true if and only if they share at
+# least one ancestor.
 # Sample input and output:
 # parentChildPairs, 3, 8 => false
 # parentChildPairs, 5, 8 => true
 # parentChildPairs, 6, 8 => true
-def have_common_ancestor(pairs, n1, n2):
-    # build ancestor map
-    ancestor_map = dict()
-    for parent, child in pairs:
-        if not ancestor_map.get(child):
-            ancestor_map[child] = [parent]
-        else:
-            ancestor_map[child].append(parent)
-    #print ancestor_map        
-            
-    def get_ancestors_tree(child):
-        ancestors_tree = list()
-        queue = [ child ]        
-        while queue:
-            x = queue.pop(0)
-            if ancestor_map.get(x):
-                queue += ancestor_map[x]
-            ancestors_tree.append(x)
-        # first element is the node itself, so remove it
-        return ancestors_tree[1:] 
+# pair = (parent, child)
+def have_common_ancestors(pairs, n1, n2):
 
-    n1_ancestors = get_ancestors_tree(n1)
-    n2_ancestors = get_ancestors_tree(n2)
-    for n in n1_ancestors:
-        if n in n2_ancestors:
-            return True
-    return False
-                
+    # 1 - create child-parent map
+    child_parent_dict = dict()
+    for child_value, parent in pairs:
+        if parent:
+            if child_parent_dict.get(child_value):
+                child_parent_dict[child_value].append(parent)
+            else:
+                child_parent_dict[child_value] = [parent]
+
+    # 2 - recursive function - OPTIMIZATION
+    from memoization import memoize_single_arg
+    @memoize_single_arg
+    def _get_ancestors(child):
+        ancestors = list()
+        if child_parent_dict.get(child):
+            for parent in child_parent_dict[child]:
+                ancestors += [parent] + _get_ancestors(parent)
+        return ancestors
+
+    # 3 - get ancestors
+    ancestors_n1 = _get_ancestors(n1)
+    ancestors_n2 = _get_ancestors(n2)
+    print '{}:Ancestors=[{}], {}:Ancestors=[{}]'.format(n1, ancestors_n1, n2, ancestors_n2)
+
+    for ancestor in ancestors_n1:
+        if ancestor not in ancestors_n2:
+            return False
+    return True
+
 
 # Q: Find out individuals that have 0 and 1 parents.
 def get_node_parent_counts_01(pairs):
@@ -392,12 +428,12 @@ def get_node_parent_counts_01(pairs):
     return output
 
 
-# Q: Suppose an array sorted in ascending order is rotated at some pivot unknown to you beforehand. (i.e., [0,1,2,4,5,6,7] might become [4,5,6,7,0,1,2]).
-# You are given a target value to search. If found in the array return its index, otherwise return -1. You may assume no duplicate exists in the array. Your algorithm's runtime complexity must be in the order of O(log n).
-# Example 1:
-# Input: nums = [4,5,6,7,0,1,2], target = 0 --> Output: 4
-# Example 2:
-# Input: nums = [4,5,6,7,0,1,2], target = 3 --> Output: -1
+# Q: Suppose an array sorted in ascending order is rotated at some pivot unknown to you beforehand.
+# (i.e., [0,1,2,4,5,6,7] might become [4,5,6,7,0,1,2]).
+# You are given a target value to search. If found in the array return its index, otherwise return -1. You may assume
+# no duplicate exists in the array. Your algorithm's runtime complexity must be in the order of O(log n).
+# Example 1: Input: nums = [4,5,6,7,0,1,2], target = 0 --> Output: 4
+# Example 2: Input: nums = [4,5,6,7,0,1,2], target = 3 --> Output: -1
 
 def search_rotated_array(nums, target):
     if not nums:
@@ -428,18 +464,12 @@ def search_rotated_array(nums, target):
 # Q: Given an unsorted integer array, find the smallest missing positive integer.
 def first_missing_positive(nums):
     # linear method that will be acceptable to all, add all elments to min heap
-    import heapq
-    num_heap = []
-    for n in nums:
-        heapq.heappush( numh, n )
-    return numh[0]    
-    """
-    m = 1
+    i = 1
     while True:
-        if not m in nums:   # this check could be flagged
-            return m
-        m += 1     
-    """      
+        if i not in nums:
+            return i
+        else:
+            i += 1
 
 # https://leetcode.com/problems/trapping-rain-water/
 # class Solution(object):
@@ -516,11 +546,12 @@ if __name__ == '__main__':
     print '-- intersection={}'.format(intersection(nums1, nums2))
     
     print '--------------------------------------------------------------'
-    arrlist = [[1,2,3], [4,3,2,1], [1,9], [1,0]] 
+    arrlist = [[1,2,3], [4,3,2,1], [1,9], [1,0], [9,9,9,9], [1,9,9,9]]
     for arr in arrlist:
-        print 'digits={}'.format(arr) 
-        print '-- plus_one={}'.format(plus_one(arr)) 
-        
+        print 'digits={}'.format(arr)
+        # cannot print both in same line as list is mutable and so it updates in place
+        print '--> plus_one={}'.format(plus_one(arr))
+
     print '--------------------------------------------------------------'
     arrlist = [[0,1,0,3,12]] 
     for arr in arrlist:
@@ -601,9 +632,9 @@ if __name__ == '__main__':
     print 'Children with 0 or 1 parents = {}'.format(get_node_parent_counts_01(parent_child_pairs))
     pairs = [ (3,8), (5,8), (6,8) ]
     for pair in pairs:
-        print '{} and {} have common ancestor = {}'.format(pair[0], pair[1], have_common_ancestor(parent_child_pairs, pair[0], pair[1]))
-    
-    
+        print '{} and {} have common ancestor = {}'.format(pair[0], pair[1],
+                                                                 have_common_ancestors(parent_child_pairs, pair[0],pair[1]))
+    ß
     print '--------------------------------------------------------------'
     alist = [ ([4,5,6,7,0,1,2],0), ([4,5,6,7,8,1,2,3],8) ]    
     for arr in alist:
