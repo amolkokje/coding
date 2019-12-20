@@ -337,49 +337,45 @@ def does_string_contain_substring(main, sub):
 # next_bigger(531)==-1
 
 def next_bigger(num):
-    # create a backup for comparison later
-    check_num = copy.deepcopy(num)
+    # convert to list of integers
+    nums = [int(n) for n in str(num)]
+    n = len(nums)
 
-    ## BRUTE-FORCE: convert num to string -> get permutations -> convert back to numbers
-    # from itertools import permutations
-    # perm = [ int(''.join(n)) for n in permutations(str(num)) ]  ## TIME CONSUMING!
-    # perm.sort()
-    # for i in range(len(perm)):
-    #    if perm[i] > check_num:
-    #        return perm[i]
-    # return -1
+    if len(nums) == 1:
+        return -1
+    elif len(nums) == 2:
+        if nums[0] < nums[1]:
+            return int(''.join([str(n) for n in nums[::-1]]))
+        else:
+            return -1
 
-    ## Reference: https://www.geeksforgeeks.org/find-next-greater-number-set-digits/
-    number = [int(n) for n in str(num)]  # convert num to array of integers
-    n = len(number)
-    # Start from the right most digit and find the first digit that is smaller than the digit next to it 
-    i = n - 1
-    while i > 0:
-        if number[i] > number[i - 1]:
+    # find out if list already in ascending order from the end - if so, next-bigger not possible
+    # if there is a point when the ascending order breaks, then next-bigger is possible
+    next_bigger_possible = False
+    for i in range(n - 1, 1, -1):
+        if nums[i] > nums[i - 1]:
+            next_bigger_possible = True
+            index = i
             break
-        i -= 1
-
-    # If no such digit found, then all numbers are in descending order, no greater number is possible
-    if i == 0:
+    if not next_bigger_possible:
         return -1
 
-    # Find the smallest digit on the right side of (i-1)'th digit that is greater than number[i-1] 
-    x = number[i - 1]
-    smallest = i
-    for j in range(i + 1, n):
-        if number[j] > x and number[j] < number[smallest]:
-            smallest = j
+    # if next-bigger is possible, then swap with the smallest number on RHS
+    # - Find smallest in RHS
+    smallest_index, smallest_value = None, sys.maxint
+    for i in range(index, n):
+        if nums[i] < smallest_value:
+            smallest_value = nums[i]
+            smallest_index = i
+    # - Swap with smallest in RHS --> This will make the number Bigger
+    nums[smallest_index], nums[index - 1] = nums[index - 1], nums[smallest_index]
 
-    # Swapping the above found smallest digit with (i-1)'th
-    number[smallest], number[i - 1] = number[i - 1], number[smallest]
+    # sort all the elements to right of index, to ensure that this is the smallest number
+    # --. This will ensure that the number is bigger, but the smallest
+    nums = nums[0:i] + sorted(nums[i:n])
 
-    # Sort the number from i+1 onwards, so that get the least possible there
-    number = number[:i + 1] + sorted(number[i + 1:])
-    ## NOTE: If the ask is to find smallest by swapping only one digit, then replace the sorted() with a function that
-    # finds the index on the right with smallest value and swaps with it
-
-    # convert the array of numbers back to a number
-    return int(''.join([str(n) for n in number]))
+    # convert to number and return
+    return int(''.join([str(n) for n in nums]))
 
 
 ## Q:: Given a sorted array with duplicates and a number, find the range in the form of (startIndex, endIndex) of that
@@ -538,6 +534,17 @@ def perm_exists(s1, s2):
 
     return True
 
+# Q. Function to check if a number is prime
+def is_prime(num):
+    if num < 4:
+        return True
+
+    for i in [2,3,5,7]:
+        # if number is not prime, but is divisible by a prime number
+        if num!=i and num%i == 0:
+            return False
+    return True
+
 
 if __name__ == '__main__':
 
@@ -647,3 +654,8 @@ if __name__ == '__main__':
     iplist = [['abc', 'bac'], ['abc', 'bacc'], ['abc', 'ab']]
     for ip in iplist:
         print 's1={}, s2={}, perm_exists={}'.format(ip[0], ip[1], perm_exists(ip[0], ip[1]))
+
+    print "-------------------------------------------------------"
+    num_list = [ 2, 3, 5, 7, 11, 13, 17, 19, 23, 29]
+    for num in num_list:
+        print 'Num={}, Is Prime={}'.format(num, is_prime(num))
