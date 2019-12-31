@@ -578,6 +578,38 @@ def rotate_image_matrix_by_90(matrix):
             matrix[r][layer] = temp[r]
 
 
+# Book: 3.6
+# Q. Write a program to sort a stack in ascending order (with biggest items on top). You may use at most one additional
+#  stack to hold items, but you may not copy the elements into any other data structure (such as an array). The stack
+# supports the following operations: push, pop, peek, and isEmpty.
+from lc_0 import Stack
+
+
+def sort_stack_using_additional_stack(input_stack):
+    new_stack = Stack()
+
+    # add an element in the new stack to start with
+    new_stack.insert(input_stack.get())
+
+    # add elements in sorted order to new stack. This should be reverse sorted of the required order
+    while not input_stack.is_empty():
+        temp = input_stack.get()
+        c = 0
+        # until the element is smaller than the seen value, remove elements from new stack and place in input stack
+        while temp > new_stack.check() and not new_stack.is_empty():
+            input_stack.insert(new_stack.get())
+            c += 1  # maintain count of how many elements moved, so they can be put back in the new stack
+        new_stack.insert(temp)
+
+        # put all the removed elements back in the new stack
+        for _ in range(c):
+            new_stack.insert(input_stack.get())
+
+    # move all elements back
+    while not new_stack.is_empty():
+        input_stack.insert(new_stack.get())
+
+
 if __name__ == '__main__':
 
     print '--------------------------------------------------------------'
@@ -728,3 +760,11 @@ if __name__ == '__main__':
     print 'input matrix={}'.format(ip_matrix)
     rotate_image_matrix_by_90(ip_matrix)
     print 'output={}'.format(ip_matrix)
+
+    print '--------------------------------------------------------------'
+    ipstack = Stack()
+    for value in [1, 3, 8, 12, 5, 10, 7]:
+        ipstack.insert(value)
+    print 'Input Stack: {}'.format(ipstack)
+    sort_stack_using_additional_stack(ipstack)
+    print '      Sorted using additional stack: {}'.format(ipstack)

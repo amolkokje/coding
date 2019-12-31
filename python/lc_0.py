@@ -140,6 +140,9 @@ class Stack(object):
     def __init__(self):
         self.elememts = list()
 
+    def __repr__(self):
+        return '<Stack: {}>'.format(self.elememts)
+
     def insert(self, x):
         self.elememts.append(x)
 
@@ -153,6 +156,9 @@ class Stack(object):
 
     def get_depth(self):
         return len(self.elememts)
+
+    def is_empty(self):
+        return True if len(self.elememts)==0 else False
 
 
 closed_bracket_dict = {
