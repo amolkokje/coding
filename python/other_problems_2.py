@@ -1,3 +1,6 @@
+import sys, os, copy
+
+
 # Q: Given a sorted array nums, remove the duplicates in-place such that each element appear only once and return
 # the new length.
 
@@ -610,6 +613,60 @@ def sort_stack_using_additional_stack(input_stack):
         input_stack.insert(new_stack.get())
 
 
+# Book: 9.6
+# Q. Implement an algorithm to print all valid (i.e., properly opened and closed) combi- nations ofn-pairs of
+# parentheses.
+
+def get_all_valid_parentheses(count):
+    valid_parentheses_list = list()
+
+    def _recurse(str_formed, left_rem, right_rem):
+        # left/right_rem are to keep count of parentheses left for the formation
+        str_formed_local = copy.deepcopy(str_formed)
+
+        if left_rem == right_rem == 0:
+            # based on how it goes, its possible to have duplicates, so ignore them - Note: can also use set()
+            if str_formed_local not in valid_parentheses_list:
+                valid_parentheses_list.append(str_formed_local)
+
+        # open-bracket/left is always first, so open if available
+        if left_rem > 0:
+            str_formed_local += '('
+            left_rem -= 1
+            _recurse(str_formed_local, left_rem, right_rem)
+
+        # need left to add right, so add right only if rem count is higher for right over left
+        if right_rem > left_rem:
+            str_formed_local += ')'
+            right_rem -= 1
+            _recurse(str_formed_local, left_rem, right_rem)
+
+    _recurse('', count, count)
+    return valid_parentheses_list
+
+
+# Book: 9.8
+# Q. Given an infinite number of quarters (25 cents), dimes (10 cents), nickels (5 cents) and pennies (1 cent), write
+# code to calculate the number of ways of representing n cents.
+# NOTE: can use memoization
+
+def ways_to_represent_n_cents(n):
+    def _recurse(x):
+        if x < 0:
+            return 0
+
+        elif x == 0:
+            return 1
+
+        else:
+            count_ways = 0
+            for cent in [25, 10, 5, 1]:
+                count_ways += _recurse(x - cent)
+            return count_ways
+
+    return _recurse(n)
+
+
 if __name__ == '__main__':
 
     print '--------------------------------------------------------------'
@@ -768,3 +825,11 @@ if __name__ == '__main__':
     print 'Input Stack: {}'.format(ipstack)
     sort_stack_using_additional_stack(ipstack)
     print '      Sorted using additional stack: {}'.format(ipstack)
+
+    print '--------------------------------------------------------------'
+    for count in [2, 3]:
+        print 'Count={}, Valid Parentheses String List={}'.format(count, get_all_valid_parentheses(count))
+
+    print '--------------------------------------------------------------'
+    for cents in [10, 50]:
+        print 'Cents={}, Ways to represent={}'.format(cents, ways_to_represent_n_cents(cents))
