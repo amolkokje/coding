@@ -90,31 +90,33 @@ def binarySearch_First(ip_list, x):
 # Example 1: Input: nums = [4,5,6,7,0,1,2], target = 0 --> Output: 4
 # Example 2: Input: nums = [4,5,6,7,0,1,2], target = 3 --> Output: -1
 
-def binary_search_rotated_array(nums, target):
-    if not nums:
-        return -1
+def binary_search_rotated_array(arr, x):
+    n = len(arr)
 
-    low, high = 0, len(nums) - 1
+    def _recurse(l, r):
+        if l <= r:
+            m = (l+r)/2
+            if arr[m] == x:
+                return m
 
-    while low <= high:
-        mid = (low + high) / 2
-        if target == nums[mid]:
-            return mid
+            # if left side is not rotated
+            #  - if element exists, go there, else go right
+            if arr[l] <= arr[m]:
+                if arr[l] <= x < arr[m]:
+                    return _recurse(l, m-1)
+                else:
+                    return _recurse(m+1, r)
 
-        if nums[low] <= nums[mid]:
-            # if LEFT side is not rotated, and the target exists, search there, else the other side
-            if nums[low] <= target <= nums[mid]:
-                high = mid - 1
-            else:
-                low = mid + 1
-        else:
-            # if RIGHT side is not rotated, and the target exists, search there, else the other side
-            if nums[mid] <= target <= nums[high]:
-                low = mid + 1
-            else:
-                high = mid - 1
+            # if right side is not rotated
+            #  - if element exists, go there, else go left
+            if arr[m] <= arr[r]:
+                if arr[m] < x <= arr[r]:
+                    return _recurse(m+1, r)
+                else:
+                    return _recurse(l, m-1)
 
-    return -1
+    return _recurse(0, n-1)
+
 
 ############################################################
 # binary search magic index - sorted array
@@ -156,7 +158,9 @@ def binary_search_magic_index_sorted_arr_with_repeats(arr):
                 return m
 
             # search entire left side
-            # DID NOT UNDERSTAND THIS CALCULATION
+            # left_max will be the new right to recurse on. For that we have 2 options:
+            # 1. (m-1) --> same as general binary recursion case
+            # 2. arr[m] --> this is the optimization. Since we are looking for MI, if there are repeats, we can shorten the search range
             left_max = min(m - 1, arr[m])
             left = _recurse(l, left_max)
             if left:
@@ -182,16 +186,20 @@ if __name__ == '__main__':
     # WORKS FOR: sorted arrays, no-repeats
     print '----------------------------------------------------------'
     for iparr in [[-1, 0, 1, 3, 8, 9], [-4, -5, 0, 2, 4]]:
-        print 'IP={}, Magic Index={}'.format(iparr, binary_search_magic_index_sorted_arr(iparr))
+        print 'binary_search_magic_index_sorted_arr: ' \
+              'IP={}, Magic Index={}'.format(iparr, binary_search_magic_index_sorted_arr(iparr))
 
     # WORKS FOR: sorted arrays, repeats/no-repeats
     print '----------------------------------------------------------'
-    sorted_arr_repeats = [-10, -5, 2, 2, 2, 3, 4, 7, 9, 12, 13]
-    print 'IP={}, Magic Index with repeats={}'.format(sorted_arr_repeats,
+    sorted_arr_repeats = [-10, -5, 2, 2, 2, 3, 4, 8, 9, 12, 13]
+    print 'binary_search_magic_index_sorted_arr_with_repeats: ' \
+          'IP={}, Magic Index with repeats={}'.format(sorted_arr_repeats,
                                                       binary_search_magic_index_sorted_arr_with_repeats(
                                                           sorted_arr_repeats))
 
     print '--------------------------------------------------------------'
     alist = [([4, 5, 6, 7, 0, 1, 2], 0), ([4, 5, 6, 7, 8, 1, 2, 3], 8)]
     for arr in alist:
-        print 'binary_search_rotated_array input={}, output={}'.format(arr, binary_search_rotated_array(arr[0], arr[1]))
+        print 'binary_search_rotated_array: arr={}, target={}, output={}'.format(arr[0], arr[1],
+                                                                                 binary_search_rotated_array(arr[0],
+                                                                                                             arr[1]))
