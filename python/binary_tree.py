@@ -193,7 +193,6 @@ def get_lca_binary_search_tree(node, v1, v2):
 
 
 def get_lca_binary_tree(root, v1, v2):
-
     def _recurse(node, v1, v2):
         if node:
             # if we have reached the node, return it
@@ -217,6 +216,7 @@ def get_lca_binary_tree(root, v1, v2):
                 return _recurse(node.right, v1, v2)
 
     return _recurse(root, v1, v2)
+
 
 """
 def GetLCA(node, v1, v2):
@@ -244,7 +244,8 @@ def GetLCA(node, v1, v2):
             return right_lca
 """
 
-########################################################################            
+
+########################################################################
 # Binary Tree Comparisons 
 
 def AreTreesIdentical(n1, n2):
@@ -326,6 +327,62 @@ def binary_tree_list_linked_lists(root):
     return ll_list
 
 
+# Book: 11.8
+# Q. Imagine you are reading in a stream of integers. Periodically, you wish to be able to look up the rank of a
+# number x (the number of values less than or equal to x). Implement the data structures and algorithms to support
+# these operations.
+
+# Brute-Force: Store in sorted list as they come-in, and get index when asked for rank. Con is slow insert/read operation.
+# BST: Store elements in BST with rank as they come in.
+
+class NodeRank(object):
+    def __init__(self, x, rank):
+        self.data = x
+        self.right = None
+        self.left = None
+        self.rank = rank
+
+
+class BstRank(object):
+    def __init__(self, x):
+        self.root = NodeRank(x, 0)
+
+    def insert(self, x):
+        current = self.root
+
+        while True:
+            if x > current.data:
+                if current.right:
+                    current = current.right
+                else:
+                    current.right = NodeRank(x, current.rank + 1)
+                    break
+            else:
+                current.rank += 1
+                if current.left:
+                    current = current.left
+                else:
+                    current.left = NodeRank(x, 0)
+                    break
+
+    def get_rank(self, x):
+        current = self.root
+        while True:
+            if x == current.data:
+                return current.rank
+
+            elif x > current.data:
+                if current.right:
+                    current = current.right
+                else:
+                    break
+            else:
+                if current.left:
+                    current = current.left
+                else:
+                    break
+
+
 if __name__ == '__main__':
 
     bst = BinarySearchTree(3)
@@ -395,3 +452,9 @@ if __name__ == '__main__':
     PrintLevelOrder(root)
     for ll in output:
         ll.list()
+
+    print '-------------------------------'
+    bst = BstRank(0)
+    for a in range(1, 10):
+        bst.insert(a)
+    print 9, bst.get_rank(9)

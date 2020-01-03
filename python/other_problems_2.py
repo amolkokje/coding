@@ -667,6 +667,91 @@ def ways_to_represent_n_cents(n):
     return _recurse(n)
 
 
+# Book: 11.1
+# Q. You are given two sorted arrays, A and B, where A has a large enough buffer at the end to hold B.
+# Write a method to merge B into A in sorted order
+
+def merge_sorted_arr_in_another(arr_a, arr_b):
+    na = len(arr_a)
+    nb = len(arr_b)
+
+    # create buffer in first arr
+    arr_a += [None for _ in range(nb)]
+
+    a_last_index = na - 1
+    for b in arr_b:
+        max_a = max(arr_a)
+        # if greater than max, add to the end
+        if b >= max_a:
+            arr_a[a_last_index + 1] = b
+            a_last_index += 1
+        else:
+            # if less than max, then navigate and find the point where it becomes lower
+            # find index of arr_a where a[i] < b
+            j = a_last_index
+            while j >= 0:
+                if arr_a[j] <= b:
+                    # shift
+                    a_last_index += 1
+                    arr_a[j + 1:a_last_index + 1] = arr_a[j:a_last_index]
+                    # insert
+                    arr_a[j] = b
+                    break
+                j -= 1
+
+# Book: 11.5
+# Q. Given a sorted array of strings which is interspersed with empty strings, write a method to find the location of
+# a given string.
+# Simplify: replace string by chars
+# Approach: use binary search, and if empty string is found, move to closest non-empty string and keep going
+
+def find_str_from_sorted_arr_of_empty_and_nonempty_strings(arr, x):
+
+    def _recurse(l, r):
+        if l <= r:
+            m = (l+r)/2
+            if arr[m] == x:
+                return m
+
+            if arr[m] == '':
+                # find closest non-empty str
+                left_closest = m-1
+                right_closest = m+1
+
+                # in each loop iteration, keep going-left, and going-right. Stop when you find a value.
+                while True:
+                    # if go off limits, then break
+                    if left_closest <= l and right_closest >= r:
+                        break
+
+                    if left_closest > l:
+                        if arr[left_closest] == '':
+                            left_closest -= 1
+                        else:
+                            # if the closest non-empty string is the value, return it, else keep going
+                            m = left_closest
+                            if arr[m] == x:
+                                return m
+                            break
+
+                    if right_closest < r:
+                        if arr[right_closest] == '':
+                            right_closest += 1
+                        else:
+                            m = right_closest
+                            if arr[m] == x:
+                                return m
+                            break
+
+            if arr[m] > x:
+                return _recurse(l, m-1)
+            else:
+                return _recurse(m+1, r)
+
+    return _recurse(0, len(arr)-1)
+
+
+
 if __name__ == '__main__':
 
     print '--------------------------------------------------------------'
@@ -831,5 +916,20 @@ if __name__ == '__main__':
         print 'Count={}, Valid Parentheses String List={}'.format(count, get_all_valid_parentheses(count))
 
     print '--------------------------------------------------------------'
-    for cents in [10, 50]:
+    for cents in [10,
+                  # 50
+                  ]:
         print 'Cents={}, Ways to represent={}'.format(cents, ways_to_represent_n_cents(cents))
+
+    for arrs in [(range(3), range(5))]:
+        print 'Arrs={}'.format(arrs)
+        merge_sorted_arr_in_another(arrs[0], arrs[1])
+        print '     Merge Sorted Arrs={}'.format(arrs)
+
+    print '--------------------------------------------------------------'
+    for iparr in [ [1,2,'','','','',3,'','',4,5,'',6,7,8,9] ]:
+        print 'arr={}'.format(iparr)
+        for find in [2,3,8]:
+            print 'find={}, ' \
+                  'find_str_from_sorted_arr_of_empty_and_nonempty_strings={}'.format(find,
+                                                                                     find_str_from_sorted_arr_of_empty_and_nonempty_strings(iparr, find))
