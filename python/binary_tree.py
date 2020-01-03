@@ -136,30 +136,29 @@ def PrintLevel(node, print_height, height=0):
 
 ########################################################################
 
-def GetTreeHeight(node, height=-1):
-    """
-    takes tree root node and returns height of the tree
-    PRE-ORDER
-    """
-    if node:
-        height += 1
-        return max(GetTreeHeight(node.left, height), GetTreeHeight(node.right, height))
-    else:
-        return height
+def get_tree_height(root):
+    def _recurse(node, h):
+        if node:
+            return max(_recurse(node.left, h + 1), _recurse(node.right, h + 1))
+        else:
+            return h
+
+    return _recurse(root, 0)
 
 
 ########################################################################
 # Binary Tree balanced
 # Balanced Tree - A binary tree is balanced if for each node it holds that the number of inner nodes in the left subtree and the number of inner nodes in the right subtree differ by at most 1
 
-def IsTreeBalanced(node):
-    """
-    takes tree root node and returns if the tree is balanced
-    """
-    if (not node) or (abs(GetTreeHeight(node.left) - GetTreeHeight(node.right)) <= 1):
-        return True
+def is_tree_balanced(root):
+    def _recurse(node):
+        if node:
+            if abs(get_tree_height(node.left) - get_tree_height(node.right)) > 1:
+                return False
+            else:
+                return _recurse(node.left) and _recurse(node.right)
 
-    return False
+    return _recurse(root)
 
 
 ########################################################################
@@ -168,7 +167,8 @@ def IsTreeBalanced(node):
 # Avoid storing additional nodes in a datastructure. NOTE:This is not necessarily a binary search tree
 
 # Binary Tree LCA
-# Least Common Ancestor (LCA): The LCA of n1 and n2 in T is the shared ancestor of n1 and n2 that is located farthest from the root 
+# Least Common Ancestor (LCA): The LCA of n1 and n2 in T is the shared ancestor of n1 and n2 that is located farthest
+# from the root
 
 
 def get_lca_binary_search_tree(node, v1, v2):
@@ -200,20 +200,20 @@ def get_lca_binary_tree(root, v1, v2):
                 return node
 
             # check if the nodes exist in left/right subtree
-            in_right_subtree = _recurse(node.right, v1, v2)
-            in_left_subtree = _recurse(node.left, v1, v2)
+            node_right_subtree = _recurse(node.right, v1, v2)
+            node_left_subtree = _recurse(node.left, v1, v2)
 
             # if a node each exists in left and right subtree, we are at LCA
-            if in_left_subtree and in_right_subtree:
+            if node_left_subtree and node_right_subtree:
                 return node
 
             # if both nodes exist in left subtree, go in that direction
-            if in_left_subtree and not in_right_subtree:
-                return _recurse(node.left, v1, v2)
+            if node_left_subtree and not node_right_subtree:
+                return node_left_subtree
 
             # if both nodes exist in right subtree, go in that direction
-            if in_right_subtree and not in_left_subtree:
-                return _recurse(node.right, v1, v2)
+            if node_right_subtree and not node_left_subtree:
+                return node_right_subtree
 
     return _recurse(root, v1, v2)
 
@@ -277,28 +277,24 @@ def ContainsTree(n1, n2):
 
 
 # Book: 4.3
-# Q. Given a sorted (increasing order) array with unique integer elements, write an algo- rithm to create a binary
+# Q. Given a sorted (increasing order) array with unique integer elements, write an algorithm to create a binary
 # search tree with minimal height.
 
 def bst_minimal_height(sorted_arr):
     n = len(sorted_arr)
     m = n / 2
-    bst = BinarySearchTree(sorted_arr.pop(m))
-    print n
+    bst = BinarySearchTree(sorted_arr[m])
 
     def _recurse(l, r):
-        if l < r:
+        if l <= r:
             m = (l + r) / 2
-            if l < m < r:
-                print('{}, {}, {}'.format(l, m, r))
-                bst.AddItem(sorted_arr[m])
-                _recurse(l, m)
-                _recurse(m, r)
+            bst.AddItem(sorted_arr[m])
+            _recurse(l, m-1)
+            _recurse(m+1, r)
 
-    _recurse(0, m)
-    _recurse(m, n - 1)
+    _recurse(0, m-1)
+    _recurse(m+1, n-1)
     return bst.root
-
 
 # Book: 4.4
 # Q. Given a binary tree, design an algorithm which creates a linked list of all the nodes at
@@ -311,17 +307,16 @@ def binary_tree_list_linked_lists(root):
     ll_list = list()
 
     def _recurse(node, h):
-        # if LL does not exist for that level, create it
-        if len(ll_list) == h:  # other case not possible
-            ll_list.append(LinkedList('*'))
+        if node:
+            if len(ll_list) == h:
+                # if LL does not exist for that level, create it with the new node as root
+                ll_list.append(LinkedList(node.data))
+            else:
+                # if LL already exists at that level, append to it
+                ll_list[h].append(node.data)
 
-        ll_list[h].append(node.data)
-
-        # recurse the depths
-        if node.right:
-            _recurse(node.right, h + 1)
-        if node.left:
-            _recurse(node.left, h + 1)
+            _recurse(node.right, h+1)
+            _recurse(node.left, h+1)
 
     _recurse(root, 0)
     return ll_list
@@ -419,8 +414,8 @@ if __name__ == '__main__':
         PrintLevel(bst.root, level)
     print "\n"
 
-    print 'Tree Height = {}'.format(GetTreeHeight(bst.root))
-    print 'Is Tree Balanced = {}'.format(IsTreeBalanced(bst.root))
+    print 'Tree Height = {}'.format(get_tree_height(bst.root))
+    print 'Is Tree Balanced = {}'.format(is_tree_balanced(bst.root))
 
     v1 = 5.5
     v2 = 7
@@ -445,7 +440,7 @@ if __name__ == '__main__':
     ip_sorted_arr = range(10)
     print 'input sorted arr={}'.format(ip_sorted_arr)
     root = bst_minimal_height(ip_sorted_arr)
-    print '         bst_minimal_height(): Tree Height={}'.format(GetTreeHeight(root))
+    print '         bst_minimal_height(): Tree Height={}'.format(get_tree_height(root))
 
     print '-------------------------------'
     output = binary_tree_list_linked_lists(root)
