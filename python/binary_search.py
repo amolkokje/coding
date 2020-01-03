@@ -25,8 +25,7 @@ def binarySearch(input_list, x):
 
 ############################################################
 # binary search recursive method - sorted array
-# works with repeating elements in the list
-
+# works with repeating elements in the
 def binarySearchRecursive(x, left, right, ip_list):
     if left <= right:
         mid = (left + right) / 2
@@ -83,6 +82,39 @@ def binarySearch_First(ip_list, x):
             right = mid - 1
     return first
 
+############################################################
+# Q: Suppose an array sorted in ascending order is rotated at some pivot unknown to you beforehand.
+# (i.e., [0,1,2,4,5,6,7] might become [4,5,6,7,0,1,2]).
+# You are given a target value to search. If found in the array return its index, otherwise return -1. You may assume
+# no duplicate exists in the array. Your algorithm's runtime complexity must be in the order of O(log n).
+# Example 1: Input: nums = [4,5,6,7,0,1,2], target = 0 --> Output: 4
+# Example 2: Input: nums = [4,5,6,7,0,1,2], target = 3 --> Output: -1
+
+def binary_search_rotated_array(nums, target):
+    if not nums:
+        return -1
+
+    low, high = 0, len(nums) - 1
+
+    while low <= high:
+        mid = (low + high) / 2
+        if target == nums[mid]:
+            return mid
+
+        if nums[low] <= nums[mid]:
+            # if LEFT side is not rotated, and the target exists, search there, else the other side
+            if nums[low] <= target <= nums[mid]:
+                high = mid - 1
+            else:
+                low = mid + 1
+        else:
+            # if RIGHT side is not rotated, and the target exists, search there, else the other side
+            if nums[mid] <= target <= nums[high]:
+                low = mid + 1
+            else:
+                high = mid - 1
+
+    return -1
 
 ############################################################
 # binary search magic index - sorted array
@@ -158,3 +190,8 @@ if __name__ == '__main__':
     print 'IP={}, Magic Index with repeats={}'.format(sorted_arr_repeats,
                                                       binary_search_magic_index_sorted_arr_with_repeats(
                                                           sorted_arr_repeats))
+
+    print '--------------------------------------------------------------'
+    alist = [([4, 5, 6, 7, 0, 1, 2], 0), ([4, 5, 6, 7, 8, 1, 2, 3], 8)]
+    for arr in alist:
+        print 'binary_search_rotated_array input={}, output={}'.format(arr, binary_search_rotated_array(arr[0], arr[1]))

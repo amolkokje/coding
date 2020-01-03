@@ -435,13 +435,6 @@ def get_node_parent_counts_01(pairs):
     return output
 
 
-# Q: Suppose an array sorted in ascending order is rotated at some pivot unknown to you beforehand.
-# (i.e., [0,1,2,4,5,6,7] might become [4,5,6,7,0,1,2]).
-# You are given a target value to search. If found in the array return its index, otherwise return -1. You may assume
-# no duplicate exists in the array. Your algorithm's runtime complexity must be in the order of O(log n).
-# Example 1: Input: nums = [4,5,6,7,0,1,2], target = 0 --> Output: 4
-# Example 2: Input: nums = [4,5,6,7,0,1,2], target = 3 --> Output: -1
-
 def search_rotated_array(nums, target):
     if not nums:
         return -1
@@ -879,10 +872,6 @@ if __name__ == '__main__':
         print '{} and {} have common ancestor = {}'.format(pair[0], pair[1],
                                                            have_common_ancestors(parent_child_pairs, pair[0], pair[1]))
 
-    print '--------------------------------------------------------------'
-    alist = [([4, 5, 6, 7, 0, 1, 2], 0), ([4, 5, 6, 7, 8, 1, 2, 3], 8)]
-    for arr in alist:
-        print 'search_rotated_array input={}, output={}'.format(arr, search_rotated_array(arr[0], arr[1]))
 
     print '--------------------------------------------------------------'
     alist = [[1, 2, 0], [3, 4, -1, 1], [7, 8, 9, 11, 12]]
