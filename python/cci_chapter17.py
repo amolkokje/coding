@@ -230,7 +230,8 @@ def num_string(num):
  
  
     
-# 17.8 --> You are given an array of integers (both positive and negative). Find the contiguous sequence with the largest sum. Return the sum. EXAMPLE
+# 17.8 --> You are given an array of integers (both positive and negative). Find the contiguous sequence with the
+# largest sum. Return the sum. EXAMPLE
 # Input: 2, -8, 3, -2, 4, -10
 # Output 5 i.e. {3, -2, 4}
 
@@ -368,7 +369,7 @@ def rand7():
     return (rand5()*7)/5
     
  
-# 17.12 ->  Design an algorithm to find all pairs of integers within an array which sum to a specified values
+# 17.12 -> Design an algorithm to find all pairs of integers within an array which sum to a specified values
             
 def find_pairs_sum(arr, sum):
     # O(N)
@@ -402,6 +403,8 @@ def find_pairs_sum(arr, sum):
 # For example, the string "jesslookedjustliketimherbrother" would be optimally parsed as "JESS looked just like TIM
 # her brother". This parsing has seven unrecognized characters, which we have capitalized for clarity.
 ## AMOL - not optimal, INCORRECT?? - TRY TO UNDERSTAND BOOK SOLUTION!
+
+# OPTIMIZATION - put all words of dictionary in a trie, so can skip iteration quickly if a word is not found
 
 
 def add_spaces(olds, word_dictionary):
