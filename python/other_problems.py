@@ -219,22 +219,17 @@ def find_first_non_repeating_char(ip_string):
 
 ## SPACE DEPENDS ON CHARS IN THE STRING - Pythonic
 def find_first_non_repeating_char_2(ipstring):
-    found_more_list = list()
-    found_once_list = list()
+    found_dict = dict()
 
     for c in ipstring:
-        if c in found_once_list:
-            # if found already, moved to 'more' list
-            if c not in found_more_list:
-                found_more_list.append(c)
-            found_once_list.pop(found_once_list.index(c))
+        if found_dict.get(c):
+            found_dict[c] += 1
         else:
-            # if not found once or more, add to 'once' list
-            if c not in found_more_list:
-                found_once_list.append(c)
+            found_dict[c] = 1
 
-    # return first found
-    return found_once_list[0]
+    for c in ipstring:
+        if found_dict[c] == 1:
+            return c
 
 
 ## Q:: find missing element in an AP        
@@ -351,28 +346,28 @@ def next_bigger(num):
 
     # find out if list already in ascending order from the end - if so, next-bigger not possible
     # if there is a point when the ascending order breaks, then next-bigger is possible
-    next_bigger_possible = False
+    index = None
     for i in range(n - 1, 1, -1):
         if nums[i] > nums[i - 1]:
-            next_bigger_possible = True
             index = i
             break
-    if not next_bigger_possible:
+    if not index:
+        # next-bigger not possible
         return -1
 
-    # if next-bigger is possible, then swap with the smallest number on RHS
+    # if next-bigger is possible, then swap element at index with the smallest number on RHS
     # - Find smallest in RHS
     smallest_index, smallest_value = None, sys.maxint
     for i in range(index, n):
         if nums[i] < smallest_value:
             smallest_value = nums[i]
             smallest_index = i
-    # - Swap with smallest in RHS --> This will make the number Bigger
+    # - Swap with smallest in RHS --> This will make the number Smaller
     nums[smallest_index], nums[index - 1] = nums[index - 1], nums[smallest_index]
 
     # sort all the elements to right of index, to ensure that this is the smallest number
-    # --. This will ensure that the number is bigger, but the smallest
-    nums = nums[0:i] + sorted(nums[i:n])
+    # --> This will ensure that the number is bigger, but the smallest
+    nums = nums[0:index] + sorted(nums[index:n])
 
     # convert to number and return
     return int(''.join([str(n) for n in nums]))
@@ -447,8 +442,8 @@ def find_unique_element(arr):
 
 ## Q:: You are given a list which represents Amazon's stock price each day. The values are the price of the Amazon
 # stock. return the best profit that can be made from 1 purchase and 1 sale of Amazon stock.
-# [2, 5, 4, 9, 1] --> Max profix is 7 by buying when the price is 2 and selling when the price is 9
-# [2, 5, 4, 9, 1, 9] --> Max profix is 8 by buying when the price is 1 and selling when the price is 9        
+# [2, 5, 4, 9, 1] --> Max profit is 7 by buying when the price is 2 and selling when the price is 9
+# [2, 5, 4, 9, 1, 9] --> Max profit is 8 by buying when the price is 1 and selling when the price is 9
 # [2, 1, 4, 10, 1, 9]
 
 def max_profit(sp):
@@ -609,7 +604,7 @@ if __name__ == '__main__':
     num_list = [12, 513, 2017, 4132, 9, 111, 531]
     for num in num_list:
         print 'next closest bigger permutation of {} is {}'.format(num, next_bigger(num))
-
+    
     print "-------------------------------------------------------"
     arr = [0, 2, 3, 3, 3, 10, 10]
     print 'arr={}, n={}, range={}'.format(arr, 3, find_range(arr, 3))
