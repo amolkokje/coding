@@ -15,6 +15,10 @@ class LinkedList(object):
         self.root = Node(x)
 
     def append(self, x):
+        """
+
+        :rtype:
+        """
         current = self.root
         while True:
             if current.next_node:

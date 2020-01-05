@@ -604,7 +604,7 @@ if __name__ == '__main__':
     num_list = [12, 513, 2017, 4132, 9, 111, 531]
     for num in num_list:
         print 'next closest bigger permutation of {} is {}'.format(num, next_bigger(num))
-    
+
     print "-------------------------------------------------------"
     arr = [0, 2, 3, 3, 3, 10, 10]
     print 'arr={}, n={}, range={}'.format(arr, 3, find_range(arr, 3))

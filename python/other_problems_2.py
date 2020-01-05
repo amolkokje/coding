@@ -1,4 +1,4 @@
-import sys, os, copy
+import sys, os, copy, re
 
 
 # Q: Given a sorted array nums, remove the duplicates in-place such that each element appear only once and return
@@ -133,30 +133,66 @@ def intersection(nums1, nums2):
 ## NOTE: combining the array to create number may cause overflow if the number is very huge, if its some other language
 #  like Java, etc. where the types are static
 def plus_one(digits):
-    n = len(digits)
-
-    if digits[n - 1] < 9:
-        # if last digit is less than 9, just add +1 to it and return
-        return digits[:n - 1] + [digits[n - 1] + 1]
+    # Optimization for this case
+    if digits[-1] < 9:
+        # simpler, since there will not be any carry
+        digits[-1] += 1
+        return digits
     else:
-        # if last digit is 9, then adding +1 to it will make it 0, and carry forward a +1 to the next significant digit
-        # carry forward needs to happen until there are no longer any 9
-        last_inc = n - 1
-        while last_inc > 0:
-            if digits[last_inc] == 9:
-                digits[last_inc] = 0
-                last_inc -= 1
-            else:
-                digits[last_inc] = digits[last_inc] + 1
-                break
+        # need complex operation as carry needs to be handled
+        return add_numbers_using_arrs(digits, [1])
 
-        # always reaches here, because loop only goes till >0
-        if digits[0] == 9:
-            # if the first digit also overflows, then need another digit in the array
-            return [1] + [0] + digits[1:]
+
+# Given 2 arrays representing numbers with MSB at head of list, give an output array containing their sum
+def add_numbers_using_arrs(arr1, arr2):
+    n1 = len(arr1)
+    n2 = len(arr2)
+
+    i1 = n1 - 1
+    i2 = n2 - 1
+
+    sum_arr = list()
+    carry = 0
+
+    while i1 >= 0 and i2 >= 0:
+        temp_sum = arr1[i1] + arr2[i2] + carry
+        if temp_sum >= 10:
+            carry = 1
+            val = int(str(temp_sum)[1])
         else:
-            digits[0] = digits[0] + 1
-    return digits
+            carry = 0
+            val = temp_sum
+        sum_arr.append(val)
+        i1 -= 1
+        i2 -= 1
+
+    # only either or i1 or i2 will be >= 0
+    while i1 >= 0:
+        temp_sum = arr1[i1] + carry
+        if temp_sum >= 10:
+            carry = 1
+            val = int(str(temp_sum)[1])
+        else:
+            carry = 0
+            val = temp_sum
+        sum_arr.append(val)
+        i1 -= 1
+
+    while i2 >= 0:
+        temp_sum = arr2[i2] + carry
+        if temp_sum >= 10:
+            carry = 1
+            val = int(str(temp_sum)[1])
+        else:
+            carry = 0
+            val = temp_sum
+        sum_arr.append(val)
+        i2 -= 1
+
+    if carry == 1:
+        sum_arr.append(carry)
+
+    return sum_arr[::-1]
 
 
 # Q: Given an array nums, write a function to move all 0's to the end of it while maintaining the relative order of
@@ -223,7 +259,10 @@ def length_longest_substring(s):
 # You may assume nums1 and nums2 cannot be both empty.    
 
 def median_sorted_arrays(nums1, nums2):
+    # 1 - merge the arrays, then sorte the merged array (method here) --> O(log(m+n))
+    # 2 - create a new sorted array using method used in merge sort --> O(n)
     merged = sorted(nums1 + nums2)  # this part will take O(log (m+n))
+
     n = len(merged)
     mid = n / 2  # will default to int i.e. 7/2=3
     if n % 2 == 0:
@@ -290,8 +329,6 @@ def reverse_int(n):
 # If the first sequence of non-whitespace characters in str is not a valid integral number, or if no such sequence
 # exists because either str is empty or it contains only whitespace characters, no conversion is performed.
 # If no valid conversion could be performed, a zero value is returned.   
-import re, sys
-
 
 def atoi(ints):
     def ret_value(n):
@@ -378,7 +415,7 @@ def regex_match(s, p):
 # parentChildPairs, 5, 8 => true
 # parentChildPairs, 6, 8 => true
 # pair = (parent, child)
-def have_common_ancestors(pairs, n1, n2):
+def have_common_ancestors2(pairs, n1, n2):
     # 1 - create child-parent map
     child_parent_dict = dict()
     for child_value, parent in pairs:
@@ -403,10 +440,64 @@ def have_common_ancestors(pairs, n1, n2):
     ancestors_n2 = _get_ancestors(n2)
     print '{}:Ancestors=[{}], {}:Ancestors=[{}]'.format(n1, ancestors_n1, n2, ancestors_n2)
 
+
+class Child(object):
+    def __init__(self, value, parents):
+        self.value = value
+        self.parents = parents
+
+    def __repr__(self):
+        return '<ChildNode: {}: {}>'.format(self.value, self.parents)
+
+
+def have_common_ancestors(pairs, n1, n2):
+    # 1 - Convert pairs to Node objects
+    child_parent_nodes = list()
+    for pair in pairs:
+        # if child node exists, add to list, else create a new one
+        node_found = False
+        for node in child_parent_nodes:
+            if node.value == pair[1]:
+                node.parents.append(pair[0])
+                node_found = True
+        if not node_found:
+            child_parent_nodes.append(Child(pair[1], [pair[0]]))
+
+    # 2 - Get ancestors
+    # NOTE: this can be memoized
+    def _recurse_get_ancestors(child_node):
+        ancestors = list()
+
+        for parent_value in child_node.parents:
+            # find node for the parent
+            parent_node = None
+            for node in child_parent_nodes:
+                if node.value == parent_value:
+                    parent_node = node
+                    break
+
+            if parent_node:
+                # if the parent is a node, then recurse
+                ancestors += _recurse_get_ancestors(parent_node)
+            else:
+                # if the parent is not a node, then use the value and return
+                ancestors.append(parent_value)
+        return ancestors
+
+    ancestors_n1 = None
+    ancestors_n2 = None
+    for child_node in child_parent_nodes:
+        if ancestors_n1 and ancestors_n2:
+            break
+        elif child_node.value == n1:
+            ancestors_n1 = _recurse_get_ancestors(child_node)
+        elif child_node.value == n2:
+            ancestors_n2 = _recurse_get_ancestors(child_node)
+
     for ancestor in ancestors_n1:
-        if ancestor not in ancestors_n2:
-            return False
-    return True
+        if ancestor in ancestors_n2:
+            return True
+    return False
 
 
 # Q: Find out individuals that have 0 and 1 parents.
@@ -435,33 +526,6 @@ def get_node_parent_counts_01(pairs):
     return output
 
 
-def search_rotated_array(nums, target):
-    if not nums:
-        return -1
-
-    low, high = 0, len(nums) - 1
-
-    while low <= high:
-        mid = (low + high) / 2
-        if target == nums[mid]:
-            return mid
-
-        if nums[low] <= nums[mid]:
-            # if LEFT side is not rotated, and the target exists, search there, else the other side
-            if nums[low] <= target <= nums[mid]:
-                high = mid - 1
-            else:
-                low = mid + 1
-        else:
-            # if RIGHT side is not rotated, and the target exists, search there, else the other side
-            if nums[mid] <= target <= nums[high]:
-                low = mid + 1
-            else:
-                high = mid - 1
-
-    return -1
-
-
 # Q: Given an unsorted integer array, find the smallest missing positive integer.
 def first_missing_positive(nums):
     # linear method that will be acceptable to all, add all elments to min heap
@@ -472,46 +536,6 @@ def first_missing_positive(nums):
         else:
             i += 1
 
-
-# https://leetcode.com/problems/trapping-rain-water/
-# class Solution(object):
-#    def trap(self, height):
-#        """
-#        :type height: List[int]
-#        :rtype: int
-#        """
-#        
-#        total_units = 0
-#        start = None
-#        n = len(height)
-#        units = 0
-#        for i in range(n-1):
-#            if not start and ( 0 < height[i] <= max(height[i+1:n]) ):
-#                start = i
-#                units = 0
-#                print 'start={}'.format(start)
-#            
-#            
-#            if start:
-#                print height[i]
-#                if height[i] <= height[start]:
-#                    units += height[start]-height[i]+1
-#                    print 'u={}'.format(units)
-#                else:
-#                    total_units += units
-#                    units = 0
-#                    start = None
-#                    print 'total_units={}'.format(total_units)
-#                    
-#
-#                
-#        return total_units
-
-# Book: 1.4
-# Q. Write a method to replace all spaces in a string with '%20'. Youmay assume that the string has sufficient space at
-#  the end of the string to hold the additional characters, and that you are given the "true" length of the string.
-# (Note: if implementing in Java, please use a character array so that you can perform this operation inplace.)
-# Python - character arrays
 
 def replace_spaces_in_str(arr, replace_by='%20'):
     n = len(arr)
@@ -607,7 +631,7 @@ def sort_stack_using_additional_stack(input_stack):
 
 
 # Book: 9.6
-# Q. Implement an algorithm to print all valid (i.e., properly opened and closed) combi- nations ofn-pairs of
+# Q. Implement an algorithm to print all valid (i.e., properly opened and closed) combinations of n-pairs of
 # parentheses.
 
 def get_all_valid_parentheses(count):
@@ -671,6 +695,7 @@ def merge_sorted_arr_in_another(arr_a, arr_b):
     # create buffer in first arr
     arr_a += [None for _ in range(nb)]
 
+    # WAY - 1
     a_last_index = na - 1
     for b in arr_b:
         max_a = max(arr_a)
@@ -692,6 +717,10 @@ def merge_sorted_arr_in_another(arr_a, arr_b):
                     break
                 j -= 1
 
+    # WAY - 2
+    # navigate A and B together, and at point, when need to insert, insert from B to A, and shift - CODE!
+
+
 # Book: 11.5
 # Q. Given a sorted array of strings which is interspersed with empty strings, write a method to find the location of
 # a given string.
@@ -699,17 +728,16 @@ def merge_sorted_arr_in_another(arr_a, arr_b):
 # Approach: use binary search, and if empty string is found, move to closest non-empty string and keep going
 
 def find_str_from_sorted_arr_of_empty_and_nonempty_strings(arr, x):
-
     def _recurse(l, r):
         if l <= r:
-            m = (l+r)/2
+            m = (l + r) / 2
             if arr[m] == x:
                 return m
 
             if arr[m] == '':
                 # find closest non-empty str
-                left_closest = m-1
-                right_closest = m+1
+                left_closest = m - 1
+                right_closest = m + 1
 
                 # in each loop iteration, keep going-left, and going-right. Stop when you find a value.
                 while True:
@@ -737,12 +765,11 @@ def find_str_from_sorted_arr_of_empty_and_nonempty_strings(arr, x):
                             break
 
             if arr[m] > x:
-                return _recurse(l, m-1)
+                return _recurse(l, m - 1)
             else:
-                return _recurse(m+1, r)
+                return _recurse(m + 1, r)
 
-    return _recurse(0, len(arr)-1)
-
+    return _recurse(0, len(arr) - 1)
 
 
 if __name__ == '__main__':
@@ -789,6 +816,7 @@ if __name__ == '__main__':
     for arr in arrlist:
         print 'digits={}'.format(arr)
         # cannot print both in same line as list is mutable and so it updates in place
+        print '--> add_numbers_using_arrs={}'.format(add_numbers_using_arrs(arr, arr))
         print '--> plus_one={}'.format(plus_one(arr))
 
     print '--------------------------------------------------------------'
@@ -872,7 +900,6 @@ if __name__ == '__main__':
         print '{} and {} have common ancestor = {}'.format(pair[0], pair[1],
                                                            have_common_ancestors(parent_child_pairs, pair[0], pair[1]))
 
-
     print '--------------------------------------------------------------'
     alist = [[1, 2, 0], [3, 4, -1, 1], [7, 8, 9, 11, 12]]
     for arr in alist:
@@ -916,9 +943,10 @@ if __name__ == '__main__':
         print '     Merge Sorted Arrs={}'.format(arrs)
 
     print '--------------------------------------------------------------'
-    for iparr in [ [1,2,'','','','',3,'','',4,5,'',6,7,8,9] ]:
+    for iparr in [[1, 2, '', '', '', '', 3, '', '', 4, 5, '', 6, 7, 8, 9]]:
         print 'arr={}'.format(iparr)
-        for find in [2,3,8]:
+        for find in [2, 3, 8]:
             print 'find={}, ' \
                   'find_str_from_sorted_arr_of_empty_and_nonempty_strings={}'.format(find,
-                                                                                     find_str_from_sorted_arr_of_empty_and_nonempty_strings(iparr, find))
+                                                                                     find_str_from_sorted_arr_of_empty_and_nonempty_strings(
+                                                                                         iparr, find))
