@@ -5,14 +5,6 @@ https://leetcode.com/contest/weekly-contest-170/problems/get-watched-videos-by-y
 
 class Solution(object):
 
-    def get_friends_of_friends(self, id, friends):
-        my_friends = friends[id]
-        my_ff = list()
-
-        for fid in my_friends:
-            my_ff.extend(friends[fid])
-        return my_ff
-
     def watchedVideosByFriends(self, watchedVideos, friends, id, level):
         """
         :type watchedVideos: List[List[str]]
@@ -21,41 +13,37 @@ class Solution(object):
         :type level: int
         :rtype: List[str]
         """
-        max_count = 0
+        n = len(friends)
+        visited = [ False for _ in range(n) ]
+        wv_dict = dict()
 
-        if level == 1:
-            # get videos watched by friends
-            wv_dict = dict()
-            for fid in friends[id]:
-                videos = watchedVideos[fid]
-                for v in videos:
-                    if wv_dict.get(v):
-                        wv_dict[v] += 1
-                    else:
-                        wv_dict[v] = 1
+        def _recurse(visited, i, l):
+            if visited[i]:
+                return
 
-        elif level==2:
-            ff_list = list(set(self.get_friends_of_friends(id, friends)))
-            n = len(ff_list)
-            i= 0
-            while i < n:
-                if ff_list[i] == id:
-                    n -= 1
-                    ff_list.pop(i)
-                i += 1
-            #print ff_list
+            print 'l={}, wv={}'.format(l, wv_dict)
+            my_friends = friends[i]
+            print my_friends
 
-            wv_dict = dict()
-            for fid in ff_list:
-                videos = watchedVideos[fid]
-                for v in videos:
-                    if wv_dict.get(v):
-                        wv_dict[v] += 1
-                    else:
-                        wv_dict[v] = 1
+            if l==level:
+                # get videos watched by friends
+                for f in my_friends:
+                    if f!=id:
+                        videos = watchedVideos[f]
+                        for v in videos:
+                            if wv_dict.get(v):
+                                wv_dict[v] += 1
+                            else:
+                                wv_dict[v] = 1
+                return
 
-                        #return wv_dict.keys()
-        #print wv_dict
+            visited_local = copy.deepcopy(visited)
+            visited_local[i] = True
+
+            for f in my_friends:
+                return _recurse(visited_local, f, l+1)
+
+        _recurse(visited, 0, 1)
         return sorted(wv_dict, key=wv_dict.__getitem__)
 
 
@@ -76,12 +64,7 @@ class Solution(object):
         """
         output = list()
         for query in queries:
-            #L = query[0]
-            #R = query[1]+1
-            #xor_out = reduce(lambda x,y:x^y, arr[L: R])
-            #output.append(xor_out)
             output.append(reduce(lambda x,y:x^y, arr[query[0]: query[1]+1]))
-            #print L, R, arr[L:R], xor_out
 
         return output
 

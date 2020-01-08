@@ -12,19 +12,14 @@ class Solution(object):
         :rtype: int
         """
 
-        div = threshold
+        div = max(nums)   # TODO - this can be improved
         div_result_dict = dict()
 
         while div >= 1:
             result = 0
             #print 'div={}'.format(div)
             for n in nums:
-                out = int(math.ceil(float(n)/float(div)))
-                #print out
-                if out == 0:
-                    out = 1
-                result += out
-                #print 'n={} result={}'.format(n, result)
+                result += int(math.ceil(float(n)/float(div)))
             div_result_dict[div] = result
             div -= 1
         print div_result_dict
@@ -32,17 +27,16 @@ class Solution(object):
         smallest_div = None
         #closest_val = -99
         smallest_gap = None
-        for k,v in div_result_dict.iteritems():
-            # print '****',k,v
-            if v < threshold:
-                gap = (threshold-v)
-                if not smallest_gap:
-                    smallest_gap = gap
-                    smallest_div = k
-                    print smallest_div, smallest_gap
-                elif gap < smallest_gap:
-                    smallest_gap = gap
-        return smallest_div
+        biggest_found = -1
+        ret = -1
+        for div, result in div_result_dict.iteritems():
+            if result <= threshold and result > biggest_found:
+                biggest_found = result
+                ret = div
+                #print 'd={}, r={}, ret={}, biggest={}'.format(div, result, ret, biggest_found)
+        return ret
+
+
 
 
 
@@ -102,4 +96,4 @@ class Solution(object):
             p *= nums[i]
             s += nums[i]
         return p-s
-        
+

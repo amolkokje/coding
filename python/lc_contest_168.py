@@ -133,32 +133,21 @@ class Solution(object):
         :rtype: int
         """
         curr = head
-        result = 0
-        m2 = 1
+        self.result = 0
         i = 0
 
-        def _recurse(node):
+        def _recurse(node, m2):
             if node:
-                _recurse(node.next)
-                result += m2*node.val
-                m2 *= 2
+                m2_recv = _recurse(node.next, m2)
+                if not m2_recv:
+                    m2_recv = m2
+                self.result += m2_recv*node.val
+                #print 'res={}, m2={}, n={}'.format(self.result, m2_recv, node.val)
+                m2_recv *= 2
+                return m2_recv
 
-        _recurse(head)
-        return result
-
-        """
-        while True:
-            print i, mult_2, curr.val
-            output += mult_2*curr.val
-            mult_2 *= 2
-            if curr.next:
-                i += 1
-                curr = curr.next
-            else:
-                break
-        return output
-        """
-
-
+        _recurse(head, 1)
+        #print self.result
+        return self.result
 """
 """

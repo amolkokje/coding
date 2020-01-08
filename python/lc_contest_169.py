@@ -70,11 +70,15 @@ class Solution(object):
         :type start: int
         :rtype: bool
         """
-        max_tries = n = len(arr)
+        n = len(arr)
+        visited = [ False for _ in range(n) ]
 
-        def _recurse(i, tries):
-            if tries > max_tries:
+        def _recurse(i, visited):
+            if visited[i]:
                 return False
+
+            visited_local = copy.deepcopy(visited)
+            visited_local[i] = True
 
             index_left = i - arr[i]
             if index_left < 0:
@@ -82,14 +86,15 @@ class Solution(object):
 
             index_right = i + arr[i]
             if index_right >= n:
-                index_right = n - 1
+                index_right = n-1
 
-            if arr[index_left] == 0 or arr[index_right] == 0:
+            if arr[index_left]==0 or arr[index_right]==0:
                 return True
 
-            return _recurse(index_left, tries + 1) or _recurse(index_right, tries + 1)
+            return _recurse(index_left, visited_local) or _recurse(index_right, visited_local)
 
-        return _recurse(start, 0)
+        return _recurse(start, visited)
+
 
 
 """
