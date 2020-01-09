@@ -1,3 +1,6 @@
+
+# MOCK PASS: https://leetcode.com/interview/reports/SW50ZXJ2aWV3U2Vzc2lvbk5vZGU6NTExNzk3
+
 """
 https://leetcode.com/contest/weekly-contest-164/problems/number-of-ways-to-stay-in-the-same-place-after-some-steps/
 """
@@ -249,4 +252,4 @@ class Solution(object):
 
 
 
-        
+
