@@ -63,8 +63,9 @@ class Solution(object):
                 sum_list.append(curr_sum)
 
             visited_local = copy.deepcopy(visited)
+            visited_local[i] = True
 
-            for k in range(i+1, n):
+            for k in range(i+1, n):  # combinations, no need to test all permutations
                 _recurse(visited_local, k, curr_sum)
 
         for i in range(n):
@@ -76,4 +77,5 @@ class Solution(object):
         else:
             return 0
 
-        
+
+

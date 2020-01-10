@@ -42,6 +42,7 @@ class Solution(object):
 
 """
 https://leetcode.com/contest/weekly-contest-164/problems/search-suggestions-system/
+--> leetcode answer is wrong
 """
 import copy
 
@@ -75,11 +76,13 @@ class Trie(object):
 
     def print_all(self):
         current = self.root
+        print 'current={}'.format(current.value)
 
         def _recurse(node, word):
             if node:
                 word_local = copy.deepcopy(word)
                 word_local += node.value
+                #print 'wl={}'.format(word_local)
                 if node.is_word:
                     print 'WORD={}'.format(word_local)
 
@@ -88,7 +91,7 @@ class Trie(object):
                         _recurse(child, word_local)
 
         for child in current.child_nodes:
-            _recurse(child, child.value)
+            _recurse(child, '')
 
     def search(self, prefix):
         current = self.root
@@ -113,15 +116,15 @@ class Trie(object):
             if node:
                 post_formed += node.value
                 if node.is_word:
-                    print '--> word={}'.format(prefix + post_formed)
+                    #print '--> word={}'.format(prefix + post_formed)
                     output.append(prefix + post_formed)
 
                 pf_local = copy.deepcopy(post_formed)
                 for child in node.child_nodes:
                     _recurse(pf_local, child)
 
-        print current
-        _recurse('', current)
+        for child in current.child_nodes:
+            _recurse('', child)
         return output
 
 
@@ -138,14 +141,19 @@ class Solution(object):
             print 'inserting {}'.format(p)
             trie.insert(p)
 
-        trie.print_all()
-        return
+        #trie.print_all()
+        #return
 
+        output_list = list()
         word = ''
         for w in searchWord:
             word += w
             print 'word={}'.format(word)
-            print 'search output = {}'.format(trie.search(word))
+            output = trie.search(word)
+            print 'search output = {}'.format(output)
+            output_list.append(output)
+        return output_list
+
 
 """
 https://leetcode.com/contest/weekly-contest-164/problems/count-servers-that-communicate/
