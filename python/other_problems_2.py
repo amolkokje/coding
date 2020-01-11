@@ -415,6 +415,48 @@ def regex_match(s, p):
 # parentChildPairs, 5, 8 => true
 # parentChildPairs, 6, 8 => true
 # pair = (parent, child)
+
+# Solution without any node data struct
+def have_common_ancestors3(pairs, n1, n2):
+
+    def _get_ancestors(child):
+        #print 'child={}'.format(child)
+        queue = list()
+        ancestors = list()
+
+        # add the child of interest to queue
+        for p in pairs:
+            if p[1]==child:
+                queue.append(p[0])
+                ancestors.append(p[0])
+        #print queue
+
+        while queue:
+            p = queue.pop(0)
+
+            # find all the parents, and add to queue
+            for pair in pairs:
+                if pair[1] == p:
+                    queue.append(pair[0])
+                    ancestors.append(pair[0])
+                    #print 'q={}, a={}'.format(queue, ancestors)
+
+        return ancestors
+
+    anc_n1 = _get_ancestors(n1)
+    anc_n2 = _get_ancestors(n2)
+    common =list()
+
+    for a in anc_n1:
+        if a in anc_n2:
+            common.append(a)
+
+    if len(common)>0:
+        return True
+    return False
+
+
+
 def have_common_ancestors2(pairs, n1, n2):
     # 1 - create child-parent map
     child_parent_dict = dict()
@@ -897,8 +939,10 @@ if __name__ == '__main__':
     print 'Children with 0 or 1 parents = {}'.format(get_node_parent_counts_01(parent_child_pairs))
     pairs = [(3, 8), (5, 8), (6, 8)]
     for pair in pairs:
-        print '{} and {} have common ancestor = {}'.format(pair[0], pair[1],
+        print '{} and {} have common ancestor={}'.format(pair[0], pair[1],
                                                            have_common_ancestors(parent_child_pairs, pair[0], pair[1]))
+        hca(parent_child_pairs, pair[0], pair[1])
+    sys.exit()
 
     print '--------------------------------------------------------------'
     alist = [[1, 2, 0], [3, 4, -1, 1], [7, 8, 9, 11, 12]]

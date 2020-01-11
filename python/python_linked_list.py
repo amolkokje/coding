@@ -110,6 +110,24 @@ def is_ll_palindrome(ll):
     print _recurse(ll.root, [])
 
 
+"""
+https://leetcode.com/problems/delete-node-in-a-linked-list/
+"""
+# Definition for singly-linked list.
+# class ListNode(object):
+#     def __init__(self, x):
+#         self.val = x
+#         self.next = None
+
+class Solution(object):
+    def deleteNode(self, node):
+        """
+        :type node: ListNode
+        :rtype: void Do not return anything, modify node in-place instead.
+        """
+        node.val = node.next.val
+        node.next = node.next.next
+
 if __name__ == '__main__':
     ll = LinkedList(0)
     for i in range(1, 10):
