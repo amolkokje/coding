@@ -167,50 +167,35 @@ class Solution(object):
         m = len(grid)  # rows
         n = len(grid[0]) # cols
 
-        #print 'm={}, n={}'.format(m,n)
+        connected_pairs = set()
 
-        #row_servers = [ 0 for _ in range(m) ]
-        #col_servers = [ 0 for _ in range(n) ]
-
-        #for i in range(m):
-        #    row_servers[i] = len( filter(lambda x:x==1, grid[i]) )
-
-        #for i in range(n):
-        #    col_servers[i] = len( filter(lambda x:x==1, [ grid[k][i] for k in range(m) ]) )
-
-        comm_count = 0
         for i in range(m):
             for j in range(n):
                 if grid[i][j] == 1:
-                    print '---> ({},{})'.format(i,j)
 
-                    """
-                    r_before = grid[i][:j]
-                    #print 'r_before={}'.format(r_before)
-                    if 1 in r_before:
-                        comm_count += 1
-                    """
+                    ## LEFT
+                    for k in range(j-1, -1, -1):
+                        if grid[i][k]==1:
+                            connected_pairs.add((i,k))
 
-                    r_after = grid[i][j+1:]
-                    #print 'r_after={}'.format(r_after)
-                    if 1 in r_after:
-                        comm_count += 1
+                    ## RIGHT
+                    for k in range(j+1, n):
+                        if grid[i][k]==1:
+                            connected_pairs.add((i,k))
 
-                    """
-                    col_before = [ grid[k][j] for k in range(i) ] ###
-                    #print 'col_before={}'.format(col_before)
-                    if 1 in col_before:
-                        comm_count += 1
-                    """
+                    ## UP
+                    for k in range(i-1, -1, -1):
+                        if grid[k][j]==1:
+                            connected_pairs.add((k,j))
 
-                    col_after = [ grid[k][j] for k in range(i+1,m) ]
-                    #print 'col_after={}'.format(col_after)  ## ??
-                    if 1 in col_after:
-                        comm_count += 1
+                    ## DOWN
+                    for k in range(i+1, m):
+                        if grid[k][j]==1:
+                            connected_pairs.add((k,j))
 
-                print 'i={},j={}, count={}'.format(i,j,comm_count)
-        return comm_count
 
+        #print connected_pairs
+        return len(connected_pairs)
 
 
 """
@@ -224,7 +209,6 @@ class Solution(object):
         :rtype: int
         """
         n = len(points)
-        #visited = [ False for _ in range(n) ]
 
         current = points[0]
         steps = 0
@@ -235,8 +219,6 @@ class Solution(object):
                 #print 'current: {}'.format(current)
 
                 if current == point:
-                    #steps += 1
-                    #print '--> reached: {}'.format(current)
                     break
 
                 if current[0] < point[0]:
