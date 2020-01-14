@@ -1,9 +1,9 @@
 import copy
 
-## DID NOT UNDERSTAND THIS ONE WELL
 """
 https://leetcode.com/contest/weekly-contest-162/problems/number-of-closed-islands/
 """
+# UNDERSTAND WELL - SEE
 
 class Solution(object):
     def closedIsland(self, grid):
