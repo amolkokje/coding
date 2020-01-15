@@ -21,48 +21,80 @@ OTHER RULES:
 import re, sys, os
 
 
-def is_number(s):
-    try:
-        int(s)
-        return True
-    except ValueError:
-        return False
-
 def find_all_decompress_candidates(input):
-    return re.findall(r'\d+\D+]', input)
+    #return re.findall(r'\d+\D+]', input)
 
-def needs_more_decompress(input):
-    # if there is a number in the string
-    needs = False
-    for i in input:
-        if is_number(i):
-            needs = True
-    print 'STR={}, NEEDS={}'.format(input, needs)
-    return False
+    # find out if need to decompress
+    opening = len(filter(lambda x: x=='[', input))
+    closing = len(filter(lambda x: x==']', input))
+    print 'opening={}, closing={}'.format(opening, closing)
+    if not(opening>0 and closing>0 and opening==closing):
+        return [(False, 0, input)]
 
-def multiply_by_count(input):
-    match_result = re.match(r'(\d+)(.*)', input)
-    count, multiply_str = match_result.groups()
-    multiply_str = multiply_str[1:-1]   # remove starting [ and ending ]
-    #print count, multiply_str
-    output = int(count)*multiply_str
-    print 'IN={}, OUT={}'.format(input, output)
-    return output
+    # split string
+    candidates = list()  # tuples: (needs, str)
+    i = 0
+
+    start = None
+    buffer = ''
+    nums = ''
+    ob = 0
+    cb = 0
+    while i<len(input):
+        if not start:
+            if input[i]=='[':
+                ob += 1
+                start = i
+                if len(buffer)>2:
+                    print 'buffer={}'.format(buffer)
+                    candidates.append(False, 0, buffer[-2])
+                    buffer = ''
+            else:
+                buffer += input[i]
+                if input[i].isdigit():
+                    nums+=input[i]
+
+        elif start:
+            if ob!=cb:
+                if input[i]=='[':
+                    ob+=1
+                    if ob==1:
+                        start=i
+                elif input[i]==']':
+                    cb+=1
+                    if ob==cb:
+                        candidates.append((True, int(''.join(nums)), input[start+1:i]))
+                        nums=''
+                        start = None
+                        ob=0
+                        cb=0
+        print start, buffer
+        i+=1
+
+    if len(buffer)>1:
+        print buffer
+        candidates.append((False, 0, buffer[1:]))
+    print 'input={}, candidates={}'.format(input, candidates)
+    return candidates
+
 
 def decompress(input):
     output = ''
     n = len(input)
 
-    decompress_candidates = find_all_decompress_candidates(input)
-    # if sum of all lengths is the equal to total length, then all need to be decompressed.
-    # if not the same, then there are some in the beginning/end that dont need to decompressed
-    print decompress_candidates
+    candidates = find_all_decompress_candidates(input)
+    for candidate in candidates:
+        raw_input('Candidate={}'.format(candidate))
+        needs, count, string = candidate
 
-    for candidate in decompress_candidates:
-        if needs_more_decompress(candidate):
-            output += decompress(candidate)
+        if '[' in string and ']' in string:
+            string = decompress(string)
+
+        if needs:
+            output += ''.join([ string for _ in range(count) ])
         else:
-            output += multiply_by_count(candidate)
+            output += string
+    print 'output={}'.format(output)
     return output
 
 
@@ -70,9 +102,12 @@ def decompress(input):
 if __name__ =='__main__':
     inputs = [
         #'3[abc]4[ab]c',
+        '3[a]b',
         '2[3[a]b]',
         '10[a]'
     ]
     for input in inputs:
         print '*******'
-        print '---> IN:{}, OUT:{}'.format(input, decompress(input))
+        print '---> IN:{}'.format(input)
+        print 'OUT:{}'.format(decompress(input))
+        raw_input('***')
