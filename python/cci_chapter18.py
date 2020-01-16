@@ -1,3 +1,4 @@
+import sys
 # 18.1 --> digit manipulation
 
 # 18.2: Write a method to shuffle a deck of cards. It must be a perfect shuffle: in other words, each of the 52!
@@ -130,20 +131,16 @@ def find_longest(words):
         
     ## O(N + N^2)
     word_dict = dict()
-    max_len = 0
-    ret = None
     for word in words:   ## N
         word_dict[word] = 1
-        
-    for word in words:   ## N
+
+    # go from word of longest length to shortest
+    for word in sorted(word_dict.keys(), key=len)[::-1]:
         n = len(word)
         for i in range(1,n):   ## xN
-            if word_dict.get(word[:i]) and word_dict.get(word[i:]) and n > max_len:
-                max_len = n
-                ret = [ word[:i], word[i:], n ]
-                print '{} + {} = {}, length={}'.format(word[:i], word[i:], word, n)
-                break
-    return ret
+            if word_dict.get(word[:i]) and word_dict.get(word[i:]):
+                print '{} = {} + {}'.format(word, word[:i], word[i:])
+                return n
         
                 
     
@@ -177,5 +174,5 @@ if __name__ == '__main__':
         print 'w1={}, w2={}, min_distance={}'.format(ws[0], ws[1], find_min_distance(book, ws[0], ws[1]))
     
     print '---------------------------------------------------'
-    words = [ 'sam', 'tim', 'jackson', 'nolan', 'samjackson4', 'timnolan' ]
+    words = [ 'samjackson4', 'timnolan', 'sam', 'tim', 'jackson', 'nolan' ]
     find_longest(words)

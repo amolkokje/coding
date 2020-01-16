@@ -1,3 +1,5 @@
+import sys
+
 # 17.1 -> swapping number in place, without temp vars
 def swap_nums(a, b):
     print 'before: a={}, b={}'.format(a, b)
@@ -407,47 +409,38 @@ def find_pairs_sum(arr, sum):
 # OPTIMIZATION - put all words of dictionary in a trie, so can skip iteration quickly if a word is not found
 
 
-def add_spaces(olds, word_dictionary):
-    news = []
-    n = len(olds)
-    
-    def get_word_end(i, j, word_dictionary):
-        w = (j-i)-1 # window size
-        while w > 0:
-            word = olds[j-w:j]
-            if word in word_dictionary:
-                return word
-            w -= 1    
+def add_spaces(ipstring, words):
 
-    i = 0        
-    while i < n:
-        print 'i={}'.format(i)
-    
-        j = i+1
-        while i+1 <= j <= n:  ## NOTE: range(min, max) --> index from [min:max-1] i.e. last is not included
-            word = olds[i:j]  ## NOTE: Here, last is not included
-            #print 'i={}:j={}: word={}'.format(i, j, word)
-            
-            if word in word_dictionary:
-                #print 'START={}'.format(word)
-                news.append(word)
-                i += (j-i)
+    # put all dict words in a trie
+    from trie_problems import Trie, TrieNode
+    trie = Trie()
+    for w in words:
+        trie.insert(w)
 
-            # AMOL - why checking the same substring again for word_end?    
-            word_end = get_word_end(i, j, word_dictionary)
-            if word_end:
-                print 'END={} in word={}'.format(word_end, word)
-                news.append(word.split(word_end)[0].upper())
-                news.append(word_end)
-                i += (j-i)
-            
-            j += 1
-            
-        i += 1        
-                
-    return news            
-                
- 
+    # read line from left to right and generate string as found
+    n = len(ipstring)
+    i = 0
+    buffer = ''
+    word = ''
+    sentence = ''
+    while i<n:
+        word += ipstring[i]
+        can_form_word, is_word = trie.search(word)
+        if not can_form_word:
+            buffer += word
+            word = ''
+        else:
+            # can form a word
+            if is_word:
+                sentence += ' ' + buffer.upper() + ' ' + word
+                buffer = ''
+                word = ''
+        #print 'buffer={}, sentence={}'.format(buffer, sentence)
+        i += 1
+
+    return sentence
+
+
 # Q: Google Sample Question --> Given an array and a number, check if there are two elements in the array that sum to
 # the number
 # [ 1, 2, 3, 4 ], Sum=8 --> No
@@ -523,9 +516,11 @@ if __name__ == '__main__':
     sentence = 'jesslookedjustliketimherbrother'
     print 'original={}, with_spaces={}'.format(sentence, add_spaces(sentence, word_dictionary))
     
-    word_dictionary =  [ 'i', 'reset', 'the', 'computer', 'it', 'still', 'didnt', 'boot' ]
-    sentence = 'iresetthecomputeritstilldidntboot'
-    print 'original={}, with_spaces={}'.format(sentence, add_spaces(sentence, word_dictionary))
+    word_dictionary =  [ 'i', 'reset', 'the', 'computer', 'it', 'still', 'didnt', 'boot', 'looked', 'just',
+                         'like', 'her', 'brother' ]
+    for sentence in ['iresetthecomputeritstilldidntboot',  # ISSUE: i TSTILL
+                     'jesslookedjustliketimherbrother']:
+        print 'original={}, with_spaces={}'.format(sentence, add_spaces(sentence, word_dictionary))
 
     print '---------------------------------------------------'        
     arr = [ 1, 2, 4, 7, 10, 11, 7, 12, 6, 7, 16, 18, 19 ]
