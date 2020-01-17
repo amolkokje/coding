@@ -2,7 +2,8 @@ import sys, os, re, copy
 
 
 """
-Write a function that, given an array A of N integers, returns the smallest positive integer (greater than 0) that does not occur in A.
+Write a function that, given an array A of N integers, returns the smallest positive integer (greater than 0) that does 
+not occur in A.
 max N = 100000
 Examples:
 Given A = [1, 3, 6, 4, 1, 2], the function should return 5.

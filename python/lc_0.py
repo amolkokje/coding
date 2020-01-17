@@ -45,21 +45,39 @@ def get_two_sum(arr, target):
 
 
 # NOTE: list() cannot be added to set() as list() is mutable and set() is immutable. So have to add tuple()
-def get_three_sum(arr, target):
-    three_sum_set = set()
+def get_num_sum(arr, target, count):
+
     n = len(arr)
+    three_sum_set = set()
+
+    def _recurse(visited, i, num_list):
+        if visited[i]:
+            return
+
+        if len(num_list) > (count-1):
+            return
+
+        visited_local = copy.deepcopy(visited)
+        visited_local[i] = True
+
+        num_list_local = copy.deepcopy(num_list)
+        num_list_local.append(arr[i])
+
+        if len(num_list) == (count-1):
+            if sum(num_list_local) == target:
+                # converting to tuple and adding to set will ensure there are no duplicates
+                three_sum_set.add(tuple(sorted(num_list_local)))
+                return
+
+        for k in range(i+1, n):
+            _recurse(visited_local, k, num_list_local)
+
+    visited = [ False for _ in range(n) ]
     for i in range(n):
-        two_sum_list = get_two_sum(arr, target - arr[i])
-        if two_sum_list:
-            # convert all to tuple() from the list to list()
-            two_sum_list = [list(t) for t in two_sum_list]
+        _recurse(visited, i, list())
 
-            for two_sum in two_sum_list:  # ASSUMPTION: all non-repeating numbers in the list
-                if not arr[i] in two_sum:
-                    two_sum.append(arr[i])
-                    three_sum_set.add(tuple(sorted(two_sum)))
 
-    return list(three_sum_set)
+    return three_sum_set
 
 
 #############################
@@ -83,43 +101,35 @@ number_letter_dict = {
 
 
 def generate_combinations(nums):
-    n = len(nums)
+    nums = [ int(s) for s in nums ]
+    n = len(nums)  # max depth
 
-    # print 'nums={}, n={}'.format(nums, n)
+    output = list()
 
-    def _combinations_from_to(list1, list2):
-        """ helper method to generate combinations. NOTE: this can be replaced by recursive combination """
-        combinations_list = list()
-        for l1 in list1:
-            for l2 in list2:
-                combinations_list.append('{}{}'.format(l1, l2))
-        return combinations_list
+    def _recurse(depth, str_formed):
+        #print 'depth={}, str={}'.format(depth, str_formed)
+        if depth > n-1:
+            return
 
-    def _generate_letter_combinations(ip_nums):
-        """ helper method to convert the number to letters to generate the combinations """
-        num1, num2 = int(ip_nums[0]), int(ip_nums[1])
-        letters1 = number_letter_dict[num1]
-        letters2 = number_letter_dict[num2]
-        n1, n2 = len(letters1), len(letters2)
-        if n1 > n2:
-            return _combinations_from_to(letters1, letters2)
-        else:
-            return _combinations_from_to(letters2, letters1)
+        # reached max number input length, then add to output
+        if depth == n-1:
+            #print 'nums[depth]={} --> {}'.format(nums[depth], number_letter_dict.get(nums[depth]))
+            for letter in number_letter_dict.get(nums[depth]):
+                # create a string and add to list
+                output.append(str_formed+letter)
 
-    # Approach Recursive - Complexity O(logN)
-    copy_nums = copy.deepcopy(nums)
-    if n == 2:
-        ret = _generate_letter_combinations(copy_nums)
-    elif n > 2:
-        m = n / 2
-        ret = _combinations_from_to(generate_combinations(copy_nums[0:m]), generate_combinations(copy_nums[m:n]))
-    elif n == 1:
-        ret = [''.join(number_letter_dict[int(copy_nums)])]
-    else:
-        ret = []
+        # if not reached the max length, recurse through all possibilities of next number
+        for letter in number_letter_dict.get(nums[depth]):
+            _recurse(depth+1, str_formed+letter)
 
-    print 'nums={}, n={}, ret={}'.format(nums, n, ret)
-    return ret
+
+    for letter in number_letter_dict.get(nums[0]):
+        _recurse(1, letter)
+
+    #print 'OUT={}'.format(output)
+    return output
+
+
 
 
 # Q. Given a string containing just the characters '(', ')', '{', '}', '[' and ']', determine if the input string is valid.
@@ -199,6 +209,7 @@ def is_string_valid(ipstring):
         return False
 
 
+
 # Q. Given a sorted array nums, remove the duplicates in-place such that each element appear only once and return the new length.
 # Do not allocate extra space for another array, you must do this by modifying the input array in-place with O(1) extra memory.
 # REF: https://leetcode.com/problems/remove-duplicates-from-sorted-array/submissions/
@@ -230,11 +241,15 @@ if __name__ == '__main__':
               {'arr': [-1, 0, 1, 2, -1, -4], 'target2': 6, 'target3': 0},
               ]
     for ip in iplist:
-        print 'arr={}, output2={}, output3={}'.format(ip['arr'], get_two_sum(ip['arr'], ip['target2']),
-                                                      get_three_sum(ip['arr'], ip['target3']))
+        print 'target2={}, target3={}, arr={}'.format(ip['target2'], ip['target3'], ip['arr'])
+        print 'output2={}, output3={}'.format(get_two_sum(ip['arr'], ip['target2']),
+                                                      get_num_sum(ip['arr'], ip['target3'], 3))
 
     print '**************************'
-    nums_list = ["23", "2345", "234"]
+    nums_list = ["23",
+                 "2345",
+                 "234"
+                 ]
     for nums in nums_list:
         print '----------------'
         print 'nums={}, letter combinations={}'.format(nums, generate_combinations(nums))
