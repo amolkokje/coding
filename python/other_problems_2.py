@@ -12,6 +12,21 @@ def removeDuplicates(nums):
     # NOTE: in absence of python set, put them in a dict with values as counts. Return only the dict.keys()
     return list(set(nums))
 
+    """
+    # Non-python approach
+    ad = dict()
+    i = 0
+    n = len(nums)
+    while i < n:
+        if ad.get(nums[i]):
+            nums.pop(i)
+            n -= 1
+        else:
+            ad[nums[i]]=1
+            i +=1
+    return nums
+    """
+
 
 # Q: Say you have an array for which the ith element is the price of a given stock on day i.
 # Design an algorithm to find the maximum profit. You may complete as many transactions as you like (i.e., buy one and
@@ -89,34 +104,25 @@ def single_number(nums):
 def intersection(nums1, nums2):
     # OTHER SOLUTION:
     # if dont want to sort, then put elements of both in a dict with values as total occurance    
-    """
-    d1 = d2 = {}
-    for n in nums1:
-        if not d1.get(n):
-            d1[n] = 1
-        else:
-            d1[n] += 1    
-    -- same to generate d2        
-    -- use the smaller dict to start
-    intersection = []
-    for k in d1.keys():
-        if d2.get(k):
-            count = min(d1[k], d2[k])
-            intersection.append(k) for _ in range(c)            
-    """
-
-    nums1.sort()
-    nums2.sort()
 
     def intersect(smaller, larger):
-        n1 = len(smaller)
-        n2 = len(larger)
-        intersection = []
-        for i in range(n1):
-            if smaller[i] in larger:
-                larger.pop(larger.index(larger[i]))
-                intersection.append(smaller[i])
-        return intersection
+        numd = dict()
+        for l in larger:
+            if numd.get(l):
+                numd[l] += 1
+            else:
+                numd[l] = 1
+
+        result = list()
+        for s in smaller:
+            if numd.get(s):
+                if numd[s] == 1:
+                    del numd[s]
+                else:
+                    numd[s] -= 1
+                result.append(s)
+
+        return result
 
     if len(nums1) > len(nums2):
         return intersect(nums2, nums1)
@@ -206,7 +212,8 @@ def move_zeros(nums):
         if nums[i] == 0:
             nums.append(nums.pop(i))
             n -= 1  # need to go till one less as the last one will be zero
-        i += 1
+        else:
+            i += 1
 
 
 # Q: Determine if a 9x9 Sudoku board is valid. Only the filled cells need to be validated according to the following rules:
@@ -418,18 +425,17 @@ def regex_match(s, p):
 
 # Solution without any node data struct
 def have_common_ancestors3(pairs, n1, n2):
-
     def _get_ancestors(child):
-        #print 'child={}'.format(child)
+        # print 'child={}'.format(child)
         queue = list()
         ancestors = list()
 
         # add the child of interest to queue
         for p in pairs:
-            if p[1]==child:
+            if p[1] == child:
                 queue.append(p[0])
                 ancestors.append(p[0])
-        #print queue
+        # print queue
 
         while queue:
             p = queue.pop(0)
@@ -439,22 +445,21 @@ def have_common_ancestors3(pairs, n1, n2):
                 if pair[1] == p:
                     queue.append(pair[0])
                     ancestors.append(pair[0])
-                    #print 'q={}, a={}'.format(queue, ancestors)
+                    # print 'q={}, a={}'.format(queue, ancestors)
 
         return ancestors
 
     anc_n1 = _get_ancestors(n1)
     anc_n2 = _get_ancestors(n2)
-    common =list()
+    common = list()
 
     for a in anc_n1:
         if a in anc_n2:
             common.append(a)
 
-    if len(common)>0:
+    if len(common) > 0:
         return True
     return False
-
 
 
 def have_common_ancestors2(pairs, n1, n2):
@@ -590,9 +595,9 @@ def replace_spaces_in_str(arr, replace_by='%20'):
         # increase the size of input array by length of shift char
         arr.extend([None for _ in range(m)])
         # shift right
-        arr[index + (m):n + (m)] = arr[index + 1:n]
+        arr[index+m:n+m] = arr[index+1:n]
         # add
-        arr[index:index + m] = replace_by_arr
+        arr[index:index+m] = replace_by_arr
 
     while i < n:
         if arr[i] == ' ':
@@ -730,37 +735,32 @@ def ways_to_represent_n_cents(n):
 # Q. You are given two sorted arrays, A and B, where A has a large enough buffer at the end to hold B.
 # Write a method to merge B into A in sorted order
 
-def merge_sorted_arr_in_another(arr_a, arr_b):
-    na = len(arr_a)
-    nb = len(arr_b)
+def merge_sorted_arr(a, b):
+    na = len(a)
+    nb = len(b)
 
-    # create buffer in first arr
-    arr_a += [None for _ in range(nb)]
+    # buffer in a for b
+    a += [None for _ in range(nb)]
 
-    # WAY - 1
-    a_last_index = na - 1
-    for b in arr_b:
-        max_a = max(arr_a)
-        # if greater than max, add to the end
-        if b >= max_a:
-            arr_a[a_last_index + 1] = b
-            a_last_index += 1
+    ia=0
+    ib=0
+    while ia<na and ib<nb:
+        # if found, then add in a, and shift a to the right
+        if b[ib] <= a[ia]:
+            a[ia+1:na+1] = a[ia:na]
+            a[ia] = b[ib]
+            na += 1
+            ib += 1
         else:
-            # if less than max, then navigate and find the point where it becomes lower
-            # find index of arr_a where a[i] < b
-            j = a_last_index
-            while j >= 0:
-                if arr_a[j] <= b:
-                    # shift
-                    a_last_index += 1
-                    arr_a[j + 1:a_last_index + 1] = arr_a[j:a_last_index]
-                    # insert
-                    arr_a[j] = b
-                    break
-                j -= 1
+            # else, check next element of a
+            ia +=1
 
-    # WAY - 2
-    # navigate A and B together, and at point, when need to insert, insert from B to A, and shift - CODE!
+    # if any bigger elements still present in b
+    while ib < nb:
+        a[ia] = b[ib]
+        na+=1
+        ia+=1
+        ib+=1
 
 
 # Book: 11.5
@@ -778,34 +778,30 @@ def find_str_from_sorted_arr_of_empty_and_nonempty_strings(arr, x):
 
             if arr[m] == '':
                 # find closest non-empty str
-                left_closest = m - 1
-                right_closest = m + 1
+                #left_closest = m - 1
+                #right_closest = m + 1
+
+                move = 1
 
                 # in each loop iteration, keep going-left, and going-right. Stop when you find a value.
                 while True:
-                    # if go off limits, then break
-                    if left_closest <= l and right_closest >= r:
+                    left_closest = m-move
+                    if left_closest>0 and arr[left_closest]!='':
+                        m = left_closest
                         break
+                    right_closest = m+move
+                    if right_closest<n and arr[right_closest]!='':
+                        m = right_closest
+                        break
+                    move+=1
 
-                    if left_closest > l:
-                        if arr[left_closest] == '':
-                            left_closest -= 1
-                        else:
-                            # if the closest non-empty string is the value, return it, else keep going
-                            m = left_closest
-                            if arr[m] == x:
-                                return m
-                            break
-
-                    if right_closest < r:
-                        if arr[right_closest] == '':
-                            right_closest += 1
-                        else:
-                            m = right_closest
-                            if arr[m] == x:
-                                return m
-                            break
-
+                if arr[m] == x:
+                    return m
+                elif arr[m] > x:
+                    return _recurse(l, m - 1)
+                else:
+                    return _recurse(m + 1, r)
+                
             if arr[m] > x:
                 return _recurse(l, m - 1)
             else:
@@ -844,14 +840,10 @@ if __name__ == '__main__':
         print 'arr={}, single_number={}'.format(arr, single_number(arr))
 
     print '--------------------------------------------------------------'
-    nums1 = [1, 2, 2, 1]
-    nums2 = [2, 2]
-    print 'nums1={}, nums2={}'.format(nums1, nums2)
-    print '-- intersection={}'.format(intersection(nums1, nums2))
-    nums1 = [4, 9, 5]
-    nums2 = [9, 4, 9, 8, 4]
-    print 'nums1={}, nums2={}'.format(nums1, nums2)
-    print '-- intersection={}'.format(intersection(nums1, nums2))
+    for nums in [([1, 2, 2, 1], [2, 2]),
+                 ([4, 9, 5], [9, 4, 9, 8, 4])
+                 ]:
+        print 'nums1={}, nums2={}, intersection={}'.format(nums[0], nums[1], intersection(nums[0], nums[1]))
 
     print '--------------------------------------------------------------'
     arrlist = [[1, 2, 3], [4, 3, 2, 1], [1, 9], [1, 0], [9, 9, 9, 9], [1, 9, 9, 9]]
@@ -862,7 +854,7 @@ if __name__ == '__main__':
         print '--> plus_one={}'.format(plus_one(arr))
 
     print '--------------------------------------------------------------'
-    arrlist = [[0, 1, 0, 3, 12]]
+    arrlist = [[0, 1, 0, 3, 12], [0, 1, 0, 0,0,0,3, 12]]
     for arr in arrlist:
         print 'arr={}'.format(arr)
         move_zeros(arr)
@@ -940,9 +932,8 @@ if __name__ == '__main__':
     pairs = [(3, 8), (5, 8), (6, 8)]
     for pair in pairs:
         print '{} and {} have common ancestor={}'.format(pair[0], pair[1],
-                                                           have_common_ancestors(parent_child_pairs, pair[0], pair[1]))
-        hca(parent_child_pairs, pair[0], pair[1])
-    sys.exit()
+                                                         have_common_ancestors(parent_child_pairs, pair[0], pair[1]))
+        #hca(parent_child_pairs, pair[0], pair[1])
 
     print '--------------------------------------------------------------'
     alist = [[1, 2, 0], [3, 4, -1, 1], [7, 8, 9, 11, 12]]
@@ -983,8 +974,8 @@ if __name__ == '__main__':
 
     for arrs in [(range(3), range(5))]:
         print 'Arrs={}'.format(arrs)
-        merge_sorted_arr_in_another(arrs[0], arrs[1])
-        print '     Merge Sorted Arrs={}'.format(arrs)
+        merge_sorted_arr(arrs[0], arrs[1])
+        print '-- After Merging: Arrs={}'.format(arrs)
 
     print '--------------------------------------------------------------'
     for iparr in [[1, 2, '', '', '', '', 3, '', '', 4, 5, '', 6, 7, 8, 9]]:
