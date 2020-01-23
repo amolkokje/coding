@@ -11,9 +11,8 @@ import sys, os, copy
 class MovieHeap(object):
     """ Movie Heap Class """
 
-    def __init__(self, movies):
-        self.elements = copy.deepcopy(movies)
-        self._heapify()
+    def __init__(self):
+        self.elements = list()
 
     def _heapify(self):
         n = len(self.elements)
@@ -42,27 +41,6 @@ def _movie_exists(check_movie, movie_list):
     return True if check_movie.name in movie_names else False
 
 
-# Function: get list of similar movies
-def get_similar_movies(movie):
-    movies_done = list()
-    similar_movies_found = list()
-    queue = [movie]
-
-    # print 'here:{}'.format(queue)
-    while queue:
-        # print queue
-        movie_check = queue.pop(0)
-        for similar_movie in movie_check.similar_movies:
-            if not _movie_exists(similar_movie, movies_done):
-                # print ''
-                queue.append(similar_movie)
-                movies_done.append(similar_movie)
-
-                if not _movie_exists(similar_movie, similar_movies_found) and (similar_movie != movie):
-                    similar_movies_found.append(similar_movie)
-    return similar_movies_found
-
-
 # Function: get list of movies with the same rating
 def get_movies_with_same_rating(movie_list, expected_rating):
     return filter(lambda x: x.rating == expected_rating, movie_list)
@@ -74,7 +52,9 @@ def get_top_rating_movies_heap(movie_list, no_movies):
     *** Solution-1 ***
     Put all in max heap, and get first 5
     """
-    movie_heap = MovieHeap(movie_list)
+    movie_heap = MovieHeap()
+    for movie in movie_list:
+        movie_heap.push(movie)
     return_movies = list()
     for _ in range(no_movies):
         return_movies.append(movie_heap.pop())
@@ -111,6 +91,36 @@ class Movie(object):
         return '<Movie:{}>'.format(self.name)
 
 
+import copy
+
+
+def get_similar_movies(all_movies_list, movie_name):
+    n = len(all_movies_list)
+    similar_movie_names = list()
+
+    def _get_movie_index(movie_name):
+        i = 0
+        while i < n:
+            if all_movies_list[i].name == movie_name:
+                return i
+            i += 1
+
+    def _recurse(visited, i):
+        if visited[i]:
+            return
+
+        visited_local = copy.deepcopy(visited)
+        visited_local[i] = True
+
+        similar_movie_names.append(movies[i].name)
+        for movie_name in all_movies_list[i].similar_movies:
+            _recurse(visited_local, _get_movie_index(movie_name))
+
+    visited = [False for _ in range(n)]
+    _recurse(visited, _get_movie_index(movie_name))
+    return similar_movie_names[1:]
+
+
 if __name__ == '__main__':
     movies = [Movie('M0', 5),
               Movie('M1', 5),
@@ -120,16 +130,16 @@ if __name__ == '__main__':
               Movie('M5', 5)
               ]
 
-    movies[0].similar_movies = [movies[1]]  # M0 -> M1
-    movies[1].similar_movies = [movies[2], movies[3]]  # M1 -> M2, M3
-    movies[2].similar_movies = [movies[4]]  # M2 -> M4
-    movies[3].similar_movies = [movies[2]]  # M3 -> M2
-    movies[4].similar_movies = [movies[3], movies[5]]  # M4 -> M3, M5
+    movies[0].similar_movies = ['M1']  # M0 -> M1
+    movies[1].similar_movies = ['M2', 'M3']  # M1 -> M2, M3
+    movies[2].similar_movies = ['M4']  # M2 -> M4
+    movies[3].similar_movies = ['M2']  # M3 -> M2
+    movies[4].similar_movies = ['M3', 'M5']  # M4 -> M3, M5
     movies[5].similar_movies = []  # M5 -> None
 
     print '**************************'
     for movie in movies:
-        print 'Movie={}, Similar Movies={}'.format(movie.name, get_similar_movies(movie))
+        print 'Movie={}, Similar Movies={}'.format(movie.name, get_similar_movies(movies, movie.name))
 
     print '**************************'
     ratings = [3, 4, 5]

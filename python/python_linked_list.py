@@ -15,10 +15,6 @@ class LinkedList(object):
         self.root = Node(x)
 
     def append(self, x):
-        """
-
-        :rtype:
-        """
         current = self.root
         while True:
             if current.next_node:
@@ -139,8 +135,13 @@ if __name__ == '__main__':
     ll.list()
 
     print '***********************************************'
+    print '$$$'
     reverse_ll = reverse_linked_list(ll)
     reverse_ll.list()
+
+    print '$$$'
+    revll = revll(ll)
+    revll.list()
 
     print '***********************************************'
     ll = LinkedList(0)

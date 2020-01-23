@@ -801,7 +801,7 @@ def find_str_from_sorted_arr_of_empty_and_nonempty_strings(arr, x):
                     return _recurse(l, m - 1)
                 else:
                     return _recurse(m + 1, r)
-                
+
             if arr[m] > x:
                 return _recurse(l, m - 1)
             else:
