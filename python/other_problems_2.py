@@ -423,10 +423,12 @@ def regex_match(s, p):
 # parentChildPairs, 6, 8 => true
 # pair = (parent, child)
 
+# NOTE - Solution can be made faster with memoization on the _recurse() method
+
 # Solution without any node data struct
-def have_common_ancestors3(pairs, n1, n2):
+# BFS
+def have_common_ancestors_BFS(pairs, n1, n2):
     def _get_ancestors(child):
-        # print 'child={}'.format(child)
         queue = list()
         ancestors = list()
 
@@ -435,7 +437,6 @@ def have_common_ancestors3(pairs, n1, n2):
             if p[1] == child:
                 queue.append(p[0])
                 ancestors.append(p[0])
-        # print queue
 
         while queue:
             p = queue.pop(0)
@@ -451,100 +452,38 @@ def have_common_ancestors3(pairs, n1, n2):
 
     anc_n1 = _get_ancestors(n1)
     anc_n2 = _get_ancestors(n2)
-    common = list()
-
-    for a in anc_n1:
-        if a in anc_n2:
-            common.append(a)
-
-    if len(common) > 0:
-        return True
-    return False
+    # print anc_n1, anc_n2
+    common_anc = filter(lambda x: x in anc_n2, anc_n1)
+    return True if common_anc else False
 
 
-def have_common_ancestors2(pairs, n1, n2):
-    # 1 - create child-parent map
-    child_parent_dict = dict()
-    for child_value, parent in pairs:
-        if parent:
-            if child_parent_dict.get(child_value):
-                child_parent_dict[child_value].append(parent)
-            else:
-                child_parent_dict[child_value] = [parent]
+# DFS
+def have_common_ancestors_DFS(pairs, n1, n2):
+    def _get_parent_names(child_node_name):
+        parent_names = list()
+        for pair in pairs:
+            if pair[1] == child_node_name:
+                parent_names.append(pair[0])
+        return parent_names
 
-    # 2 - recursive function - OPTIMIZATION
-    from memoization import memoize_single_arg
-    @memoize_single_arg
-    def _get_ancestors(child):
-        ancestors = list()
-        if child_parent_dict.get(child):
-            for parent in child_parent_dict[child]:
-                ancestors += [parent] + _get_ancestors(parent)
-        return ancestors
-
-    # 3 - get ancestors
-    ancestors_n1 = _get_ancestors(n1)
-    ancestors_n2 = _get_ancestors(n2)
-    print '{}:Ancestors=[{}], {}:Ancestors=[{}]'.format(n1, ancestors_n1, n2, ancestors_n2)
-
-
-class Child(object):
-    def __init__(self, value, parents):
-        self.value = value
-        self.parents = parents
-
-    def __repr__(self):
-        return '<ChildNode: {}: {}>'.format(self.value, self.parents)
-
-
-def have_common_ancestors(pairs, n1, n2):
-    # 1 - Convert pairs to Node objects
-    child_parent_nodes = list()
-    for pair in pairs:
-        # if child node exists, add to list, else create a new one
-        node_found = False
-        for node in child_parent_nodes:
-            if node.value == pair[1]:
-                node.parents.append(pair[0])
-                node_found = True
-        if not node_found:
-            child_parent_nodes.append(Child(pair[1], [pair[0]]))
-
-    # 2 - Get ancestors
-    # NOTE: this can be memoized
-    def _recurse_get_ancestors(child_node):
+    def _get_ancestors(child_node_name):
         ancestors = list()
 
-        for parent_value in child_node.parents:
-            # find node for the parent
-            parent_node = None
-            for node in child_parent_nodes:
-                if node.value == parent_value:
-                    parent_node = node
-                    break
+        def _recurse(child_node_name):
+            parent_names = _get_parent_names(child_node_name)
+            if parent_names:
+                ancestors.extend(parent_names)
+                for parent_name in parent_names:
+                    _recurse(parent_name)
 
-            if parent_node:
-                # if the parent is a node, then recurse
-                ancestors += _recurse_get_ancestors(parent_node)
-            else:
-                # if the parent is not a node, then use the value and return
-                ancestors.append(parent_value)
+        _recurse(child_node_name)
         return ancestors
 
-    ancestors_n1 = None
-    ancestors_n2 = None
-    for child_node in child_parent_nodes:
-        if ancestors_n1 and ancestors_n2:
-            break
-        elif child_node.value == n1:
-            ancestors_n1 = _recurse_get_ancestors(child_node)
-        elif child_node.value == n2:
-            ancestors_n2 = _recurse_get_ancestors(child_node)
-
-    for ancestor in ancestors_n1:
-        if ancestor in ancestors_n2:
-            return True
-    return False
+    anc_n1 = _get_ancestors(n1)
+    anc_n2 = _get_ancestors(n2)
+    # print anc_n1, anc_n2
+    common_anc = filter(lambda x: x in anc_n2, anc_n1)
+    return True if common_anc else False
 
 
 # Q: Find out individuals that have 0 and 1 parents.
@@ -595,9 +534,9 @@ def replace_spaces_in_str(arr, replace_by='%20'):
         # increase the size of input array by length of shift char
         arr.extend([None for _ in range(m)])
         # shift right
-        arr[index+m:n+m] = arr[index+1:n]
+        arr[index + m:n + m] = arr[index + 1:n]
         # add
-        arr[index:index+m] = replace_by_arr
+        arr[index:index + m] = replace_by_arr
 
     while i < n:
         if arr[i] == ' ':
@@ -742,25 +681,25 @@ def merge_sorted_arr(a, b):
     # buffer in a for b
     a += [None for _ in range(nb)]
 
-    ia=0
-    ib=0
-    while ia<na and ib<nb:
+    ia = 0
+    ib = 0
+    while ia < na and ib < nb:
         # if found, then add in a, and shift a to the right
         if b[ib] <= a[ia]:
-            a[ia+1:na+1] = a[ia:na]
+            a[ia + 1:na + 1] = a[ia:na]
             a[ia] = b[ib]
             na += 1
             ib += 1
         else:
             # else, check next element of a
-            ia +=1
+            ia += 1
 
     # if any bigger elements still present in b
     while ib < nb:
         a[ia] = b[ib]
-        na+=1
-        ia+=1
-        ib+=1
+        na += 1
+        ia += 1
+        ib += 1
 
 
 # Book: 11.5
@@ -778,22 +717,22 @@ def find_str_from_sorted_arr_of_empty_and_nonempty_strings(arr, x):
 
             if arr[m] == '':
                 # find closest non-empty str
-                #left_closest = m - 1
-                #right_closest = m + 1
+                # left_closest = m - 1
+                # right_closest = m + 1
 
                 move = 1
 
                 # in each loop iteration, keep going-left, and going-right. Stop when you find a value.
                 while True:
-                    left_closest = m-move
-                    if left_closest>0 and arr[left_closest]!='':
+                    left_closest = m - move
+                    if left_closest > 0 and arr[left_closest] != '':
                         m = left_closest
                         break
-                    right_closest = m+move
-                    if right_closest<n and arr[right_closest]!='':
+                    right_closest = m + move
+                    if right_closest < n and arr[right_closest] != '':
                         m = right_closest
                         break
-                    move+=1
+                    move += 1
 
                 if arr[m] == x:
                     return m
@@ -854,7 +793,7 @@ if __name__ == '__main__':
         print '--> plus_one={}'.format(plus_one(arr))
 
     print '--------------------------------------------------------------'
-    arrlist = [[0, 1, 0, 3, 12], [0, 1, 0, 0,0,0,3, 12]]
+    arrlist = [[0, 1, 0, 3, 12], [0, 1, 0, 0, 0, 0, 3, 12]]
     for arr in arrlist:
         print 'arr={}'.format(arr)
         move_zeros(arr)
@@ -931,9 +870,9 @@ if __name__ == '__main__':
     print 'Children with 0 or 1 parents = {}'.format(get_node_parent_counts_01(parent_child_pairs))
     pairs = [(3, 8), (5, 8), (6, 8)]
     for pair in pairs:
-        print '{} and {} have common ancestor={}'.format(pair[0], pair[1],
-                                                         have_common_ancestors(parent_child_pairs, pair[0], pair[1]))
-        #hca(parent_child_pairs, pair[0], pair[1])
+        print '{} and {}: hcaDFS={}, hcaBFS={}'.format(pair[0], pair[1],
+                                                       have_common_ancestors_BFS(parent_child_pairs, pair[0], pair[1]),
+                                                       have_common_ancestors_DFS(parent_child_pairs, pair[0], pair[1]))
 
     print '--------------------------------------------------------------'
     alist = [[1, 2, 0], [3, 4, -1, 1], [7, 8, 9, 11, 12]]
