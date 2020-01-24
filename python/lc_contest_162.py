@@ -172,13 +172,12 @@ if __name__ == '__main__':
             [1, 1, 1, 1, 1, 1, 1, 0]]
     print grid
     print 'ISLANDS={}'.format(get_island_count(grid))
-    # import sys
-    # sys.exit()
+
 
     grid = [[0, 0, 1, 0, 0], [0, 1, 0, 1, 0], [0, 1, 1, 1, 0]]
     print grid
     print 'ISLANDS={}'.format(get_island_count(grid))
-    # """
+
 
     grid = [[1, 1, 1, 1, 1, 1, 1],
             [1, 0, 0, 0, 0, 0, 1],
@@ -189,4 +188,3 @@ if __name__ == '__main__':
             [1, 1, 1, 1, 1, 1, 1]]
     print grid
     print 'ISLANDS={}'.format(get_island_count(grid))
-    # """
