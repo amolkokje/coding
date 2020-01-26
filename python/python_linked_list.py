@@ -71,7 +71,7 @@ def reverse_linked_list(ip_ll):
 
 # Book: 2.5
 # You have two numbers represented by a linked list, where each node contains a single digit. The digits are stored in
-# reverse order, such that the 1'sdigit isat the head of the list. Write a function that adds the two numbers and
+# reverse order, such that the 1's digit is at the head of the list. Write a function that adds the two numbers and
 # returns the sum as a linked list.
 
 
@@ -139,9 +139,6 @@ if __name__ == '__main__':
     reverse_ll = reverse_linked_list(ll)
     reverse_ll.list()
 
-    print '$$$'
-    revll = revll(ll)
-    revll.list()
 
     print '***********************************************'
     ll = LinkedList(0)
