@@ -15,9 +15,8 @@ Q:: Given a NxN matrix and a dictionary of words. print all the words in the mat
 
 # SOLUTION -2    
 # Compare by converting dict to trie
-#### DONT KNOW HOW TO USE A TRIE HERE??
 
-# TRIE IMPLEMENTATION - STUDY IF TIME?
+# TRIE IMPLEMENTATION:
 # Python implementation: https://www.geeksforgeeks.org/trie-insert-and-search/ --> not required to know
 # need to know what trie is: https://towardsdatascience.com/implementing-a-trie-data-structure-in-python-in-less-than-100-lines-of-code-a877ea23c1a1
 

@@ -129,6 +129,9 @@ class WeightedTrie(object):
 
     def sort_words_by_weights(self, words_weights_list):
         """ sorts the words found by their weights to return """
+        # sort in descending order, so negate the value in lambda function
+        return sorted(words_weights_list, key=lambda x:-x[1])
+        """
         n = len(words_weights_list)
         for _ in range(n):
             for i in range(n - 1):
@@ -136,6 +139,7 @@ class WeightedTrie(object):
                     words_weights_list[i], words_weights_list[i + 1] = \
                         words_weights_list[i + 1], words_weights_list[i]
         return words_weights_list
+        """
 
 
 if __name__ == '__main__':
