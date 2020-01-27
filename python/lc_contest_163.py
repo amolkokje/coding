@@ -2,6 +2,7 @@
 https://leetcode.com/contest/weekly-contest-163/problems/shift-2d-grid/
 """
 
+
 class Solution(object):
     def shiftGrid(self, grid, k):
         """
@@ -11,29 +12,21 @@ class Solution(object):
         """
         m = len(grid)  # rows
         n = len(grid[0])  # cols
-        #print 'm={}, n={}'.format(m,n)
-        #print grid[0]
 
         # convert to a list
         grid_list = list()
         for i in range(m):
-            grid_list.extend(grid[i])
-        #print grid_list
+            grid_list += grid[i]
 
         # shift it
-        total = m*n
+        total = m * n
         if k > total:
-            k = k%total
-
-        grid_list = grid_list[total-k:] + grid_list[:total-k]
-        #print grid_list
+            k = k % total
+        grid_list = grid_list[total - k:] + grid_list[:total - k]
 
         # convert to a grid
-        k = 0
         for i in range(m):
-            for j in range(n):
-                grid[i][j] = grid_list[k]
-                k += 1
+            grid[i] = grid_list[(i * n):(i * n) + n]
 
         return grid
 
@@ -42,7 +35,6 @@ class Solution(object):
 https://leetcode.com/contest/weekly-contest-163/problems/greatest-sum-divisible-by-three/
 """
 
-import copy
 
 class Solution(object):
     def maxSumDivThree(self, nums):
@@ -51,31 +43,30 @@ class Solution(object):
         :rtype: int
         """
         n = len(nums)
-        visited = [ False for _ in range(n) ]
-        sum_list = list()
+        visited = [False for _ in range(n)]
+        max_sum = 0
 
-        def _recurse(visited, i, curr_sum):
+        def _recurse(i, curr_sum, max_sum):
             if visited[i]:
                 return
 
             curr_sum += nums[i]
-            if curr_sum%3 == 0:
-                sum_list.append(curr_sum)
+            if curr_sum % 3 == 0:
+                if curr_sum > max_sum:
+                    max_sum = curr_sum
 
-            visited_local = copy.deepcopy(visited)
-            visited_local[i] = True
+            for k in range(i + 1, n):  # combinations, no need to test all permutations
+                visited[i] = True
+                found_sum = _recurse(k, curr_sum, max_sum)
+                if found_sum and found_sum > max_sum:
+                    max_sum = found_sum
+                visited[i] = False
 
-            for k in range(i+1, n):  # combinations, no need to test all permutations
-                _recurse(visited_local, k, curr_sum)
+            return max_sum
 
         for i in range(n):
-            _recurse(visited, i, 0)
+            found_sum = _recurse(i, 0, max_sum)
+            if found_sum and found_sum > max_sum:
+                max_sum = found_sum
 
-        #print sum_list
-        if sum_list:
-            return max(sum_list)
-        else:
-            return 0
-
-
-
+        return max_sum
