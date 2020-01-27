@@ -1,9 +1,9 @@
-
 # MOCK PASS: https://leetcode.com/interview/reports/SW50ZXJ2aWV3U2Vzc2lvbk5vZGU6NTExNzk3
 
 """
 https://leetcode.com/contest/weekly-contest-164/problems/number-of-ways-to-stay-in-the-same-place-after-some-steps/
 """
+
 
 class Solution(object):
     def numWays(self, steps, arrLen):
@@ -12,32 +12,36 @@ class Solution(object):
         :type arrLen: int
         :rtype: int
         """
-        #visited = [False for _ in range(arrLen)]
-        self.count = 0
 
-        def _recurse(step_count, place, start):
-            if step_count > steps:
-                return
+        def _recurse(path):
+            np = len(path)
+            count_right = len(filter(lambda x: x == 'R', path))
+            count_left = len(filter(lambda x: x == 'L', path))
+            if np == steps:
+                if count_left == count_right:
+                    print 'Found Path: {}'.format(path)
+                    return 1
+                else:
+                    return 0
 
-            if place<0 or place>=arrLen:
-                return
+            no_ways = 0
+            if count_right == count_left:  # i.e. already at first element of arr, so cannot move left
+                no_ways += _recurse(path + ['R'])
+            elif count_right - count_left == arrLen:  # i.e. already at left most element of the arr, so cannot move right
+                no_ways += _recurse(path + ['L'])
+            else:  # i.e. not at any arr edge
+                no_ways += _recurse(path + ['L'])
+                no_ways += _recurse(path + ['R'])
 
-            #print 'place={}, step_count={}'.format(place, step_count)
-            if step_count == steps:
-                if place==start:
-                    self.count += 1
-                    #print 'found, count={}'.format(self.count)
-                    return
+            no_ways += _recurse(path + ['S'])  # case for all
+            return no_ways
 
-            _recurse(step_count+1, place-1, start)
-            _recurse(step_count+1, place+1, start)
-            _recurse(step_count+1, place, start)
+        no_ways = 0
+        for way in ['R', 'S']:  # start from left most, so cannot go more left
+            no_ways += _recurse([way])
 
-        _recurse(0, 0, 0)
-        return self.count
-
-
-
+            # print 'no ways = {}'.format(no_ways)
+        return no_ways
 
 
 """
@@ -46,13 +50,16 @@ https://leetcode.com/contest/weekly-contest-164/problems/search-suggestions-syst
 """
 import copy
 
+
 class TrieNode(object):
     def __init__(self, x):
         self.value = x
         self.child_nodes = list()
         self.is_word = False
+
     def __repr__(self):
         return '<TN: value={}, word={}>'.format(self.value, self.is_word)
+
 
 class Trie(object):
     def __init__(self):
@@ -82,7 +89,7 @@ class Trie(object):
             if node:
                 word_local = copy.deepcopy(word)
                 word_local += node.value
-                #print 'wl={}'.format(word_local)
+                # print 'wl={}'.format(word_local)
                 if node.is_word:
                     print 'WORD={}'.format(word_local)
 
@@ -116,7 +123,7 @@ class Trie(object):
             if node:
                 post_formed += node.value
                 if node.is_word:
-                    #print '--> word={}'.format(prefix + post_formed)
+                    # print '--> word={}'.format(prefix + post_formed)
                     output.append(prefix + post_formed)
 
                 pf_local = copy.deepcopy(post_formed)
@@ -141,8 +148,8 @@ class Solution(object):
             print 'inserting {}'.format(p)
             trie.insert(p)
 
-        #trie.print_all()
-        #return
+        # trie.print_all()
+        # return
 
         output_list = list()
         word = ''
@@ -158,6 +165,8 @@ class Solution(object):
 """
 https://leetcode.com/contest/weekly-contest-164/problems/count-servers-that-communicate/
 """
+
+
 class Solution(object):
     def countServers(self, grid):
         """
@@ -165,42 +174,35 @@ class Solution(object):
         :rtype: int
         """
         m = len(grid)  # rows
-        n = len(grid[0]) # cols
+        n = len(grid[0])  # cols
 
-        connected_pairs = set()
+        conn_count = 0
 
         for i in range(m):
             for j in range(n):
+
+                # found a server
                 if grid[i][j] == 1:
 
-                    ## LEFT
-                    for k in range(j-1, -1, -1):
-                        if grid[i][k]==1:
-                            connected_pairs.add((i,k))
+                    # check if it has at least 1 connection
 
-                    ## RIGHT
-                    for k in range(j+1, n):
-                        if grid[i][k]==1:
-                            connected_pairs.add((i,k))
+                    # check if the row has a server
+                    row_count = len(filter(lambda x: x == 1, grid[i]))
+                    if row_count >= 2:
+                        conn_count += 1
+                    else:
+                        # if row does not have any connections, check if col has any
+                        col_count = len(filter(lambda x: x == 1, [grid[k][j] for k in range(m)]))
+                        if col_count >= 2:
+                            conn_count += 1
 
-                    ## UP
-                    for k in range(i-1, -1, -1):
-                        if grid[k][j]==1:
-                            connected_pairs.add((k,j))
-
-                    ## DOWN
-                    for k in range(i+1, m):
-                        if grid[k][j]==1:
-                            connected_pairs.add((k,j))
-
-
-        #print connected_pairs
-        return len(connected_pairs)
+        return conn_count
 
 
 """
 https://leetcode.com/contest/weekly-contest-164/problems/minimum-time-visiting-all-points/
 """
+
 
 class Solution(object):
     def minTimeToVisitAllPoints(self, points):
@@ -213,25 +215,25 @@ class Solution(object):
         current = points[0]
         steps = 0
         for point in points[1:]:
-            #print 'trynig to reach {}'.format(point)
+            # print 'trying to reach {}'.format(point)
 
             while True:
-                #print 'current: {}'.format(current)
+                # print 'current: {}'.format(current)
 
                 if current == point:
                     break
 
                 if current[0] < point[0]:
-                    next_x = current[0]+1
+                    next_x = current[0] + 1
                 elif current[0] > point[0]:
-                    next_x = current[0]-1
+                    next_x = current[0] - 1
                 else:
                     next_x = current[0]
 
                 if current[1] < point[1]:
-                    next_y = current[1]+1
+                    next_y = current[1] + 1
                 elif current[1] > point[1]:
-                    next_y = current[1]-1
+                    next_y = current[1] - 1
                 else:
                     next_y = current[1]
 
@@ -239,7 +241,3 @@ class Solution(object):
                 steps += 1
 
         return steps
-
-
-
-
