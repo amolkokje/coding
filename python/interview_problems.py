@@ -1,6 +1,50 @@
 import sys, os, copy
 
 
+# Knapsack Problem: (NP complete)
+# Given weights and values of n items, put these items in a knapsack of capacity W to get the maximum total value in
+# the knapsack. In other words, given two integer arrays val[0..n-1] and wt[0..n-1] which represent values and weights
+# associated with n items respectively. Also given an integer W which represents knapsack capacity, find out the
+#  maximum value subset of val[] such that sum of the weights of this subset is smaller than or equal to W. You
+# cannot break an item, either pick the complete item, or dont pick it (0-1 property).
+
+def knapsack(items, weights, max_capacity):
+    n = len(items)
+
+    visited = [False for _ in range(n)]
+
+    def _recurse(i, weight_formed, value_formed):
+        if visited[i]:
+            return weight_formed, value_formed
+
+        new_weight = weight_formed + weights[i]
+        if new_weight > max_capacity:
+            return weight_formed, value_formed
+
+        max_weight_found = 0
+        max_weight_value = None
+        for k in range(i + 1, n):
+            visited[i] = True
+            found_weight, found_value = _recurse(k, new_weight, value_formed + items[k])
+            visited[i] = False
+
+            if max_weight_found < found_weight <= max_capacity:
+                max_weight_found = found_weight
+                max_weight_value = found_value
+
+        return max_weight_found, max_weight_value
+
+    max_found_weight = 0
+    max_weight_value = None
+    for i in range(n):
+        output_weight, output_value = _recurse(i, 0, 0)
+        if max_found_weight < output_weight <= max_capacity:
+            max_found_weight = output_weight
+            max_weight_value = output_value
+
+    print 'OUTPUT: Weight={}, Value={}'.format(max_found_weight, max_weight_value)
+
+
 # Traveling Salesman Problem: (NP complete)
 # Given a set of cities and distance between every pair of cities, the problem is to find the shortest possible
 # route that visits every city exactly once and returns back to the starting point.
@@ -18,35 +62,36 @@ def get_shortest_distance_to_visit_all_cities(grid, start_city):
                 connections_dict[i] = grid[x][i]
         return connections_dict
 
-    def _recurse(visited, i, distance):
+    visited = list()
+
+    def _recurse(i, distance):
         if i in visited:
             return
 
-        visited_local = copy.deepcopy(visited)
-        visited_local.append(i)
-        #print 'VISITED={}'.format(visited_local)
+        visited.append(i)
 
         conn_dict = get_connections(i)
 
-        if len(visited_local) == n:
+        if len(visited) == n:
             # visited all
             # if start in neighbors, made it
             if start_city in conn_dict.keys():
-                path_distance_tuples.append((visited_local + [start_city], distance + grid[i][start_city]))
-                #return (visited_local + [start_city], distance + grid[i][start_city])  # IF REQUIRED TO FIND A PATH
+                path_distance_tuples.append((visited + [start_city], distance + grid[i][start_city]))
+                # return (visited + [start_city], distance + grid[i][start_city])  # IF REQUIRED TO FIND A PATH
             else:
                 return
         else:
             # continue recursing
 
             for conn in conn_dict.keys():
-                _recurse(visited_local, conn, distance + grid[i][conn])
+                _recurse(conn, distance + grid[i][conn])
                 # IF NEED TO FIND ALL PATHS
-                #found = _recurse(visited_local, conn, distance + grid[i][conn])
-                #if found:
+                # found = _recurse(visited, conn, distance + grid[i][conn])
+                # if found:
                 #    return found
+        visited.pop(-1)
 
-    _recurse(list(), start_city, 0)
+    _recurse(start_city, 0)
     paths_sorted_by_distance = sorted(path_distance_tuples, key=lambda x: x[1])
     print 'Paths sorted by distance={}'.format(paths_sorted_by_distance)
     return paths_sorted_by_distance[0][1]
@@ -72,27 +117,16 @@ def hamilton_cycle_exists(grid):
                 connections.append(i)
         return connections
 
-    def _recurse(visited, i, path):
+    def _recurse(i, path):
         if visited[i]:
             return
-
-        visited_all = False
-        visited_local = copy.deepcopy(visited)
-        visited_local[i] = True
 
         path_local = copy.deepcopy(path)
         path_local.append(i)
 
-        # print 'VISITED={}, PATH={}'.format(visited_local, path_local)
-        # print filter(lambda x: x==True, visited_local)
-
-        if len(filter(lambda x: x == True, visited_local)) == n:
-            # if can go to 'start' from here, then hamilton cycle/path exists
-            visited_all = True
-
         connections = get_connections(i)
-        # print connections, visited_all
-        if visited_all:
+
+        if len(filter(lambda x: x == True, visited)) == n - 1:  # i.e. Visited all
             if start in connections:
                 # print 'PATH={}'.format(path_local + [start])
                 return True
@@ -102,12 +136,14 @@ def hamilton_cycle_exists(grid):
             # keep looking
             for conn in connections:
                 # return the first found, and no need to recurse further
-                found = _recurse(visited_local, conn, path_local)
+                visited[i] = True
+                found = _recurse(conn, path_local)
+                visited[i] = False
                 if found:
                     return found
             return False
 
-    return _recurse(visited, start, list())
+    return _recurse(start, list())
 
 
 # N-Queen Problem:
@@ -190,7 +226,6 @@ def color_graph(grid, m):
     # m - number of colors
 
     n = len(grid)  # number of cells
-    possibilities = list()  # list of dicts {point: color}
 
     def _get_connections(p):
         conns = list()
@@ -213,9 +248,10 @@ def color_graph(grid, m):
 
         return usable_colors
 
-    def _recurse(p, pcolor_dict):
-        visited = pcolor_dict.keys()
-        if p in visited:
+    pcolor_dict = dict()
+
+    def _recurse(p):
+        if p in pcolor_dict.keys():
             return
 
         # SET COLOR OF POINT
@@ -231,30 +267,37 @@ def color_graph(grid, m):
 
         for color in usable_colors:
             # set current point to that color and recurse
-            pcolor_dict_local = copy.deepcopy(pcolor_dict)
-            pcolor_dict_local[p] = color
+
+            pcolor_dict[p] = color
 
             # if all points are already colored, then found a possibility
-            if len(pcolor_dict_local.keys()) == n:
+            if len(pcolor_dict.keys()) == n:
                 # possibilities.append(pcolor_dict_local)  # THIS IN CASE YOU WANT TO LIST ALL THE POSSIBILITIES
-                return pcolor_dict_local  # THIS IS TO RETURN IF FOUND A POSSIBILITY
+                return pcolor_dict  # THIS IS TO RETURN IF FOUND A POSSIBILITY
 
             # RECURSE-2: further, can recurse in direction of any connection
             for conn in connections:
-                found = _recurse(conn, pcolor_dict_local)  # RETURN IF FOUND ALREADY FROM FIRST RECURSION
-                if found:
+
+                found = _recurse(conn)  # RETURN IF FOUND ALREADY FROM FIRST RECURSION
+                if found is not None:
                     return found
 
+            del pcolor_dict[p]
+
     # get the first point in the graph and start from there
-    found = _recurse(0, dict())
+    found = _recurse(0)
     # return possibilities  # IF NEED TO RETURN ALL POSSIBILITIES
     if found:
         return found
 
 
-
-
 if __name__ == '__main__':
+    print knapsack(items=[60, 100, 120],
+                   weights=[10, 20, 30],
+                   max_capacity=50)
+
+    print '###############################################################'
+
     grid = [
         [0, 1, 1, 1],
         [1, 0, 1, 0],
@@ -262,7 +305,7 @@ if __name__ == '__main__':
         [1, 0, 1, 0]
     ]
     m = 3
-    print 'Color Graph = {}' .format(color_graph(grid, m))
+    print 'Color Graph = {}'.format(color_graph(grid, m))
 
     print '###############################################################'
 
