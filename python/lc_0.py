@@ -49,32 +49,31 @@ def get_num_sum(arr, target, count):
 
     n = len(arr)
     three_sum_set = set()
+    visited = [ False for _ in range(n) ]
+    num_list = list()
 
-    def _recurse(visited, i, num_list):
+    def _recurse(i):
         if visited[i]:
             return
 
         if len(num_list) > (count-1):
             return
 
-        visited_local = copy.deepcopy(visited)
-        visited_local[i] = True
-
-        num_list_local = copy.deepcopy(num_list)
-        num_list_local.append(arr[i])
-
-        if len(num_list) == (count-1):
-            if sum(num_list_local) == target:
+        if len(num_list) == count-1:
+            if sum(num_list)+arr[i] == target:
                 # converting to tuple and adding to set will ensure there are no duplicates
-                three_sum_set.add(tuple(sorted(num_list_local)))
+                three_sum_set.add(tuple(sorted(num_list + [arr[i]])))
                 return
 
         for k in range(i+1, n):
-            _recurse(visited_local, k, num_list_local)
+            visited[i] = True
+            num_list.append(arr[i])
+            _recurse(k)
+            visited[i] = False
+            num_list.pop(-1)
 
-    visited = [ False for _ in range(n) ]
     for i in range(n):
-        _recurse(visited, i, list())
+        _recurse(i)
 
 
     return three_sum_set
@@ -99,37 +98,26 @@ number_letter_dict = {
     5: ['j', 'k', 'l']
 }
 
-
 def generate_combinations(nums):
     nums = [ int(s) for s in nums ]
-    n = len(nums)  # max depth
 
-    output = list()
+    def _get_letters(x):
+        return number_letter_dict[x]
 
-    def _recurse(depth, str_formed):
-        #print 'depth={}, str={}'.format(depth, str_formed)
-        if depth > n-1:
-            return
+    def _combine_with_new_letters(iplist, letters):
+        new = list()
+        for ip in iplist:
+            new += [ ip+l for l in letters ]
+        return new
 
-        # reached max number input length, then add to output
-        if depth == n-1:
-            #print 'nums[depth]={} --> {}'.format(nums[depth], number_letter_dict.get(nums[depth]))
-            for letter in number_letter_dict.get(nums[depth]):
-                # create a string and add to list
-                output.append(str_formed+letter)
+    out = list()
+    for n in nums:
+        if len(out) > 0:
+            out = _combine_with_new_letters(out, _get_letters(n))
+        else:
+            out = _get_letters(n)
 
-        # if not reached the max length, recurse through all possibilities of next number
-        for letter in number_letter_dict.get(nums[depth]):
-            _recurse(depth+1, str_formed+letter)
-
-
-    for letter in number_letter_dict.get(nums[0]):
-        _recurse(1, letter)
-
-    #print 'OUT={}'.format(output)
-    return output
-
-
+    return out
 
 
 # Q. Given a string containing just the characters '(', ')', '{', '}', '[' and ']', determine if the input string is valid.
