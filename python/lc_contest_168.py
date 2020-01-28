@@ -11,62 +11,49 @@ class Solution(object):
         :type k: int
         :rtype: int
         """
-        m = len(grid)  #y -> columns
-        n = len(grid[0])  #x -> rows
-        #print 'm={}, n={}'.format(m, n)
+        m = len(grid)  #x -> rows
+        n = len(grid[0])  #y -> cols
+        visited = [ [False for _ in range(n)] for _ in range(m) ]
 
         paths = list()
 
-        def _recurse(x, y, path_formed, visited, obs):
-            #print x,y, path_formed, visited
+        def _recurse(x, y, path_length, obs, path):
+
             # return if invalid
-            if x<0 or y<0 or x>m-1 or y>n-1:
+            if x<0 or y<0 or x>=m or y>=n:
                 return
 
             # return if visited
             if visited[x][y]:
                 return
 
-            # return if obstacle
-            if obs <= 0:
+            # return if max obstacle count is done
+            if obs < 0:
                 return
 
+            # if obstacle, increment the obstacle count for tracking
             if grid[x][y] == 1:
                 obs -= 1
-            #print obs
 
-            visited_local = copy.deepcopy(visited)
-            path_formed_local = copy.deepcopy(path_formed)
-
-            path_formed_local.append((x,y))
-            visited_local[x][y] = True
             if x==m-1 and y==n-1:
-                print 'FOUND={}'.format(path_formed_local)
-                paths.append(path_formed_local)
+                #print 'here: path={}'.format(path)
+                paths.append(path + [(x,y)])
+
             else:
-                _recurse(x-1, y, path_formed_local, visited_local, obs)
-                _recurse(x, y-1, path_formed_local, visited_local, obs)
-                _recurse(x-1, y-1, path_formed_local, visited_local, obs)
-                _recurse(x+1, y, path_formed_local, visited_local, obs)
-                _recurse(x, y+1, path_formed_local, visited_local, obs)
-                _recurse(x+1, y+1, path_formed_local, visited_local, obs)
+                next_points = [ (x-1,y), (x,y-1), (x+1,y), (x,y+1) ]
+                for a,b in next_points:
+                    visited[x][y] = True
+                    path += [(x,y)]
+                    _recurse(a, b, path_length+1, obs, path)
+                    visited[x][y] = False
+                    path.pop(-1)
 
-        visited = [ [None for _ in range(n)] for _ in range(m) ]
-        #print visited
-        #print visited[2][3]
-        _recurse(0, 0, list(), visited, k)
 
-        min_length = None
-        for path in paths:
-            l = len(path)
-            if min_length:
-                if l < min_length:
-                    min_length = l
-            else:
-                min_length = l
-
-        if min_length:
-            return min_length
+        _recurse(0, 0, 0, k, list())
+        #print 'paths={}'.format(paths)
+        if paths:
+            sorted_paths = sorted(paths, key=lambda x:len(x))
+            return len(sorted_paths[0])-1
         else:
             return -1
 
