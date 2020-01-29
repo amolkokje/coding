@@ -1,10 +1,9 @@
-
 """
 https://leetcode.com/contest/weekly-contest-170/problems/get-watched-videos-by-your-friends/
 """
 
-class Solution(object):
 
+class Solution(object):
     def watchedVideosByFriends(self, watchedVideos, friends, id, level):
         """
         :type watchedVideos: List[List[str]]
@@ -14,38 +13,38 @@ class Solution(object):
         :rtype: List[str]
         """
         n = len(friends)
-        visited = [ False for _ in range(n) ]
-        wv_dict = dict()
 
-        def _recurse(visited, i, l):
-            if visited[i]:
-                return
+        fof = set()
+        queue = [[id]]
+        for l in range(level):
+            friends_id = queue.pop(0)
+            # print 'level={}, friends={}'.format(l, friends_id)
+            friends_next_level_id = list()
+            for fid in friends_id:
+                friends_next_level_id += friends[fid]
+            print friends_next_level_id
+            queue.append(list(set(friends_next_level_id)))
 
-            print 'l={}, wv={}'.format(l, wv_dict)
-            my_friends = friends[i]
-            print my_friends
+        # now queue[0] has the friends at the intended level
 
-            if l==level:
-                # get videos watched by friends
-                for f in my_friends:
-                    if f!=id:
-                        videos = watchedVideos[f]
-                        for v in videos:
-                            if wv_dict.get(v):
-                                wv_dict[v] += 1
-                            else:
-                                wv_dict[v] = 1
-                return
+        # if cyclic and return back to the same point, delete the starting point
+        target_friends = queue[0]
+        for i in range(len(target_friends)):
+            if target_friends[i] == id:
+                target_friends.pop(i)
+                break
 
-            visited_local = copy.deepcopy(visited)
-            visited_local[i] = True
+        # get all movies of friends at that level
+        videod = dict()
+        for fid in target_friends:
+            print 'fid={}'.format(fid)
+            for video in watchedVideos[fid]:
+                if not videod.get(video):
+                    videod[video] = 1
+                else:
+                    videod[video] += 1
 
-            for f in my_friends:
-                return _recurse(visited_local, f, l+1)
-
-        _recurse(visited, 0, 1)
-        return sorted(wv_dict, key=wv_dict.__getitem__)
-
+        return sorted(videod, key=videod.__getitem__)
 
 
 """
@@ -55,6 +54,8 @@ https://leetcode.com/contest/weekly-contest-170/problems/minimum-insertion-steps
 """
 https://leetcode.com/contest/weekly-contest-170/problems/xor-queries-of-a-subarray/
 """
+
+
 class Solution(object):
     def xorQueries(self, arr, queries):
         """
@@ -62,11 +63,8 @@ class Solution(object):
         :type queries: List[List[int]]
         :rtype: List[int]
         """
-        output = list()
-        for query in queries:
-            output.append(reduce(lambda x,y:x^y, arr[query[0]: query[1]+1]))
+        return [reduce(lambda x, y: x ^ y, arr[query[0]: query[1] + 1]) for query in queries]
 
-        return output
 
 """
 https://leetcode.com/contest/weekly-contest-170/problems/decrypt-string-from-alphabet-to-integer-mapping/
@@ -77,18 +75,17 @@ from string import ascii_lowercase
 
 dg_dict = None
 
+
 class Solution(object):
-
-
     def get_digit_str_map(self):
         dg_dict = dict()
         for s in ascii_lowercase:
-            val = ord(s)-96
+            val = ord(s) - 96
             if val >= 10:
                 dg_dict[str(val) + '#'] = s
             else:
                 dg_dict[str(val)] = s
-        #print dg_dict
+        # print dg_dict
         return dg_dict
 
     def convert_digit_to_str(self, d):
@@ -96,7 +93,7 @@ class Solution(object):
         if not dg_dict:
             dg_dict = self.get_digit_str_map()
 
-        #print 'in={}, out={}'.format(d, dg_dict[d])
+        # print 'in={}, out={}'.format(d, dg_dict[d])
         return dg_dict[d]
 
     def freqAlphabets(self, s):
@@ -109,14 +106,13 @@ class Solution(object):
         window = 3
         i = 0
         while i < n:
-            #print i
-            current = s[i:i+window]
+            # print i
+            current = s[i:i + window]
             if current[-1] == '#':
                 output += self.convert_digit_to_str(current)
                 i += window
             else:
                 output += self.convert_digit_to_str(s[i])
                 i += 1
-        #print output
+        # print output
         return output
-
