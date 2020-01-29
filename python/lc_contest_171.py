@@ -5,8 +5,8 @@ https://leetcode.com/contest/weekly-contest-171/problems/minimum-distance-to-typ
 
 from string import ascii_uppercase
 
-class Solution(object):
 
+class Solution(object):
     def get_cd(self, c, mat):
         for i in range(len(mat)):
             for j in range(len(mat[0])):
@@ -14,22 +14,15 @@ class Solution(object):
                     return (i, j)
 
     def get_distance(self, p0, p1):
-        #print 'p0={}, p1={}'.format(p0, p1)
-        return abs(p0[0]-p1[0]) + abs(p0[1]-p1[1])
+        return abs(p0[0] - p1[0]) + abs(p0[1] - p1[1])
 
-    def minimumDistance(self, word):
-        """
-        :type word: str
-        :rtype: int
-        """
-
-        # get all the letters from A to Z in a matrix
+    def get_letter_matrix(self):
         mat = list()
-        m = 6 # rows
+        m = 6  # rows
         k = 0
         row = None
         for a in ascii_uppercase:
-            if k%6 == 0:
+            if k % 6 == 0:
                 if row:
                     mat.append(row)
                 row = list()
@@ -38,65 +31,65 @@ class Solution(object):
             k += 1
         row += ['' for _ in range(4)]
         mat.append(row)
-        print mat
+        return mat
+
+    def minimumDistance(self, word):
+        """
+        :type word: str
+        :rtype: int
+        """
+
+        # get all the letters from A to Z in a matrix
+        mat = self.get_letter_matrix()
+        m = len(mat)  # rows
+        n = len(mat[0])  # cols
+        print m, n
 
         # distance counters for left and right fingers
-        leftd = 0
-        rightd = 0
+        left_hand_pts = list()
+        right_hand_pts = list()
 
-        # first letter
-        left = list()
-        right = list()
-        r, c = self.get_cd(word[0], mat)
-        # If on left side of matrix, use the left finger
-        if c < (m/2):
-            left.append(word[0])
-        else:
-            right.append(word[0])
+        # get movement of left and right hands
+        for w in word:
+            x, y = self.get_cd(w, mat)
+            # print '({},{}), n/2={}'.format(x, y, n/2)
+            if y < n / 2:  # point is on left side
+                left_hand_pts.append((x, y))
+            else:
+                right_hand_pts.append((x, y))
 
-        # letters going forward
-        dist = 0
-        for w in word[1:]:
-            pw = self.get_cd(w, mat)
+        # NOTE: optimize this for min distance, but this is not needed for normal keyboard type operation
+        # where the left hand remains on the left, and right hand remains on the right side.
+        # Hence. Answer incorrect for: "PRDL", "JDX", etc
+        if not left_hand_pts and right_hand_pts:
+            left_hand_pts.append(right_hand_pts.pop(-1))
+        elif not right_hand_pts and left_hand_pts:
+            right_hand_pts.append(left_hand_pts.pop(-1))
 
-            # if the next letter is closest to left finger, move using left finger, else right finger
-            if left and right:
-                ld = self.get_distance(pw, self.get_cd(left[-1], mat))
-                rd = self.get_distance(pw, self.get_cd(right[-1], mat))
-                if  ld <= rd:
-                    left.append(w)
-                    leftd += ld
-                else:
-                    right.append(w)
-                    rightd += rd
+        # print 'left={}, right={}'.format(left_hand_pts, right_hand_pts)
 
-            # if one of the finger is not used yet, then see which side the letter is and use that one
-            elif left and not right:
-                if pw[1] < m/2:
-                    leftd += self.get_distance(pw, self.get_cd(left[-1], mat))
-                    left.append(w)
-                else:
-                    right.append(w)
+        # get distance traversed by each hand
+        def _get_distance(pts):
+            k = len(pts)
+            i = 1
+            dist = 0
+            while i < k:
+                dist += self.get_distance(pts[i - 1], pts[i])
+                i += 1
+            return dist
 
-            elif right and not left:
-                if pw[1] < m/2:
-                    left.append(w)
-                else:
-                    rightd += self.get_distance(pw, self.get_cd(right[-1], mat))
-                    right.append(w)
+        return _get_distance(left_hand_pts) + _get_distance(right_hand_pts)
 
-
-        return leftd+rightd
 
 """
 https://leetcode.com/contest/weekly-contest-171/problems/convert-integer-to-the-sum-of-two-no-zero-integers/
 """
 
-class Solution(object):
 
+class Solution(object):
     def is_no_zero(self, x):
         arr_x = [int(s) for s in str(x)]
-        temp = filter(lambda x:x!=0, arr_x)
+        temp = filter(lambda x: x != 0, arr_x)
         return len(arr_x) == len(temp)
 
     def getNoZeroIntegers(self, n):
@@ -105,24 +98,25 @@ class Solution(object):
         :rtype: List[int]
         """
         for i in range(1, n):
-            if self.is_no_zero(i) and self.is_no_zero(n-i):
-                return [i, n-i]
-
+            if self.is_no_zero(i) and self.is_no_zero(n - i):
+                return [i, n - i]
 
 
 """
 https://leetcode.com/contest/weekly-contest-171/problems/number-of-operations-to-make-network-connected/
 """
-# UNDERSTAND WELL - SEE
+
+
+# AMOL - GOOD ONE
 
 class Solution(object):
     def makeConnected(self, n, connections):
-        if len(connections) < n-1:
+        if len(connections) < n - 1:
             return -1
 
         # create a list of nodes and its connections
-        node_connections = [ list() for _ in range(n)]
-        for a,b in connections:
+        node_connections = [list() for _ in range(n)]
+        for a, b in connections:
             node_connections[a].append(b)
             node_connections[b].append(a)
 
@@ -177,10 +171,5 @@ class Solution(object):
                     if astr[i] != '1':
                         min_flips += 1
 
-                        #print 'c={}, a={}, b={} --> mf={}'.format(cstr[i], astr[i], bstr[i], min_flips)
+                        # print 'c={}, a={}, b={} --> mf={}'.format(cstr[i], astr[i], bstr[i], min_flips)
         return min_flips
-
-
-
-
-

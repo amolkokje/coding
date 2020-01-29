@@ -1,3 +1,5 @@
+import sys
+
 """
 You are playing the following Nim Game with your friend: There is a heap of stones on the table, each time one of you
 take turns to remove 1 to 3 stones. The one who removes the last stone will be the winner. You will take the first
@@ -17,37 +19,29 @@ Explanation: If there are 4 stones in the heap, then you will never win the game
 
 
 class Solution(object):
-    def canWinNim(self, n):
+    @staticmethod
+    def canWinNim(n):
         """
         :type n: int
         :rtype: bool
         """
         poss = [1, 2, 3]
 
-        def _recurse(num_left):
-            print 'Me left = {}'.format(num_left)
-            if num_left <= 0:
-                return False
+        def _recurse(stones, taken):
 
-            # step-1: I remove
-            if num_left in poss:
-                return True
+            for take in poss:
+                if stones-take == 0:
+                    if taken:
+                        return False
+                    else:
+                        return True
 
-            # step-2: friend remove
-            for me_remove_stone in poss:
-                # num after I remove
-                new_num_left = (num_left - me_remove_stone)
+            taken = not taken
 
-                # if num after friend removes is ==0 then not possible, >0 may be possible
-                for friend_remove_stone in poss:
-                    num_after_friend_remove_stone = new_num_left - friend_remove_stone
-                    if num_after_friend_remove_stone > 0:
-                        return _recurse(num_after_friend_remove_stone)
+            return _recurse(stones-1, taken) or _recurse(stones-2, taken) or _recurse(stones-3, taken)
 
-            return False
-
-        return _recurse(n)
-
+        return _recurse(n-1, True) or _recurse(n-2, True) or _recurse(n-3, True)
+    
 
 """
 The Hamming distance between two integers is the number of positions at which the corresponding bits are different.
@@ -144,15 +138,15 @@ class Node(object):
         self.right = right
         self.next = next
 """
-class Solution(object):
 
 
+class Solution3(object):
     def connect(self, root):
         """
         :type root: Node
         :rtype: Node
         """
-        #print root
+        # print root
 
         # list containing node list at each level
         node_level_list = list()
@@ -164,11 +158,11 @@ class Solution(object):
                 if level >= len(node_level_list):
                     node_level_list.append(list())
 
-                #print len(node_level_list), node_level_list
+                # print len(node_level_list), node_level_list
                 node_level_list[level].append(node)
 
-                _recurse(node.left, level+1)
-                _recurse(node.right, level+1)
+                _recurse(node.left, level + 1)
+                _recurse(node.right, level + 1)
 
         _recurse(root, 0)
 
@@ -176,8 +170,8 @@ class Solution(object):
         # update node right vals
         for node_list in node_level_list:
             n = len(node_list)
-            for i in range(n-1):
-                node_list[i].right = node_list[i+1]
+            for i in range(n - 1):
+                node_list[i].right = node_list[i + 1]
             new_node = Node(val='#')
             node_list[-1].right = new_node
             node_list.append(new_node)
@@ -186,11 +180,11 @@ class Solution(object):
         return output
 
 
-
 if __name__ == '__main__':
     sol = Solution()
     for ip in [4, 8]:
         print 'ip={}, out={}'.format(ip, sol.canWinNim(ip))
+    sys.exit()
 
     sol2 = Solution2()
     for ip in [[1, 4], [3, 1], [4, 2]]:
