@@ -73,27 +73,26 @@ class Solution(object):
         n = len(arr)
         visited = [ False for _ in range(n) ]
 
-        def _recurse(i, visited):
+        def _is_valid(idx):
+            return True if idx>=0 and idx<n else False
+
+        def _recurse(i, path):
+            if arr[i] == 0:
+                return path+[i]
+
             if visited[i]:
-                return False
+                return
 
-            visited_local = copy.deepcopy(visited)
-            visited_local[i] = True
+            for next_idx in [ i-arr[i], i+arr[i] ]:
+                visited[i] = True
+                if _is_valid(next_idx):
+                    found = _recurse(next_idx, path+[i])
+                    if found:
+                        return found
+                visited[i] = False
 
-            index_left = i - arr[i]
-            if index_left < 0:
-                index_left = 0
+        return _recurse(start, list())
 
-            index_right = i + arr[i]
-            if index_right >= n:
-                index_right = n-1
-
-            if arr[index_left]==0 or arr[index_right]==0:
-                return True
-
-            return _recurse(index_left, visited_local) or _recurse(index_right, visited_local)
-
-        return _recurse(start, visited)
 
 
 

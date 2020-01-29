@@ -136,5 +136,30 @@ class Solution(object):
         _recurse(head, 1)
         #print self.result
         return self.result
-"""
-"""
+
+
+# if LL digits are in the reversed order
+class Solution(object):
+    def getDecimalValue(self, head):
+        """
+        :type head: ListNode
+        :rtype: int
+        """
+
+        def _recurse(node, power, val):
+            #print 'node={}, power={}, val={}'.format(node.val, power, val)
+            if node:
+                if node.val == 1:
+                    power2 = 1
+                    for p in range(power):
+                        power2 *= 2
+                    val += power2
+                    return _recurse(node.next, power+1, val)
+                else:
+                    return _recurse(node.next, power+1, val)
+            else:
+                return val
+
+        output = _recurse(head, 0, 0)
+        #print 'out={}'.format(output)
+        return output
