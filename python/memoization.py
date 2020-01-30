@@ -7,7 +7,7 @@ def memoize_multi_args(func):
 
     def wrapper(*args, **kwargs):
         key = str(args) + str(**kwargs)
-        if key not in cache_dict.keys():
+        if not cache_dict.get(key):
             cache_dict[key] = func(*args, **kwargs)
         return cache_dict[key]
 

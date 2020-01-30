@@ -10,39 +10,41 @@ import sys, os, copy
 
 def knapsack(items, weights, max_capacity):
     n = len(items)
-
     visited = [False for _ in range(n)]
 
-    def _recurse(i, weight_formed, value_formed):
+    def _recurse(i, weight, value):
         if visited[i]:
-            return weight_formed, value_formed
+            return weight, value
 
-        new_weight = weight_formed + weights[i]
-        if new_weight > max_capacity:
-            return weight_formed, value_formed
+        if weight + weights[i] > max_capacity:
+            return weight, value
 
-        max_weight_found = 0
-        max_weight_value = None
-        for k in range(i + 1, n):
-            visited[i] = True
-            found_weight, found_value = _recurse(k, new_weight, value_formed + items[k])
-            visited[i] = False
+        visited[i] = True
+        max_weight = None
+        max_value = None
+        for k in range(n):
+            foundw, foundv = _recurse(k, weight + weights[i], value + items[i])
+            if max_weight:
+                if foundw > max_weight:
+                    max_weight, max_value = foundw, foundv
+            else:
+                max_weight, max_value = foundw, foundv
+        visited[i] = False
 
-            if max_weight_found < found_weight <= max_capacity:
-                max_weight_found = found_weight
-                max_weight_value = found_value
+        if max_weight:
+            return max_weight, max_value
 
-        return max_weight_found, max_weight_value
-
-    max_found_weight = 0
-    max_weight_value = None
+    max_weight = None
+    max_value = None
     for i in range(n):
-        output_weight, output_value = _recurse(i, 0, 0)
-        if max_found_weight < output_weight <= max_capacity:
-            max_found_weight = output_weight
-            max_weight_value = output_value
+        foundw, foundv = _recurse(i, 0, 0)
+        if max_weight:
+            if foundw > max_weight:
+                max_weight, max_value = foundw, foundv
+        else:
+            max_weight, max_value = foundw, foundv
 
-    print 'OUTPUT: Weight={}, Value={}'.format(max_found_weight, max_weight_value)
+    print max_weight, max_value
 
 
 # Traveling Salesman Problem: (NP complete)
@@ -51,9 +53,7 @@ def knapsack(items, weights, max_capacity):
 # https://www.geeksforgeeks.org/traveling-salesman-problem-tsp-implementation/
 
 def get_shortest_distance_to_visit_all_cities(grid, start_city):
-    path_distance_tuples = list()
-    n = len(grid)  # total cities
-    print 'start_city={}'.format(start_city)
+    n = len(grid)
 
     def get_connections(x):
         connections_dict = dict()
@@ -62,39 +62,30 @@ def get_shortest_distance_to_visit_all_cities(grid, start_city):
                 connections_dict[i] = grid[x][i]
         return connections_dict
 
-    visited = list()
+    def _recurse(city, path, distance):
+        # print city, path, distance
 
-    def _recurse(i, distance):
-        if i in visited:
-            return
-
-        visited.append(i)
-
-        conn_dict = get_connections(i)
-
-        if len(visited) == n:
-            # visited all
-            # if start in neighbors, made it
-            if start_city in conn_dict.keys():
-                path_distance_tuples.append((visited + [start_city], distance + grid[i][start_city]))
-                # return (visited + [start_city], distance + grid[i][start_city])  # IF REQUIRED TO FIND A PATH
+        if city in path:
+            if len(path) == n and city == start_city:
+                print 'PATH={}, DISTANCE={}'.format(path, distance)
+                return distance
             else:
                 return
-        else:
-            # continue recursing
 
-            for conn in conn_dict.keys():
-                _recurse(conn, distance + grid[i][conn])
-                # IF NEED TO FIND ALL PATHS
-                # found = _recurse(visited, conn, distance + grid[i][conn])
-                # if found:
-                #    return found
-        visited.pop(-1)
+        min_dist = None
+        conndict = get_connections(city)
+        for conn, dist in conndict.iteritems():
+            found = _recurse(conn, path + [city], distance + dist)
+            if found:
+                if not min_dist:
+                    min_dist = found
+                else:
+                    if found < min_dist:
+                        min_dist = found
+        if min_dist:
+            return min_dist
 
-    _recurse(start_city, 0)
-    paths_sorted_by_distance = sorted(path_distance_tuples, key=lambda x: x[1])
-    print 'Paths sorted by distance={}'.format(paths_sorted_by_distance)
-    return paths_sorted_by_distance[0][1]
+    return _recurse(start_city, list(), 0)
 
 
 # Hamiltonian Cycle: (NP Complete)
@@ -107,41 +98,25 @@ def get_shortest_distance_to_visit_all_cities(grid, start_city):
 def hamilton_cycle_exists(grid):
     n = len(grid)  # total pts
     start = 0
-    visited = [False for _ in range(n)]
     print 'n={}'.format(n)
 
     def get_connections(x):
-        connections = list()
-        for i in range(n):
-            if grid[x][i] == 1:
-                connections.append(i)
-        return connections
+        return [i for i in range(n) if grid[x][i] == 1]
 
     def _recurse(i, path):
-        if visited[i]:
-            return
-
-        path_local = copy.deepcopy(path)
-        path_local.append(i)
+        if i in path:
+            if len(path) == n and i == start:
+                # print 'here: {}'.format(path)
+                return True
+            else:
+                return
 
         connections = get_connections(i)
 
-        if len(filter(lambda x: x == True, visited)) == n - 1:  # i.e. Visited all
-            if start in connections:
-                # print 'PATH={}'.format(path_local + [start])
-                return True
-            else:
-                return False
-        else:
-            # keep looking
-            for conn in connections:
-                # return the first found, and no need to recurse further
-                visited[i] = True
-                found = _recurse(conn, path_local)
-                visited[i] = False
-                if found:
-                    return found
-            return False
+        for conn in connections:
+            found = _recurse(conn, path + [i])
+            if found:
+                return found
 
     return _recurse(start, list())
 
@@ -251,7 +226,7 @@ def color_graph(grid, m):
     pcolor_dict = dict()
 
     def _recurse(p):
-        if p in pcolor_dict.keys():
+        if pcolor_dict.get(p):
             return
 
         # SET COLOR OF POINT
