@@ -5,6 +5,10 @@ import heapq
 # DIJKSTRA - for graph with weighted edges, find the shortest distance to all nodes from a given start node
 # e.g. Networking - find the shortest distance to a server (distance between routers is a weight)
 
+# NOTE:
+# - No weight on edges --> normal queue
+# - Weights on edges --> priority queue
+
 def dijkstra(graph, starting_vertex):
     distances = {vertex: float('infinity') for vertex in graph}  # or use sys.maxint to indicate some max value
     distances[starting_vertex] = 0
