@@ -30,7 +30,7 @@ class Solution(object):
         def _recurse(stones, taken):
 
             for take in poss:
-                if stones-take == 0:
+                if stones - take == 0:
                     if taken:
                         return False
                     else:
@@ -38,10 +38,10 @@ class Solution(object):
 
             taken = not taken
 
-            return _recurse(stones-1, taken) or _recurse(stones-2, taken) or _recurse(stones-3, taken)
+            return _recurse(stones - 1, taken) or _recurse(stones - 2, taken) or _recurse(stones - 3, taken)
 
-        return _recurse(n-1, True) or _recurse(n-2, True) or _recurse(n-3, True)
-    
+        return _recurse(n - 1, True) or _recurse(n - 2, True) or _recurse(n - 3, True)
+
 
 """
 The Hamming distance between two integers is the number of positions at which the corresponding bits are different.
@@ -60,38 +60,17 @@ The above stars point to positions where the corresponding bits are different.
 
 
 class Solution2(object):
-    def _convert_int_to_bin(self, x):
-        bin_str = bin(x).split('b')[1]
-        n = len(bin_str)
-        diff = 32 - n
-        if diff > 0:
-            bin_str = ''.join(['0' for _ in range(diff)]) + bin_str
-        return bin_str
-
-    def hammingDistance(self, x, y):
+    @staticmethod
+    def hammingDistance(x, y):
         """
         :type x: int
         :type y: int
         :rtype: int
         """
-        x = self._convert_int_to_bin(x)
-        y = self._convert_int_to_bin(y)
-
-        tstart = None
-        min_diff = 33
-        for i in range(32):
-            if x[i] != y[i]:
-                if not tstart:
-                    tstart = i
-                else:
-                    diff = i - tstart
-                    if diff < min_diff:
-                        min_diff = diff
-                        tstart = i
-                        # print tstart
-        if min_diff == 33:
-            return None
-        return min_diff
+        bx = '{:032b}'.format(x)
+        by = '{:032b}'.format(y)
+        result = [bx[i] != by[i] for i in range(32)]
+        return len(filter(lambda x: x == True, result))
 
 
 """
@@ -139,7 +118,8 @@ class Node(object):
         self.next = next
 """
 
-
+# SOLUTION-1: Use DFS and generate list for each level of BT
+# SOLUTION-2: Use BFS and add the whole level as as list in the queue i.e. queue is list of lists
 class Solution3(object):
     def connect(self, root):
         """
@@ -181,11 +161,8 @@ class Solution3(object):
 
 
 if __name__ == '__main__':
-    sol = Solution()
     for ip in [4, 8]:
-        print 'ip={}, out={}'.format(ip, sol.canWinNim(ip))
-    sys.exit()
+        print 'ip={}, out={}'.format(ip, Solution.canWinNim(ip))
 
-    sol2 = Solution2()
     for ip in [[1, 4], [3, 1], [4, 2]]:
-        print 'ip={}, hamming distance={}'.format(ip, sol2.hammingDistance(ip[0], ip[1]))
+        print 'ip={}, hamming distance={}'.format(ip, Solution2.hammingDistance(ip[0], ip[1]))

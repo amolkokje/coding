@@ -48,28 +48,23 @@ def all_letters_distinct(ip_str):
 
 def get_longest_concatenated_str_with_unique_letters(A):
     n = len(A)
-    visited = [ None for _ in range(n) ]
-    str_with_unique_letters = list()
+    visited = [ False for _ in range(n) ]
+    str_with_unique_letters = set()
 
-    def _recurse(str_formed, visited, i):
+    def _recurse(str_formed, i):
         if visited[i]:
             return
 
-        visited_local = copy.deepcopy(visited)
-        str_formed_local = copy.deepcopy(str_formed)
-
-        visited_local[i] = True
-        str_formed_local += A[i]
-
-        if all_letters_distinct(str_formed_local):
-            if str_formed_local not in str_with_unique_letters:
-                str_with_unique_letters.append(str_formed_local)
+        if all_letters_distinct(str_formed + A[i]):
+            str_with_unique_letters.add(str_formed+A[i])
 
             for j in range(i+1, n):
-                _recurse(str_formed_local, visited_local, j)
+                visited[i] = True
+                _recurse(str_formed +A[i], j)
+                visited[i] = False
 
     for i in range(n):
-        _recurse('', visited, i)
+        _recurse('', i)
 
     #print str_with_unique_letters
     longest_len = 0
