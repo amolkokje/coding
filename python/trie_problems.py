@@ -41,6 +41,9 @@ class TrieNode(object):
         self.children = list()
         self.end_of_word = False  # indicates if node is end of word
 
+    def __repr__(self):
+        return '<TN:{}:{}>'.format(self.value, self.end_of_word)
+
 
 class Trie(object):
     def __init__(self):
@@ -95,6 +98,105 @@ class Trie(object):
                 return (False, False)
 
         return (True, True if current.end_of_word else False)
+
+    def search_prefix(self, prefix):
+
+        # go till the last letter node
+        current = self.root
+        for w in prefix:
+            found = False
+            for child in current.children:
+                if child.value == w:
+                    current = child
+                    found = True
+            if not found:
+                # There is no word for the prefix
+                return
+
+        # have reached current, so from here find the words that can be formed
+        output = list()
+
+        def _recurse(node, formed):
+            if node.end_of_word:
+                output.append(formed)
+
+            if node.children:
+                for child in node.children:
+                    _recurse(child, formed + child.value)
+
+        _recurse(current, prefix)
+        return output
+
+    def remove(self, word):
+        print 'removing {}'.format(word)
+        current = self.root
+
+        # recurse till the end of word, and delete nodes as you come back up
+        # - if the node has no children, delete it
+        # - if the node has children, then just mark the end_of_word as False
+
+        node_stack = list()
+
+        # go to the end of the word and come back up
+        for w in word:
+            found = False
+            for node in current.children:
+                if w == node.value:
+                    node_stack.append(current)
+                    current = node
+                    found = True
+                    break
+            if not found:
+                # word is not found
+                return
+        # add the last one to the stack
+        node_stack.append(current)
+
+        # print 'node stack = {}'.format(node_stack)
+
+        # reached the end of word - so it has to be a word. If not, do not attempt to delete
+
+        remove_child = None
+
+        # if the last node has children, mark it as not the end and return. No need to delete anything
+        current = node_stack.pop(-1)
+        if current.children:
+            current.end_of_word = False
+            return
+        else:
+            remove_child = current
+
+        # if last node does not have children, then keep on deleting until reach:
+        # - node with end_of_word
+        # - node with children
+
+        while node_stack:
+            current = node_stack.pop(-1)
+            # print 'curr = {}'.format(current)
+
+            if remove_child is not None:
+                for i in range(len(current.children)):
+                    if current.children[i].value == remove_child.value:
+                        current.children.pop(i)
+                        break
+
+            if current.children or current.end_of_word:
+                return
+
+            remove_child = current
+
+    def show(self):
+        output = list()
+
+        def _recurse(node, formed):
+            if node.end_of_word:
+                output.append(formed)
+
+            for child in node.children:
+                _recurse(child, formed + child.value)
+
+        _recurse(self.root, '')
+        return output
 
 
 #######################################################
@@ -252,8 +354,7 @@ def main():
     # -------------------------
     # AMOL
     keys = ["the", "a", "there", "anaswe", "any", "by", "their"]
-    print keys
-    test_trie = AmolTrie()
+    test_trie = Trie()
     for k in keys:
         test_trie.insert(k)
 
