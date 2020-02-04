@@ -1,4 +1,6 @@
 
+# NOTE - better implementation in file: large_file.py
+
 def read_file_lines(file):
     with open(file, 'r') as fh:
         ## instead of: return fh.readlines()
