@@ -156,7 +156,6 @@ if __name__ == '__main__':
         print 'Arr={}'.format(arr)
         update_arr(arr)
         print 'After Update: Arr={}'.format(arr)
-    sys.exit()
 
     print '##################################################################'
 
