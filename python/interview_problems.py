@@ -54,6 +54,7 @@ def knapsack(items, weights, max_capacity):
 
 def get_shortest_distance_to_visit_all_cities(grid, start_city):
     n = len(grid)
+    visited = list()
 
     def get_connections(x):
         connections_dict = dict()
@@ -70,10 +71,12 @@ def get_shortest_distance_to_visit_all_cities(grid, start_city):
                 print 'PATH={}, DISTANCE={}'.format(path, distance)
                 return distance
             else:
+                # works as an alternative to maintaining visited list
                 return
 
         min_dist = None
         conndict = get_connections(city)
+
         for conn, dist in conndict.iteritems():
             found = _recurse(conn, path + [city], distance + dist)
             if found:
@@ -82,6 +85,7 @@ def get_shortest_distance_to_visit_all_cities(grid, start_city):
                 else:
                     if found < min_dist:
                         min_dist = found
+
         if min_dist:
             return min_dist
 
@@ -109,6 +113,7 @@ def hamilton_cycle_exists(grid):
                 # print 'here: {}'.format(path)
                 return True
             else:
+                # works as an alternative to maintaining visited list
                 return
 
         connections = get_connections(i)
@@ -226,6 +231,7 @@ def color_graph(grid, m):
     pcolor_dict = dict()
 
     def _recurse(p):
+        # works as an alternative to visited
         if pcolor_dict.get(p):
             return
 

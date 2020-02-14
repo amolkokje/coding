@@ -53,27 +53,24 @@ class Trie(object):
         """ insert word in the trie """
         # start from root
         current = self.root
-        n = len(word)
 
         # check if each letter of the word exists in the trie tree
-        i = 0
-        while i < n:
-            node_found = False
+        for w in word:
+            node_found = None
 
             # check if the char exists in trie tree, and if it does go to it
             for trie_node in current.children:
-                if trie_node.value == word[i]:
-                    current = trie_node
-                    i += 1
-                    node_found = True
+                if trie_node.value == w:
+                    node_found = trie_node
                     break
 
             # if the char does not exist, then add and go to it
-            if not node_found:
-                new_trie_node = TrieNode(word[i])
+            if node_found is not None:
+                current = node_found
+            else:
+                new_trie_node = TrieNode(w)
                 current.children.append(new_trie_node)
                 current = new_trie_node
-                i += 1
 
         # for the last char added, set the end_of_word=True as it is end of word
         current.end_of_word = True
@@ -139,25 +136,25 @@ class Trie(object):
 
         # go to the end of the word and come back up
         for w in word:
-            found = False
+            found = None
             for node in current.children:
                 if w == node.value:
-                    node_stack.append(current)
-                    current = node
-                    found = True
+                    found = node
                     break
-            if not found:
+            if found is not None:
+                current = found
+                node_stack.append(current)
+            else:
                 # word is not found
                 return
-        # add the last one to the stack
-        node_stack.append(current)
 
-        # print 'node stack = {}'.format(node_stack)
+        #print 'node stack = {}'.format(node_stack)
 
-        # reached the end of word - so it has to be a word. If not, do not attempt to delete
+        ## reached the end of word - so it has to be a word. If not, do not attempt to delete
 
         remove_child = None
 
+        # last node is a special case
         # if the last node has children, mark it as not the end and return. No need to delete anything
         current = node_stack.pop(-1)
         if current.children:
@@ -172,15 +169,17 @@ class Trie(object):
 
         while node_stack:
             current = node_stack.pop(-1)
-            # print 'curr = {}'.format(current)
+            #print 'curr = {}'.format(current)
 
             if remove_child is not None:
+                #print '---> removing child {}'.format(remove_child)
                 for i in range(len(current.children)):
                     if current.children[i].value == remove_child.value:
                         current.children.pop(i)
                         break
 
-            if current.children or current.end_of_word:
+            if len(current.children)>0 or current.end_of_word:
+                #print '--> has children OR end of word'
                 return
 
             remove_child = current

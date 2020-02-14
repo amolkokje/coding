@@ -5,6 +5,9 @@ import heapq
 # DIJKSTRA - for graph with weighted edges, find the shortest distance to all nodes from a given start node
 # e.g. Networking - find the shortest distance to a server (distance between routers is a weight)
 
+# By using a priority queue, we ensure that as we explore one vertex after another, we are always exploring
+# the one with the smallest distance.
+
 # NOTE:
 # - No weight on edges --> normal queue
 # - Weights on edges --> priority queue
