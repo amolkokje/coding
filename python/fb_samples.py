@@ -132,11 +132,71 @@ def one_edit_apart(w1, w2):
                     return False
 
 
+"""
+Queue using 2 stacks
+"""
+
+
+# Enter your code here. Read input from STDIN. Print output to STDOUT
+
+class Stack(object):
+    def __init__(self):
+        self.elements = list()
+
+    def push(self, x):
+        self.elements.append(x)
+
+    def pop(self):
+        if len(self.elements) > 0:
+            return self.elements.pop(0)
+
+    def peek(self):
+        return self.elements[0]
+
+    def size(self):
+        return len(self.elements)
+
+
+class Queue(object):
+    def __init__(self):
+        self.s1 = Stack()  # to take in input
+        self.s2 = Stack()  # to give out output
+
+    def enqueue(self, x):
+        self.s1.push(x)
+
+    def dequeue(self):
+        # transfer all from s1 to s2
+        while self.s1.size() > 0:
+            self.s2.push(self.s1.pop())
+
+        # read last element from s2
+        ret = self.s2.pop()
+
+        while self.s2.size() > 0:
+            self.s1.push(self.s2.pop())
+
+        return ret
+
+    def peek(self):
+        while self.s1.size() > 0:
+            self.s2.push(self.s1.pop())
+
+        ret = self.s2.peek()
+
+        while self.s2.size() > 0:
+            self.s1.push(self.s2.pop())
+
+        return ret
+
+
 if __name__ == '__main__':
 
+    print '##########################################'
     for n in [3, 4]:
         print 'n={}, grid={}'.format(n, spiral(n))
 
+    print '##########################################'
     for words in [
         ('cat', 'dog'),
         ('cat', 'cats'),
@@ -146,3 +206,13 @@ if __name__ == '__main__':
         ('cat', 'act')
     ]:
         print '{}, {}, one_edit_apart={}'.format(words[0], words[1], one_edit_apart(words[0], words[1]))
+
+    print '##########################################'
+    q = Queue()
+    print 'Enqueue ...'
+    for i in range(10):
+        q.enqueue(i)
+
+    print 'Dequeue ...'
+    for _ in range(10):
+        print q.dequeue()
