@@ -46,26 +46,25 @@ def get_two_sum(arr, target):
 
 # NOTE: list() cannot be added to set() as list() is mutable and set() is immutable. So have to add tuple()
 def get_num_sum(arr, target, count):
-
     n = len(arr)
     three_sum_set = set()
-    visited = [ False for _ in range(n) ]
+    visited = [False for _ in range(n)]
     num_list = list()
 
     def _recurse(i):
         if visited[i]:
             return
 
-        if len(num_list) > (count-1):
+        if len(num_list) > (count - 1):
             return
 
-        if len(num_list) == count-1:
-            if sum(num_list)+arr[i] == target:
+        if len(num_list) == count - 1:
+            if sum(num_list) + arr[i] == target:
                 # converting to tuple and adding to set will ensure there are no duplicates
                 three_sum_set.add(tuple(sorted(num_list + [arr[i]])))
                 return
 
-        for k in range(i+1, n):
+        for k in range(i + 1, n):
             visited[i] = True
             num_list.append(arr[i])
             _recurse(k)
@@ -74,7 +73,6 @@ def get_num_sum(arr, target, count):
 
     for i in range(n):
         _recurse(i)
-
 
     return three_sum_set
 
@@ -98,8 +96,9 @@ number_letter_dict = {
     5: ['j', 'k', 'l']
 }
 
+
 def generate_combinations(nums):
-    nums = [ int(s) for s in nums ]
+    nums = [int(s) for s in nums]
 
     def _get_letters(x):
         return number_letter_dict[x]
@@ -107,7 +106,7 @@ def generate_combinations(nums):
     def _combine_with_new_letters(iplist, letters):
         new = list()
         for ip in iplist:
-            new += [ ip+l for l in letters ]
+            new += [ip + l for l in letters]
         return new
 
     out = list()
@@ -132,70 +131,33 @@ def generate_combinations(nums):
 # Example 5: Input: "{[]}" Output: true
 # REF: https://leetcode.com/problems/valid-parentheses/submissions/
 
-class Stack(object):
-    """ Stack data structure using List """
+def is_bracket_string_valid(s):
+    closed_matches = {')': '(', ']': '[', '}': '{'}
+    closed_brackets = closed_matches.keys()
+    open_brackets = ['(', '[', '{']
+    stack = list()
 
-    def __init__(self):
-        self.elememts = list()
+    for i in s:
+        if i in open_brackets:
+            stack.append(i)
 
-    def __repr__(self):
-        return '<Stack: {}>'.format(self.elememts)
-
-    def insert(self, x):
-        self.elememts.append(x)
-
-    def get(self):
-        if self.elememts:
-            return self.elememts.pop(-1)
-
-    def check(self):
-        if self.elememts:
-            return self.elememts[-1]
-
-    def get_depth(self):
-        return len(self.elememts)
-
-    def is_empty(self):
-        return True if len(self.elememts)==0 else False
-
-
-closed_bracket_dict = {
-    ']': '[',
-    ')': '(',
-    '}': '{'
-}
-open_bracket_dict = {
-    '[': ']',
-    '(': ')',
-    '{': '}'
-}
-
-
-def is_string_valid(ipstring):
-    """ Put all opening brackets in stack. If a closing bracket is found right after an opening bracket, then
-    its valid and remove the opening-closing pair from the stack """
-
-    ipstack = Stack()
-
-    for s in ipstring:
-        if s in closed_bracket_dict.keys():
-            # remove from the stack if corresponding opening bracket found
-            if ipstack.check() == closed_bracket_dict[s]:
-                ipstack.get()
+        elif i in closed_brackets:
+            if len(stack) > 0:  # if no opening bracket found in the beginning
+                if stack[-1] == closed_matches[i]:
+                    stack.pop(-1)
+                else:
+                    return 'NO'
             else:
-                # if not found, then its not valid
-                return False
+                return 'NO'  # invalid bracket found
 
-        elif s in open_bracket_dict.keys():
-            # insert all opening brackets into the stack
-            ipstack.insert(s)
+        else:
+            return 'NO'
 
-    # at the end the stack must be empty
-    if ipstack.get_depth() == 0:
-        return True
-    else:
-        return False
+    # if not enough closing brackets found
+    if len(stack) > 0:
+        return 'NO'
 
+    return 'YES'
 
 
 # Q. Given a sorted array nums, remove the duplicates in-place such that each element appear only once and return the new length.
@@ -231,7 +193,7 @@ if __name__ == '__main__':
     for ip in iplist:
         print 'target2={}, target3={}, arr={}'.format(ip['target2'], ip['target3'], ip['arr'])
         print 'output2={}, output3={}'.format(get_two_sum(ip['arr'], ip['target2']),
-                                                      get_num_sum(ip['arr'], ip['target3'], 3))
+                                              get_num_sum(ip['arr'], ip['target3'], 3))
 
     print '**************************'
     nums_list = ["23",
@@ -245,7 +207,7 @@ if __name__ == '__main__':
     print '**************************'
     str_list = ["()", "()[]{}", "(]", "([)]", "{[]}"]
     for s in str_list:
-        print 'str={}, is_valid={}'.format(s, is_string_valid(s))
+        print 'str={}, is_valid={}'.format(s, is_bracket_string_valid(s))
 
     print '**************************'
     arr_list = [[1, 1, 2], [0, 0, 1, 1, 1, 2, 2, 3, 3, 4]]
