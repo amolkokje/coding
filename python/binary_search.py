@@ -99,7 +99,7 @@ def binary_search_rotated_array(arr, x):
             if arr[m] == x:
                 return m
 
-            # if left side is not rotated
+            # if left side is rotated
             #  - if element exists, go there, else go right
             if arr[l] <= arr[m]:
                 if arr[l] <= x < arr[m]:
@@ -107,7 +107,7 @@ def binary_search_rotated_array(arr, x):
                 else:
                     return _recurse(m+1, r)
 
-            # if right side is not rotated
+            # if right side is rotated
             #  - if element exists, go there, else go left
             if arr[m] <= arr[r]:
                 if arr[m] < x <= arr[r]:

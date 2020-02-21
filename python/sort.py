@@ -1,9 +1,10 @@
 import sys, os, copy
 
 ip_lists = [
+    [5, 8, 1, 3, 7, 9, 2],
     [8, 7, 5, 2, 3, 4, 1, 0],
     [12, 2, 13, 4, 25],
-    [2, 32, 4, 5, 7, 8, 4, 5],
+    [2, 32, 4, 5, 7, 8, 4, 5],   # QS low-key not working for this case!
 ]
 
 
@@ -32,7 +33,7 @@ def selectionSort(arr):
     """
     n = len(arr)
     for i in range(n - 1):
-        mi = arr[i]  # index for min value
+        mi = i  # index for min value
         for j in range(i + 1, n):
             if arr[j] < arr[mi]:
                 mi = j  # update the index for min value
@@ -46,43 +47,30 @@ def selectionSort(arr):
 # merge sort - ascending
 # Merges two subarrays of arr[]. 
 #   First subarray is arr[l..m] 
-#   Second subarray is arr[m+1..r] 
-import copy
-
+#   Second subarray is arr[m+1..r]
 
 def merge(arr, l, m, r):
-    # NOTE: When slicing arrays, note that the last index is not included. Eg. d=range(5) -> d[3:5]=[3,4]     
-    L = copy.deepcopy(
-        arr[l:m + 1])  # l->m ---- this will give equal division because m=(l+r)/2 will give us floor value in m
-    R = copy.deepcopy(arr[m + 1:r + 1])  # m+1->r
-    n1 = len(L)
-    n2 = len(R)
+    new = list()  # add sorted list to new array, and replace in original at the end
+    i = l
+    j = m + 1
 
-    # Merge the temp arrays back into arr[l..r] 
-    i = 0  # Initial index of first subarray
-    j = 0  # Initial index of second subarray
-    k = l  # Initial index of merged subarray
-
-    while i < n1 and j < n2:
-        if L[i] <= R[j]:
-            arr[k] = L[i]
+    while i <= m and j <= r:
+        if arr[i] < arr[j]:
+            new.append(arr[i])
             i += 1
         else:
-            arr[k] = R[j]
+            new.append(arr[j])
             j += 1
-        k += 1
 
-        # Copy the remaining elements of L[], if there are any
-    while i < n1:
-        arr[k] = L[i]
+    while i <= m:
+        new.append(arr[i])
         i += 1
-        k += 1
 
-    # Copy the remaining elements of R[], if there are any 
-    while j < n2:
-        arr[k] = R[j]
+    while j <= r:
+        new.append(arr[j])
         j += 1
-        k += 1
+
+    arr[l:r + 1] = new  # r+1 i.e. include r as well in the range
 
 
 # l is for left index and r is right index of the 
@@ -103,8 +91,9 @@ def mergeSort(arr, l, r):
 def quick_sort(arr):
     def partition(low, high):
         i = low  # index to start putting elements on the left from
-        pivot = arr[high]  # can be any random value - min/max/median of the range
+        pivot = arr[high]  # can be any random value - at x`min/max/median(index, not value) of the range
 
+        # go until one element before the last, as the last will be swapped, since its the pivot
         for j in range(low, high):
             # move elements lower than pivot to the left hand side
             if arr[j] <= pivot:
@@ -122,6 +111,35 @@ def quick_sort(arr):
             # sort sub-ranges
             quicksort(low, pi - 1)
             quicksort(pi + 1, high)
+
+    quicksort(0, len(arr) - 1)
+
+
+def quick_sort_low_key(arr):
+    def partition(low, high):
+        # since setting pivot as 'low', start an element after that
+        i = low + 1
+        pivot = arr[low]
+
+        # need to go until the from an element after the first element(pivot) to the very last element
+        # in the range now
+        for j in range(low + 1, high + 1):
+            if arr[j] <= pivot:
+                arr[i], arr[j] = arr[j], arr[i]
+                i += 1
+
+        arr[i - 1], arr[low] = arr[low], arr[i - 1]
+        return i
+
+    def quicksort(low, high):
+        #raw_input('{}:{}'.format(low, high))
+        if low < high:
+            # get partitioned sub-ranges
+            pi = partition(low, high)
+
+            # sort sub-ranges
+            quicksort(low, pi - 1)
+            quicksort(pi, high-1) ### SOME PROB HERE
 
     quicksort(0, len(arr) - 1)
 
@@ -149,27 +167,30 @@ if __name__ == '__main__':
         # shallow copy -- a regular python copy a=b is a shallow copy. A shallow copy will result in another reference pointing to the same object
         # deep copy -- deep copy will create a new object same as original object, and the new reference will point to the new object
 
+        print '\n\n*** INPUT = {}'.format(ip_list)
+
+        #qs_list = copy.deepcopy(ip_list)
+        #quick_sort(qs_list)
+        #print 'High Key: Quick Sort = {}'.format(qs_list)
+
         qs_list = copy.deepcopy(ip_list)
-        quick_sort(qs_list)
-        print qs_list
+        quick_sort_low_key(qs_list)
+        print 'Low Key: Quick Sort = {}'.format(qs_list)
+        raw_input()
+        continue
 
         is_list = copy.deepcopy(ip_list)
-        quick_sort(is_list)
-        print is_list
+        insertion_sort(is_list)
+        print 'Insertion Sort = {}'.format(is_list)
 
         bubbleSort_list = copy.deepcopy(ip_list)
         bubbleSort(bubbleSort_list)
-        print bubbleSort_list
+        print 'Bubble Sort = {}'.format(bubbleSort_list)
 
         selectionSort_list = copy.deepcopy(ip_list)
         selectionSort(selectionSort_list)
-        print selectionSort_list
+        print 'Selection Sort = {}'.format(selectionSort_list)
 
         mergeSort_list = copy.deepcopy(ip_list)
         mergeSort(mergeSort_list, 0, len(mergeSort_list) - 1)
-        print mergeSort_list
-
-        ip_list.sort()
-
-        assert ip_list == bubbleSort_list == selectionSort_list == mergeSort_list, 'Lists not sorted correctly: ip_list={}, bubble_sort={}, selection_sort={}, mergeSort_list={}'.format(
-            ip_list, bubbleSort_list, selectionSort_list, mergeSort_list)
+        print 'Merge Sort = {}'.format(mergeSort_list)

@@ -45,7 +45,7 @@ def dijkstra(graph, starting_vertex):
 # BFS:
 # -> For finding shortest distance between 2 points in a graph or a tree
 
-
+# BFS works very well for non-weighted shortest distance search
 def calculate_min_distance(graph, v1, v2):
     queue = [[v1]]  # store lists of paths
     visited = [v1]  # visited nodes
@@ -67,6 +67,31 @@ def calculate_min_distance(graph, v1, v2):
                 visited.append(neighbor)
 
 
+# For shortest distance search with weighted edges, problem with BFS is that it will return the first found, which
+# may not be shortest. So, for this case, need to find all the possibilities and then pick the lowest cost path
+# Hence, use DFS -OR- use Dijkstra and get the value you want from it
+def calculate_min_distance_weighted(graph, v1, v2):
+    def _recurse(n, path, wformed):
+        if n in path:
+            return
+
+        if n == v2:
+            return wformed
+
+        mind = None
+        for neigh in graph[n].keys():
+            w = _recurse(neigh, path + [n], wformed + graph[n][neigh])
+            if w:
+                if not mind:
+                    mind = w
+                elif w < mind:
+                    mind = w
+
+        return mind
+
+    return _recurse(v1, [], 0)
+
+
 # REF: https://www.interviewcake.com/concept/java/dijkstras-algorithm
 # REF: https://bradfieldcs.com/algos/graphs/dijkstras-algorithm/
 if __name__ == '__main__':
@@ -78,6 +103,7 @@ if __name__ == '__main__':
         'Y': {'X': 1, 'W': 1, 'Z': 1},
         'Z': {'W': 5, 'Y': 1},
     }
+    print(calculate_min_distance_weighted(example_graph, 'X', 'U'))
     print(dijkstra(example_graph, 'X'))
 
     example_graph = {

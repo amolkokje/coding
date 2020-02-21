@@ -1,4 +1,4 @@
-import copy
+import os, sys, copy
 
 """
 https://leetcode.com/contest/weekly-contest-162/problems/reconstruct-a-2-row-binary-matrix/
@@ -152,14 +152,16 @@ def get_island_count(grid):
                         if _is_valid(p):
                             valid_pts.append(p)
 
+                    # this means that reached a corner, and hence this island is not valid
                     if not len(valid_pts) == 4:
                         is_closed = False
-                        break
-                    else:
-                        for p in valid_pts:
-                            if grid[p[0]][p[1]] == 0:
-                                queue.append(p)
-                                # raw_input(queue)
+
+                    # island or not, go ahead and visit all the points and mark them, so they are not
+                    # visited again in the next iteration
+                    for p in valid_pts:
+                        if grid[p[0]][p[1]] == 0:
+                            queue.append(p)
+                            # raw_input(queue)
 
                 if is_closed:
                     island_count += 1
@@ -172,7 +174,6 @@ if __name__ == '__main__':
             [1, 1, 1, 1, 1, 1, 1, 0]]
     print grid
     print 'ISLANDS={}'.format(get_island_count(grid))
-
 
     grid = [[0, 0, 1, 0, 0], [0, 1, 0, 1, 0], [0, 1, 1, 1, 0]]
     print grid
