@@ -28,7 +28,7 @@ def lengthOfLongestSubstring(s):
 # TODO: Try to do all in a single iteration
 
 # Q. Given an array nums of n integers, are there elements a, b, c in nums such that a + b + c = 0?
-# Find all unique triplets in the array which gives the sum of zero.'
+# Find all unique triplets in the array which gives the sum of zero.
 
 def get_two_sum(arr, target):
     arr_dict = dict()
@@ -98,26 +98,20 @@ number_letter_dict = {
 
 
 def generate_combinations(nums):
-    nums = [int(s) for s in nums]
-
-    def _get_letters(x):
-        return number_letter_dict[x]
-
-    def _combine_with_new_letters(iplist, letters):
-        new = list()
-        for ip in iplist:
-            new += [ip + l for l in letters]
-        return new
-
+    n = len(nums)
     out = list()
-    for n in nums:
-        if len(out) > 0:
-            out = _combine_with_new_letters(out, _get_letters(n))
-        else:
-            out = _get_letters(n)
+    nums = map(int, nums)
 
+    def _recurse(numi, formed):
+        if numi == n:
+            out.append(formed)
+            return
+
+        for letter in number_letter_dict[nums[numi]]:
+            _recurse(numi+1, formed+letter)
+
+    _recurse(0, '')
     return out
-
 
 # Q. Given a string containing just the characters '(', ')', '{', '}', '[' and ']', determine if the input string is valid.
 # An input string is valid if:
@@ -171,7 +165,9 @@ def remove_duplicates_in_place(arr):
 
     while i < n:
         if num_found_dict.get(arr[i]):
-            arr.pop(i)
+            #arr.pop(i)
+            arr[i:n-1] = arr[i+1:n]
+            del arr[n-1]
             n -= 1
         else:
             num_found_dict[arr[i]] = 1
