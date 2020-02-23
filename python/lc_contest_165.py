@@ -50,11 +50,17 @@ https://leetcode.com/contest/weekly-contest-165/problems/find-winner-on-a-tic-ta
 
 class Solution(object):
     def has_winner(self, board):
+        print '*** BOARD = {}'.format(board)
         n = len(board)
 
         def _all_same(arr):
-            xor = reduce(lambda x, y: x ^ y, arr)
-            return True if xor == 0 else False
+            i = 1
+            m = len(arr)
+            while i < m:
+                if arr[i] == '' or arr[i] != arr[i - 1]:
+                    return False
+                i += 1
+            return True
 
         for i in range(n):
             if _all_same(board[i]) or _all_same([board[j][i] for j in range(n)]):
@@ -70,28 +76,27 @@ class Solution(object):
         :type moves: List[List[int]]
         :rtype: str
         """
-        n = 3
-        max_moves = n * n
-        moves_a = [[False for _ in range(n)] for _ in range(n)]
-        moves_b = [[False for _ in range(n)] for _ in range(n)]
-
         c = 0
-        total_moves = len(moves)
-        for c in range(total_moves):
-            move = moves[c]
-            if c % 2 != 0:
-                moves_b[move[0]][move[1]] = True
-                if self.has_winner(moves_b):
-                    return 'B'
-            else:
-                moves_a[move[0]][move[1]] = True
-                if self.has_winner(moves_a):
-                    return 'A'
+        board = [['' for _ in range(3)] for _ in range(3)]
+        move_a = False
+        for move in moves:
             c += 1
+            move_a = not move_a
+            if move_a:
+                board[move[0]][move[1]] = 'A'
+            else:
+                board[move[0]][move[1]] = 'B'
 
-        if c < max_moves - 1:
-            return 'Pending'
-        return 'Draw'
+            if c > 3:
+                if self.has_winner(board):
+                    if move_a:
+                        return 'A'
+                    else:
+                        return 'B'
+
+        if c >= 9:
+            return 'Draw'
+        return 'Pending'
 
 
 """

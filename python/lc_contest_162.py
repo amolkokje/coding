@@ -13,53 +13,41 @@ class Solution(object):
         :type colsum: List[int]
         :rtype: List[List[int]]
         """
-        m = len(colsum)  # cols
-        # n = 2 # rows
-        bupper = upper
-        blower = lower
+        n = len(colsum)
+        upper_sum = 0
+        lower_sum = 0
+        output = [ list(), list() ]
+        for i in range(n):
 
-        mat = [[0 for _ in range(m)] for _ in range(2)]
-
-        invalid = False
-        for i in range(m):
             if colsum[i] == 2:
-                if upper == 0 or lower == 0:
-                    invalid = True
-                    break
-
-                mat[0][i] = 1
-                mat[1][i] = 1
-                upper -= 1
-                lower -= 1
+                if upper_sum == upper or lower_sum == lower:
+                    return []
+                output[0].append(1)
+                output[1].append(1)
+                upper_sum += 1
+                lower_sum += 1
 
             elif colsum[i] == 1:
-                if upper == 0 and lower == 0:
-                    invalid = True
-                    break
 
-                if upper >= lower:
-                    mat[0][i] = 1
-                    upper -= 1
-                else:
-                    mat[1][i] = 1
-                    lower -= 1
-
+                if upper_sum == upper and lower_sum == lower:
+                    return []
+                if upper_sum < upper or lower_sum < lower:
+                    if (upper-upper_sum) >= (lower-lower_sum):
+                        output[0].append(1)
+                        output[1].append(0)
+                        upper_sum += 1
+                    else:
+                        output[0].append(0)
+                        output[1].append(1)
+                        lower_sum += 1
 
             elif colsum[i] == 0:
-                mat[0][i] = 0
-                mat[1][i] = 0
+                output[0].append(0)
+                output[1].append(0)
 
-        print mat
-        print sum(mat[0]), bupper
-        print sum(mat[1]), blower
-        if sum(mat[0]) != bupper or sum(mat[1]) != blower:
-            invalid = True
-
-        if invalid:
+        if len(output[0]) < n or upper_sum!=upper or lower_sum!=lower:
             return []
-
-        return mat
-
+        return output
 
 """
 https://leetcode.com/contest/weekly-contest-162/problems/cells-with-odd-values-in-a-matrix/
