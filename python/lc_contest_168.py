@@ -2,8 +2,8 @@
 """
 https://leetcode.com/contest/weekly-contest-167/problems/shortest-path-in-a-grid-with-obstacles-elimination/
 """
-import copy
 
+# APPROACH-1: DFS - find all the paths, and then get the shortest
 class Solution(object):
     def shortestPath(self, grid, k):
         """
@@ -56,6 +56,43 @@ class Solution(object):
             return len(sorted_paths[0])-1
         else:
             return -1
+
+
+# APPROACH-2: BFS for fastest solution to get the shortest path
+class Solution(object):
+    def shortestPath(self, grid, k):
+        """
+        :type grid: List[List[int]]
+        :type k: int
+        :rtype: int
+        """
+        m = len(grid)  #x -> rows
+        n = len(grid[0])  #y -> cols
+
+        def _get_obstacle_count(path_pts):
+            count = len(filter(lambda p:grid[p[0]][p[1]]==1, path_pts))
+            return count
+
+        queue = [ [ (0,0) ] ]
+
+        while queue:
+            curr_path = queue.pop(0)
+            x, y = curr_path[-1]  # last node
+
+            curr_path_obstacles = _get_obstacle_count(curr_path)
+
+            for nx, ny in [ (x-1,y), (x+1,y), (x,y-1), (x,y+1) ]:
+                if (not (nx,ny) in curr_path) and nx>=0 and ny>=0 and nx<m and ny<n:   # check if pt is valid
+                    if nx==m-1 and ny==n-1:
+                        return len(curr_path)
+
+                    if grid[nx][ny] == 1:
+                        curr_path_obstacles += 1
+
+                    if not curr_path_obstacles > k:
+                        queue.append(curr_path+[(nx,ny)])
+
+        return -1
 
 
 """
