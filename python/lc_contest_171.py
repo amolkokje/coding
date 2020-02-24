@@ -6,6 +6,8 @@ https://leetcode.com/contest/weekly-contest-171/problems/minimum-distance-to-typ
 from string import ascii_uppercase
 
 
+# APPROACH-1: based on which side of the keyboard the letter is, use that finger. This approach may not always
+# be accurate
 class Solution(object):
     def get_cd(self, c, mat):
         for i in range(len(mat)):
@@ -81,6 +83,82 @@ class Solution(object):
         return _get_distance(left_hand_pts) + _get_distance(right_hand_pts)
 
 
+# APPROACH-2: Find all possibilities, and get mininum. Always works
+
+from string import ascii_uppercase
+
+
+class Solution(object):
+    def get_cd(self, c, mat):
+        for i in range(len(mat)):
+            for j in range(len(mat[0])):
+                if mat[i][j] == c:
+                    return (i, j)
+
+    def get_distance(self, p0, p1):
+        # print 'P0={}, P1={}'.format(p0, p1)
+        return abs(p0[0] - p1[0]) + abs(p0[1] - p1[1])
+
+    def get_letter_matrix(self):
+        mat = list()
+        m = 6  # rows
+        k = 0
+        row = None
+        for a in ascii_uppercase:
+            if k % 6 == 0:
+                if row:
+                    mat.append(row)
+                row = list()
+
+            row.append(a)
+            k += 1
+        row += ['' for _ in range(4)]
+        mat.append(row)
+        return mat
+
+    def minimumDistance(self, word):
+        """
+        :type word: str
+        :rtype: int
+        """
+
+        # get all the letters from A to Z in a matrix
+        t = len(word)
+        mat = self.get_letter_matrix()
+        m = len(mat)  # rows
+        n = len(mat[0])  # cols
+        print m, n
+
+        distances = list()
+
+        def _recurse(right_path, left_path, right_dist, left_dist, i):
+            if i < t:
+                # print '--> i={}, R={}, L={}, DR={}, DL={}'.format(i, right_path, left_path, right_dist, left_dist)
+                word_dist = self.get_distance(self.get_cd(word[i - 1], mat), self.get_cd(word[i], mat))
+
+                if len(right_path) == 0:
+                    right_word_dist = 0
+                else:
+                    right_word_dist = right_dist + word_dist
+
+                if len(left_path) == 0:
+                    left_word_dist = 0
+                else:
+                    left_word_dist = left_dist + word_dist
+
+                _recurse(right_path + [word[i]], left_path, right_word_dist, left_dist, i + 1)
+                _recurse(right_path, left_path + [word[i]], right_dist, left_word_dist, i + 1)
+            else:
+                # print 'R={}, L={}, DR={}, DL={}'.format(right_path, left_path, right_dist, left_dist)
+                distances.append(right_dist + left_dist)
+
+        _recurse([word[0]], [], 0, 0, 1)
+        _recurse([], [word[0]], 0, 0, 1)
+        # print len(distances), distances
+
+        return min(distances)
+
+
 """
 https://leetcode.com/contest/weekly-contest-171/problems/convert-integer-to-the-sum-of-two-no-zero-integers/
 """
@@ -108,7 +186,8 @@ https://leetcode.com/contest/weekly-contest-171/problems/number-of-operations-to
 
 
 # AMOL - GOOD ONE
-
+# APPROACH-1: no of closed islands approach. Use DFS to mark all visited nodes. The nodes which are not visited
+# will count as not connected
 class Solution(object):
     def makeConnected(self, n, connections):
         if len(connections) < n - 1:
@@ -138,6 +217,33 @@ class Solution(object):
 
         # -1 to compensate for the first iteration
         return min_new_connections - 1
+
+
+# APPROACH-2: Make a note of all the connections. Iterate through the nodes to find out if it is connected
+# or not. If not, increment the count
+class Solution(object):
+    def makeConnected(self, n, connections):
+        if len(connections) < n - 1:
+            return -1
+
+        # create a list of nodes and its connections
+        conns_dict = dict()
+        for a, b in connections:
+            if conns_dict.get(a):
+                conns_dict[a].append(b)
+            else:
+                conns_dict[a] = [b]
+
+            if conns_dict.get(b):
+                conns_dict[b].append(a)
+            else:
+                conns_dict[b] = [a]
+
+        req = 0
+        for i in range(n):
+            if not conns_dict.get(i):
+                req += 1
+        return req
 
 
 """
