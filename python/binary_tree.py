@@ -295,6 +295,13 @@ def bst_minimal_height(sorted_arr):
     _recurse(0, m-1)
     _recurse(m+1, n-1)
     return bst.root
+"""
+def bst_minimal_height(sorted_arr):
+    bst = BST()
+    while len(arr)>0:
+        bst.add( arr[len(arr)/2] )
+    return bst.root
+"""
 
 # Book: 4.4
 # Q. Given a binary tree, design an algorithm which creates a linked list of all the nodes at
@@ -416,6 +423,7 @@ if __name__ == '__main__':
 
     print 'Tree Height = {}'.format(get_tree_height(bst.root))
     print 'Is Tree Balanced = {}'.format(is_tree_balanced(bst.root))
+    sys.exit()
 
     v1 = 5.5
     v2 = 7
