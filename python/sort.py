@@ -100,7 +100,7 @@ def quick_sort(arr):
                 arr[i], arr[j] = arr[j], arr[i]
                 i += 1
 
-        arr[i], arr[high] = arr[high], arr[i]  # move the pivot here to ensure its included in the range
+        arr[i], arr[high] = arr[high], arr[i]  # move the pivot here in middle, so values greater are on RHS of pivot
         return i  # this is the last point till which the elements have been pivoted
 
     def quicksort(low, high):
@@ -169,15 +169,14 @@ if __name__ == '__main__':
 
         print '\n\n*** INPUT = {}'.format(ip_list)
 
-        #qs_list = copy.deepcopy(ip_list)
-        #quick_sort(qs_list)
-        #print 'High Key: Quick Sort = {}'.format(qs_list)
+        qs_list = copy.deepcopy(ip_list)
+        quick_sort(qs_list)
+        print 'High Key: Quick Sort = {}'.format(qs_list)
+        sys.exit()
 
         qs_list = copy.deepcopy(ip_list)
         quick_sort_low_key(qs_list)
         print 'Low Key: Quick Sort = {}'.format(qs_list)
-        raw_input()
-        continue
 
         is_list = copy.deepcopy(ip_list)
         insertion_sort(is_list)

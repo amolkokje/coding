@@ -78,7 +78,7 @@ def mastermind(code, guess):
                 # check-1: not a hit
                 # check-2: not already considered a phit
                 # check-3: not already considered a hit
-                if j!=i and (code[j]==guess[i]) and (j not in phits_dict.keys()) and (j not in hits_dict.keys()):
+                if j!=i and (code[j]==guess[i]) and (not phits_dict.get(j)) and (not hits_dict.get(j)):
                     phits_dict[j] = code[j]
                     break
 
