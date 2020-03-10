@@ -157,17 +157,25 @@ def binary_search_magic_index_sorted_arr_with_repeats(arr):
             if arr[m] == m:
                 return m
 
+            ## OPTIMIZATION - to narrow search
             # search entire left side
             # left_max will be the new right to recurse on. For that we have 2 options:
             # 1. (m-1) --> same as general binary recursion case
             # 2. arr[m] --> this is the optimization. Since we are looking for MI, if there are repeats, we can shorten the search range
-            left_max = min(m - 1, arr[m])
-            left = _recurse(l, left_max)
+            #left_max = min(m - 1, arr[m])
+            #left = _recurse(l, left_max)
+
+            ## SIMPLE - will always work too
+            left = _recurse(l,m-1)
             if left:
                 return left
 
-            right_min = max(m + 1, arr[m])
-            right = _recurse(right_min, r)
+            ## OPTIMIZATION
+            #right_min = max(m + 1, arr[m])
+            #right = _recurse(right_min, r)
+
+            ## SIMPLE
+            right = _recurse(m+1,r)
             return right
 
     return _recurse(0, n - 1)
@@ -196,7 +204,7 @@ if __name__ == '__main__':
           'IP={}, Magic Index with repeats={}'.format(sorted_arr_repeats,
                                                       binary_search_magic_index_sorted_arr_with_repeats(
                                                           sorted_arr_repeats))
-
+    sys.exit()
     print '--------------------------------------------------------------'
     alist = [([4, 5, 6, 7, 0, 1, 2], 0), ([4, 5, 6, 7, 8, 1, 2, 3], 8)]
     for arr in alist:
