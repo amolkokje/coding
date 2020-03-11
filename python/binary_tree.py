@@ -164,7 +164,7 @@ def is_tree_balanced(root):
 ########################################################################
 # Book: 4.7
 # Q. Design an algorithm and write code to find the first common ancestor of two nodes in a binary tree.
-# Avoid storing additional nodes in a datastructure. NOTE:This is not necessarily a binary search tree
+# Avoid storing additional nodes in a data structure. NOTE:This is not necessarily a binary search tree
 
 # Binary Tree LCA
 # Least Common Ancestor (LCA): The LCA of n1 and n2 in T is the shared ancestor of n1 and n2 that is located farthest
@@ -179,6 +179,13 @@ def get_lca_binary_search_tree(node, v1, v2):
     - requirement: v1 <= v2
     """
     if node:
+        if node.data == v1 or node.data == v2:
+            return node
+
+        # if the value is middle, you have reached LCA
+        if v1 <= node.data <= v2:
+            return node
+
         # if both values are larger, then go in right subtree
         if node.data < v1 and node.data < v2:
             return get_lca_binary_search_tree(node.right, v1, v2)
@@ -187,9 +194,7 @@ def get_lca_binary_search_tree(node, v1, v2):
         if node.data > v1 and node.data > v2:
             return get_lca_binary_search_tree(node.left, v1, v2)
 
-        # if the value is middle, you have reached LCA
-        if v1 <= node.data <= v2:
-            return node
+
 
 
 def get_lca_binary_tree(root, v1, v2):

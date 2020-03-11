@@ -105,33 +105,18 @@ def one_edit_apart(w1, w2):
         w1, w2 = w2, w1
         l1, l2 = l2, l1
 
-    if l1 == l2:  # is replace possible?
-        for i in range(l1):
-            if w1[i] != w2[i]:
-                if i + 1 < n:  # middle element
-                    if w1 == w2[:i] + w1[i] + w2[i + 1:]:
-                        return True
-                    else:
-                        return False
-                else:  # end element
-                    if w1 == w2[:i] + w2[i]:
-                        return True
-                    else:
-                        return False
-
-    elif l1 < l2:  # is remove possible?
-        for i in range(l2):
-            if i < l1:  # middle element
-                if w1[i] != w2[i]:
-                    if w1 == w2[:i] + w2[i + 1:]:
-                        return True
-                    else:
-                        return False
-            else:  # last element
-                if w1 == w1[:i]:
-                    return True
-                else:
-                    return False
+    i = 0
+    while i<l1:
+        if w1[i] != w2[i]:
+            if l1 < l2:
+                # remove possible?
+                return w1==w2[:i]+w2[i+1:]
+            elif l1 == l2:
+                # replace possible?
+                return w1[:i]+w1[i+1:] == w2[:i]+w2[i+1:]
+        i+=1
+    # reached at a point where only 1 extra char left in w2, and till here all chars in w1 are same as w2
+    return True
 
 
 """
@@ -235,7 +220,6 @@ if __name__ == '__main__':
     print '##########################################'
     for num in [3245, 326]:
         print 'num={}, is_colorful={}'.format(num, is_colorful(num))
-    sys.exit()
 
     print '##########################################'
     for n in [3, 4]:
@@ -251,6 +235,7 @@ if __name__ == '__main__':
         ('cat', 'act')
     ]:
         print '{}, {}, one_edit_apart={}'.format(words[0], words[1], one_edit_apart(words[0], words[1]))
+    sys.exit()
 
     print '##########################################'
     q = Queue()

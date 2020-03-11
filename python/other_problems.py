@@ -103,7 +103,7 @@ def unique_paths(stop_x, stop_y, start_x, start_y, m, n, visited_cells_orig):
 
 ## Q:: Generate permutations of a list
 
-def generate_permutations(ip_list, take_count):
+def generate_permutations(arr, k):
     """
     In permutations, order is important. i.e. ABC != CAB
     """
@@ -114,42 +114,33 @@ def generate_permutations(ip_list, take_count):
     permutations("AMOL", 3) --> will give a list of all permutations, taken 2 at a time
     """
 
-    print 'Generating permutations for {}, taking only {} at a time'.format(ip_list, take_count)
-    n = len(ip_list)
-    visited = [None] * n
-    depth = 0
-    word = []
+    print 'Generating permutations for {}, taking only {} at a time'.format(arr, k)
+    n = len(arr)
+    visited = [ False for _ in range(n) ]
+    permutations = set()
 
-    def permute(word_orig, visited_orig, i):
-        """        
-        word --> string generated so far
-        visited_ --> list of visited cells
-        i --> index of cell to visit
-        """
-
-        if visited_orig[i]:
+    def _recurse(i, formed):
+        if visited[i]:
             return
 
-        visited = copy.deepcopy(visited_orig)
-        word = copy.deepcopy(word_orig)
+        if len(formed) == k:
+            permutations.add(formed)
+            return
 
-        word.append(ip_list[i])
         visited[i] = True
-
-        if len(word) == take_count:
-            print 'PERMUTATION = {}'.format(''.join(word))
-            return
-
-        for k in range(n):
-            permute(word, visited, k)
+        for j in range(n):
+            _recurse(j, formed+arr[i])
+        visited[i] = False
 
     for i in range(n):
-        permute(word, visited, i)
+        _recurse(i, '')
+
+    print 'PERMUTATIONS = [{}]'.format(list(permutations))
 
 
 ## Q:: Generate permutations of a list        
 
-def generate_combinations(ip_list, take_count):
+def generate_combinations(arr, k):
     """
     In combinations, order is not important. i.e. ABC = CAB  --> SUBSETS of a SET
     """
@@ -160,40 +151,32 @@ def generate_combinations(ip_list, take_count):
     combinations("AMOL", 3) --> will give a list of all combinations, taken 2 at a time
     """
 
-    print 'Generating combinations for {}, taking only {} at a time'.format(ip_list, take_count)
-    n = len(ip_list)
-    visited = [None] * n
-    depth = 0
-    word = []
+    print 'Generating combinations for {}, taking only {} at a time'.format(arr, k)
+    n = len(arr)
+    visited = [ False for _ in range(n) ]
+    combinations = dict()
 
-    def combine(word_orig, visited_orig, i):
-        """
-        ip_list --> input list
-        word --> string generated so far
-        visited_ --> list of visited cells
-        i --> index of cell to visit
-        """
-
-        if visited_orig[i]:
+    def _recurse(i, formed):
+        if visited[i]:
             return
 
-        visited = copy.deepcopy(visited_orig)
-        word = copy.deepcopy(word_orig)
-
-        word.append(ip_list[i])
-        visited[i] = True
-
-        if len(word) == take_count:
-            print 'COMBINATION = {}'.format(''.join(word))
+        if len(formed) == k:
+            key = ''.join(sorted(formed))
+            if not combinations.get(key):
+                combinations[key]=1
             return
 
         # this place is only where there is a difference between permutations and combinations. 
         # in combinations, we don't want to repeat what is already done, so we only move right-side in the array
-        for k in range(i + 1, n):
-            combine(word, visited, k)
+        visited[i] = True
+        for j in range(n):
+            _recurse(j, formed+arr[i])
+        visited[i] = False
 
     for i in range(n):
-        combine(word, visited, i)
+        _recurse(i, '')
+
+    print 'COMBINATIONS = [{}]'.format(combinations.keys())
 
 
 ## Q:: find first non-repeating character by iterating through the length of the string only once and by using constant
@@ -570,8 +553,9 @@ if __name__ == '__main__':
     # permutations
     ip_word_list = ["AMOL", "AMI"]
     for ip_word in ip_word_list:
-        generate_permutations(ip_list=ip_word, take_count=2)
-        generate_combinations(ip_list=ip_word, take_count=2)
+        generate_permutations(ip_word, 2)
+        generate_combinations(ip_word, 2)
+
 
     print "-------------------------------------------------------"
     s = "molamol"
