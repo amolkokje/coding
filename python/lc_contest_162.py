@@ -103,7 +103,7 @@ class Solution(object):
 https://leetcode.com/contest/weekly-contest-162/problems/number-of-closed-islands/
 """
 
-
+# AMOL - Good one
 def get_island_count(grid):
     m = len(grid)  # rows
     n = len(grid[0])  # cols

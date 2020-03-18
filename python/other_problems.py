@@ -523,8 +523,41 @@ def is_prime(num):
             return False
     return True
 
+"""
+https://leetcode.com/discuss/interview-experience/541715/facebook-e4-mar-2020
+Question 0. Similar strings ("face", "eacf") returns true if only 2 positions in the strings are swapped. 
+Here 'f' and 'e' are swapped in the example.
+"""
+
+def are_similar(s1, s2):
+    n = len(s1)
+    if len(s1) != len(s2):
+        return False
+
+    diffs = list()
+    for i in range(n):
+        if s1[i] != s2[i]:
+            diffs.append(i)
+
+    if len(diffs) != 2:
+        return False
+
+    i, j = diffs
+    print i, j, diffs
+    s1 = list(s1)  # convert to list, as str does not support swapping
+    s1[i], s1[j] = s1[j], s1[i]
+    s1 = ''.join(s1)
+    if s1 == s2:
+        return True
+    return False
+
 
 if __name__ == '__main__':
+
+    print '--------------------------------------------------------------'
+    ips = [ ('face', 'eacf') ]
+    for ip in ips:
+        print 'ip=[{}], are_similar=[{}]'.format(ip, are_similar(ip[0], ip[1]))
 
     for num in [2, 45, 1, 0, -32, 20, -20]:
         print 'num={}, twos={}'.format(num, calculate_two(num))
