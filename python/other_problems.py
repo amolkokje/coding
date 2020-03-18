@@ -313,6 +313,12 @@ def does_string_contain_substring(main, sub):
 # next_bigger(9)==-1
 # next_bigger(111)==-1
 # next_bigger(531)==-1
+"""
+Steps to memorize:
+- find index i starting from Right->Left such that arr[i+1]>arr[i]
+- find the index of min in the RHS of i i.e. arr[i+1:], and swap the value with index i  -> Make SMALL
+- sort the RHS arr[i+1:] in ascending order -> Make BIG
+"""
 
 def next_bigger(num):
     # convert to list of integers
@@ -551,8 +557,39 @@ def are_similar(s1, s2):
         return True
     return False
 
+"""
+https://leetcode.com/problems/simplify-path/submissions/
+Given an absolute path for a file (Unix-style), simplify it. Or in other words, convert it to the canonical path.
+
+In a UNIX-style file system, a period . refers to the current directory. 
+Furthermore, a double period .. moves the directory up a level. For more information, see: Absolute path vs relative 
+path in Linux/Unix
+"""
+
+def simplify_path(path):
+    dirs = path.split('/')
+    n = len(dirs)
+    new_path = list()
+
+    if n > 1:
+        for i in range(1,n):
+            if dirs[i] == '..':
+                if new_path:
+                    new_path.pop(-1)
+            elif dirs[i] != '' and dirs[i] != '.':
+                new_path.append(dirs[i])
+
+    return '/' + '/'.join(new_path)
+
+
 
 if __name__ == '__main__':
+
+    print '--------------------------------------------------------------'
+    ip_paths = [ "/home/", "/../", "/home//foo/", "/a/./b/../../c/", "/a/../../b/../c//.//", "/a//b////c/d//././/.." ]
+    for ip in ip_paths:
+        print 'input-path=[{}], simplify_path=[{}]'.format(ip, simplify_path(ip))
+    sys.exit()
 
     print '--------------------------------------------------------------'
     ips = [ ('face', 'eacf') ]
