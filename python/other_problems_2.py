@@ -4,28 +4,28 @@ import sys, os, copy, re
 # Q: Given a sorted array nums, remove the duplicates in-place such that each element appear only once and return
 # the new length.
 
-def removeDuplicates(nums):
-    """
-    :type nums: List[int]
-    :rtype: int
-    """
+def removeDuplicates(arr):
     # NOTE: in absence of python set, put them in a dict with values as counts. Return only the dict.keys()
-    return list(set(nums))
+    # PYTHON ---
+    #return list(set(arr))
 
-    """
-    # Non-python approach
-    ad = dict()
-    i = 0
-    n = len(nums)
-    while i < n:
-        if ad.get(nums[i]):
-            nums.pop(i)
-            n -= 1
-        else:
-            ad[nums[i]]=1
-            i +=1
-    return nums
-    """
+    # NON-PYTHON --- Note: this trick only works for sorted arrays
+    n = len(arr)
+    if n == 0 or n == 1:
+        return arr
+
+    # stores index of arr for all unique elements
+    j = 0
+
+    # if there are no dups, i/j will increment together, else j will be behind i
+    for i in range(0, n-1):
+        if arr[i] != arr[i+1]:
+            arr[j] = arr[i]
+            j += 1
+
+    arr[j] = arr[n-1]
+    j += 1
+    del arr[j:]  # remove all elements at the end
 
 
 # Q: Say you have an array for which the ith element is the price of a given stock on day i.
@@ -102,35 +102,26 @@ def single_number(nums):
 # into the memory at once? --> HOW TO DO LAST PART?
 
 def intersection(nums1, nums2):
-    # OTHER SOLUTION:
-    # if dont want to sort, then put elements of both in a dict with values as total occurance    
+    numd = dict()
+    for l in nums1:
+        if numd.get(l):
+            numd[l] += 1
+        else:
+            numd[l] = 1
 
-    def intersect(smaller, larger):
-        numd = dict()
-        for l in larger:
-            if numd.get(l):
-                numd[l] += 1
+    intersection = list()
+    for s in nums2:
+        if numd.get(s):
+            if numd[s] == 1:
+                del numd[s]
             else:
-                numd[l] = 1
+                numd[s] -= 1
+            intersection.append(s)
 
-        result = list()
-        for s in smaller:
-            if numd.get(s):
-                if numd[s] == 1:
-                    del numd[s]
-                else:
-                    numd[s] -= 1
-                result.append(s)
-
-        return result
-
-    if len(nums1) > len(nums2):
-        return intersect(nums2, nums1)
-    else:
-        return intersect(nums1, nums2)
+    return intersection
 
 
-        # Q: Given a non-empty array of digits representing a non-negative integer, plus one to the integer.
+# Q: Given a non-empty array of digits representing a non-negative integer, plus one to the integer.
 
 
 # The digits are stored such that the most significant digit is at the head of the list, and each element in the array
@@ -204,17 +195,28 @@ def add_numbers_using_arrs(arr1, arr2):
 # Q: Given an array nums, write a function to move all 0's to the end of it while maintaining the relative order of
 # the non-zero elements.
 
-def move_zeros(nums):
-    n = len(nums)
+def move_zeros(arr):
+    n = len(arr)
     i = 0
+    while i<n:
+        if arr[i] == 0:
+            while arr[n-1] == 0:
+                n -= 1
+            if n-1 > i:
+                arr[i], arr[n-1] = arr[n-1], arr[i]
+            else:
+                return
+        i += 1
+    #del arr[n:]
 
+    """
     while i < n:
         if nums[i] == 0:
             nums.append(nums.pop(i))
             n -= 1  # need to go till one less as the last one will be zero
         else:
             i += 1
-
+    """
 
 # Q: Determine if a 9x9 Sudoku board is valid. Only the filled cells need to be validated according to the following rules:
 #  Each row must contain the digits 1-9 without repetition.
@@ -588,7 +590,7 @@ def rotate_image_matrix_by_90(matrix):
 # Q. Write a program to sort a stack in ascending order (with biggest items on top). You may use at most one additional
 #  stack to hold items, but you may not copy the elements into any other data structure (such as an array). The stack
 # supports the following operations: push, pop, peek, and isEmpty.
-from lc_0 import Stack
+from fb_samples import Stack
 
 
 def sort_stack_using_additional_stack(input_stack):
@@ -621,32 +623,24 @@ def sort_stack_using_additional_stack(input_stack):
 # parentheses.
 
 def get_all_valid_parentheses(count):
-    valid_parentheses_list = list()
+    valid = list()
 
-    def _recurse(str_formed, left_rem, right_rem):
-        # left/right_rem are to keep count of parentheses left for the formation
-        str_formed_local = copy.deepcopy(str_formed)
+    def _recurse(formed, open, closed):
+        if open==0 and closed==0:
+            valid.append(formed)
+            return
 
-        if left_rem == right_rem == 0:
-            # based on how it goes, its possible to have duplicates, so ignore them - Note: can also use set()
-            if str_formed_local not in valid_parentheses_list:
-                valid_parentheses_list.append(str_formed_local)
-
-        # open-bracket/left is always first, so open if available
-        if left_rem > 0:
-            str_formed_local += '('
-            left_rem -= 1
-            _recurse(str_formed_local, left_rem, right_rem)
-
-        # need left to add right, so add right only if rem count is higher for right over left
-        if right_rem > left_rem:
-            str_formed_local += ')'
-            right_rem -= 1
-            _recurse(str_formed_local, left_rem, right_rem)
+        if open==closed:
+            if open>=0:
+                _recurse(formed+'(', open-1, closed)
+        elif open<closed:
+            if open>=0:
+                _recurse(formed+'(', open-1, closed)
+            if closed>=0:
+                _recurse(formed+')', open, closed-1)
 
     _recurse('', count, count)
-    return valid_parentheses_list
-
+    return valid
 
 # Book: 9.8
 # Q. Given an infinite number of quarters (25 cents), dimes (10 cents), nickels (5 cents) and pennies (1 cent), write
@@ -754,10 +748,11 @@ def find_str_from_sorted_arr_of_empty_and_nonempty_strings(arr, x):
 if __name__ == '__main__':
 
     print '--------------------------------------------------------------'
-    arrlist = [[1, 1, 2], [0, 0, 1, 1, 1, 2, 2, 3, 3, 4]]
+    arrlist = [[1, 1, 2], [0, 0, 1, 1, 1, 2, 2, 3, 3, 4, 4]]
     for arr in arrlist:
-        print 'arr={}'.format(arr)
-        print 'final={}'.format(removeDuplicates(arr))
+        print 'BEFORE: arr={}'.format(arr)
+        removeDuplicates(arr)
+        print 'AFTER REMOVING DUPLICATES: arr={}'.format(arr)
 
     print '--------------------------------------------------------------'
     arrlist = [[7, 1, 5, 3, 6, 4], [1, 2, 3, 4, 5], [7, 6, 4, 3, 1]]
@@ -895,6 +890,7 @@ if __name__ == '__main__':
     rotate_image_matrix_by_90(ip_matrix)
     print 'output={}'.format(ip_matrix)
 
+    """
     print '--------------------------------------------------------------'
     ipstack = Stack()
     for value in [1, 3, 8, 12, 5, 10, 7]:
@@ -902,11 +898,12 @@ if __name__ == '__main__':
     print 'Input Stack: {}'.format(ipstack)
     sort_stack_using_additional_stack(ipstack)
     print '      Sorted using additional stack: {}'.format(ipstack)
+    """
 
     print '--------------------------------------------------------------'
     for count in [2, 3]:
         print 'Count={}, Valid Parentheses String List={}'.format(count, get_all_valid_parentheses(count))
-
+    
     print '--------------------------------------------------------------'
     for cents in [10,
                   # 50
