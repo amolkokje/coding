@@ -4,6 +4,7 @@ https://leetcode.com/contest/weekly-contest-170/problems/get-watched-videos-by-y
 
 
 class Solution(object):
+
     def watchedVideosByFriends(self, watchedVideos, friends, id, level):
         """
         :type watchedVideos: List[List[str]]
@@ -12,39 +13,27 @@ class Solution(object):
         :type level: int
         :rtype: List[str]
         """
-        n = len(friends)
+        n = len(watchedVideos)
+        videos = set()
+        visited = [ False for _ in range(n) ]
 
-        fof = set()
-        queue = [[id]]
-        for l in range(level):
-            friends_id = queue.pop(0)
-            # print 'level={}, friends={}'.format(l, friends_id)
-            friends_next_level_id = list()
-            for fid in friends_id:
-                friends_next_level_id += friends[fid]
-            print friends_next_level_id
-            queue.append(list(set(friends_next_level_id)))
+        def _recurse(fid, rlevel):
+            if visited[fid]:
+                return
 
-        # now queue[0] has the friends at the intended level
+            #print 'fid={}, rlevel={}, friends={}'.format(fid, rlevel, friends[fid])
+            if rlevel == level:
+                for v in watchedVideos[fid]:
+                    videos.add(v)
+                return
 
-        # if cyclic and return back to the same point, delete the starting point
-        target_friends = queue[0]
-        for i in range(len(target_friends)):
-            if target_friends[i] == id:
-                target_friends.pop(i)
-                break
+            visited[fid] = True
+            for nfid in friends[fid]:
+                _recurse(nfid, rlevel+1)
+            visited[fid] = False
 
-        # get all movies of friends at that level
-        videod = dict()
-        for fid in target_friends:
-            print 'fid={}'.format(fid)
-            for video in watchedVideos[fid]:
-                if not videod.get(video):
-                    videod[video] = 1
-                else:
-                    videod[video] += 1
-
-        return sorted(videod, key=videod.__getitem__)
+        _recurse(id, 0)
+        return list(videos)
 
 
 """
