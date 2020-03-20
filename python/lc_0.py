@@ -154,50 +154,6 @@ def is_bracket_string_valid(s):
     return 'YES'
 
 
-# Q. Given a sorted array nums, remove the duplicates in-place such that each element appear only once and return the new length.
-# Do not allocate extra space for another array, you must do this by modifying the input array in-place with O(1) extra memory.
-# REF: https://leetcode.com/problems/remove-duplicates-from-sorted-array/submissions/
-
-def remove_duplicates_in_place(arr):
-    n = len(arr)
-    i = 0
-    ndict = dict()
-
-    while i<n:
-        if ndict.get(arr[i]):  # duplicate found
-            # loop until you find n such that there is no duplicate
-            while ndict.get(arr[n-1]):
-                n -= 1
-
-            arr[i], arr[n-1] = arr[n-1], arr[i]  # replace with the last one
-            n -= 1  # update the last to one less, as the nth would have a duplicate
-            i += 1  # go to the next one
-        else:
-            ndict[arr[i]] = 1
-            i += 1
-
-    # if removed duplicates, remove the last ones
-    if n<len(arr):
-        del arr[n:]
-
-
-def remove_duplicates_in_place1(arr):
-    num_found_dict = dict()
-    n = len(arr)
-    i = 0
-
-    while i < n:
-        if num_found_dict.get(arr[i]):
-            #arr.pop(i)
-            arr[i:n-1] = arr[i+1:n]  # shifting the whole array is expensive, so ABOVE APPROACH
-            del arr[n-1]
-            n -= 1
-        else:
-            num_found_dict[arr[i]] = 1
-            i += 1
-
-
-
 if __name__ == '__main__':
 
     iplist = ['', 'pwwkew', 'abcabcbb']
@@ -228,11 +184,3 @@ if __name__ == '__main__':
     str_list = ["()", "()[]{}", "(]", "([)]", "{[]}"]
     for s in str_list:
         print 'str={}, is_valid={}'.format(s, is_bracket_string_valid(s))
-
-    print '**************************'
-    arr_list = [[1, 1, 2], [0, 0, 1, 1, 1, 2, 2, 3, 3, 4]]
-    for arr in arr_list:
-        print '----------------'
-        print 'BEFORE: arr={}'.format(arr)
-        remove_duplicates_in_place(arr)
-        print 'AFTER: arr={}'.format(arr)

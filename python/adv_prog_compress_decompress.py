@@ -1,5 +1,5 @@
 """
-https://techdevguide.withgoogle.com/paths/advanced/compress-decompression#!
+https://www.geeksforgeeks.org/decode-string-recursively-encoded-count-followed-substring/
 CHALLENGE: In this exercise, you're going to decompress a compressed string.
 
 Your input is a compressed string of the format number[string] and the decompressed output form should be the
@@ -21,93 +21,61 @@ OTHER RULES:
 import re, sys, os
 
 
-def find_all_decompress_candidates(input):
-    #return re.findall(r'\d+\D+]', input)
+def decode(Str):
+    integerstack = []
+    stringstack = []
 
-    # find out if need to decompress
-    opening = len(filter(lambda x: x=='[', input))
-    closing = len(filter(lambda x: x==']', input))
-    print 'opening={}, closing={}'.format(opening, closing)
-    if not(opening>0 and closing>0 and opening==closing):
-        return [(False, 0, input)]
+    # Traversing the string
+    for i in range(len(Str)):
 
-    # split string
-    candidates = list()  # tuples: (needs, str)
-    i = 0
+        # If number, convert it into number and push it into integerstack.
+        if Str[i].isdigit():
+            nums = list()
+            while Str[i].isdigit():
+                nums.append(Str[i])
+                i += 1
 
-    start = None
-    buffer = ''
-    nums = ''
-    ob = 0
-    cb = 0
-    while i<len(input):
-        if not start:
-            if input[i]=='[':
-                ob += 1
-                start = i
-                if len(buffer)>2:
-                    print 'buffer={}'.format(buffer)
-                    candidates.append(False, 0, buffer[-2])
-                    buffer = ''
-            else:
-                buffer += input[i]
-                if input[i].isdigit():
-                    nums+=input[i]
+            i -= 1
+            count = int(''.join(nums))
+            if count:
+                integerstack.append(count)
+            #print 'integer stack = [{}]'.format(integerstack)
 
-        elif start:
-            if ob!=cb:
-                if input[i]=='[':
-                    ob+=1
-                    if ob==1:
-                        start=i
-                elif input[i]==']':
-                    cb+=1
-                    if ob==cb:
-                        candidates.append((True, int(''.join(nums)), input[start+1:i]))
-                        nums=''
-                        start = None
-                        ob=0
-                        cb=0
-        print start, buffer
-        i+=1
+        # If closing bracket ']', pop element until '[' opening bracket is not found in the character stack.
+        elif Str[i] == ']':
+            temp = ""
 
-    if len(buffer)>1:
-        print buffer
-        candidates.append((False, 0, buffer[1:]))
-    print 'input={}, candidates={}'.format(input, candidates)
-    return candidates
+            # get the last number from integer stack
+            if len(integerstack) > 0:
+                count = integerstack.pop(-1)
 
+            # go from '[' to ']' and store the string in a temp var in reverse order
+            while len(stringstack)>0 and stringstack[-1]!='[':
+                temp = stringstack.pop(-1) + temp
 
-def decompress(input):
-    output = ''
-    n = len(input)
+            # get rid of the opening bracket
+            if len(stringstack)>0 and stringstack[-1]=='[':
+                stringstack.pop(-1)
 
-    candidates = find_all_decompress_candidates(input)
-    for candidate in candidates:
-        raw_input('Candidate={}'.format(candidate))
-        needs, count, string = candidate
+            # Decode the string i.e. multiply the multiplier count(repeats) with the string
+            # Push it to the stringstack, so it can be decompressed further if there are brackets outside
+            if count:
+                stringstack += [count*temp]
 
-        if '[' in string and ']' in string:
-            string = decompress(string)
-
-        if needs:
-            output += ''.join([ string for _ in range(count) ])
         else:
-            output += string
-    print 'output={}'.format(output)
-    return output
+            stringstack.append(Str[i])
 
+    # Join all to make single string, and return
+    return ''.join(stringstack)
 
 
 if __name__ =='__main__':
     inputs = [
-        #'3[abc]4[ab]c',
+        '3[abc]4[ab]c',
         '3[a]b',
         '2[3[a]b]',
         '10[a]'
     ]
     for input in inputs:
-        print '*******'
-        print '---> IN:{}'.format(input)
-        print 'OUT:{}'.format(decompress(input))
-        raw_input('***')
+        print 'Compressed Input=[{}], Decompressed Output=[{}]'.format(input, decode(input))
+

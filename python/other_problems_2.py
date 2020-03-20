@@ -6,10 +6,25 @@ import sys, os, copy, re
 
 def removeDuplicates(arr):
     # NOTE: in absence of python set, put them in a dict with values as counts. Return only the dict.keys()
-    # PYTHON ---
+    # PYTHON-1 ---
     #return list(set(arr))
 
-    # NON-PYTHON --- Note: this trick only works for sorted arrays
+    # PYTHON-2 --- using a dictionary, and pop() -> also works for non-sorted lists
+    """
+    num_found_dict = dict()
+    n = len(arr)
+    i = 0
+
+    while i < n:
+        if num_found_dict.get(arr[i]):
+            arr.pop(i)
+            n -= 1
+        else:
+            num_found_dict[arr[i]] = 1
+            i += 1
+    """
+
+    # NON-PYTHON --- Note: this trick only works for sorted arrays, but does not use pop()
     n = len(arr)
     if n == 0 or n == 1:
         return arr

@@ -1,5 +1,5 @@
 """
-Ref: https://techdevguide.withgoogle.com/paths/advanced/volume-of-water/#!
+Ref: https://www.geeksforgeeks.org/trapping-rain-water/
 
 CHALLENGE:
 Imagine an island that is in the shape of a bar graph. When it rains, certain areas of the island fill up with
@@ -14,81 +14,28 @@ Example: Given [1,3,2,4,1,3,1,4,5,2,2,1,4,2,2],
 return 15 (3 bodies of water with volumes of 1,7,7 yields total volume of 15)
 """
 
+def maxWater(arr) :
 
-def get_island_ranges(arr):
-    """ get list of island ranges that can hold water """
+    # To store the maximum water
+    # that can be stored
     n = len(arr)
-    i = 0
-    ranges = list()
-    start = None
-    end = None
+    res = 0
 
-    #####
-    while i < n - 1:
-        # start of the range
-        if not start:
-            if arr[i] > arr[i + 1]:
-                start = i
+    # For every element of the array
+    for i in range(1, n - 1):
 
-        # if start of range exists, then find end of range
-        elif start:
-            # for ranges in middle
-            if arr[i] >= arr[start]:
-                ranges.append((start, i))
-                start = None
-                continue
+        # Find the maximum element on its left
+        left_max = max(arr[:i+1])
 
-        i += 1
+        # Find the maximum element on its right
+        right_max = max(arr[i:])
 
-    #####
-    # for last bucket, there may be no entry of same height
-    if start:
-        i = start + 1
-        min_value = None
-        max_diff = -1
-        # find the max height on the right hand side of the start found
-        while i < n:
-            if not min_value:
-                min_value = arr[i]
+        # Water height at any point is determined by the min of the max heights in the left/right of the point
+        # it is also dependent on the height of land at that point
+        res += min(left_max, right_max) - arr[i]
 
-            elif min_value:
-                # if max diff is found, then that will be the last bucket
-                diff = arr[i] - min_value
-                if diff > max_diff:
-                    max_diff = diff
-                    end = i
-
-            i += 1
-    if end:
-        ranges.append((start, end))
-
-    return ranges
-
-
-def get_volume(arr, island_range):
-    """ get the volume of water held by a range """
-    range_volume = 0
-
-    # min height of the bucket end will decide the height of water level
-    min_height = min(arr[island_range[0]], arr[island_range[1]])
-    for i in range(island_range[0] + 1, island_range[1]):
-        range_volume += min_height - arr[i]
-    print 'Range={}, Volume={}'.format(island_range, range_volume)
-    return range_volume
-
-
-def calculate_total_volume(island_arr):
-    # 1 - get ranges that can store water
-    ranges = get_island_ranges(island_arr)
-    print 'RANGES={}'.format(ranges)
-
-    # 2 - calculate total volume in these ranges
-    volume = 0
-    for range in ranges:
-        volume += get_volume(island_arr, range)
-    print 'VOLUME={}'.format(volume)
-
+    return res
 
 if __name__ == '__main__':
     island_arr = [1, 3, 2, 4, 1, 3, 1, 4, 5, 2, 2, 1, 4, 2, 2]
-    calculate_total_volume(island_arr)
+    print maxWater(island_arr)

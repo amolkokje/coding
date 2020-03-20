@@ -12,10 +12,14 @@ Follow Up: DFS versus BFS
 
 APPROACH-1:
 DFS, go down the depth, install if not present and then come back up
+Downside: Say it first installs v1 of pkg, and then another needs v1.1, it will go and upgrade(mostly uninstall/install)
 
 APPROACH-2:
 Decouple: method for handling discovery, and another to handle installation.
 This enables separation of concern/orthogonality/compactness. Also enables us to test both functions independently.
+As compared to prev approach, it will first determine versions of all pkgs that need to be installed, so no problem
+of pkg upgrades
+
 
 """
 
