@@ -4,7 +4,6 @@
 https://leetcode.com/contest/weekly-contest-164/problems/number-of-ways-to-stay-in-the-same-place-after-some-steps/
 """
 
-
 class Solution(object):
     def numWays(self, steps, arrLen):
         """
@@ -13,35 +12,40 @@ class Solution(object):
         :rtype: int
         """
 
+        ways = list()
+
         def _recurse(path):
-            np = len(path)
-            count_right = len(filter(lambda x: x == 'R', path))
-            count_left = len(filter(lambda x: x == 'L', path))
-            if np == steps:
-                if count_left == count_right:
-                    print 'Found Path: {}'.format(path)
-                    return 1
-                else:
-                    return 0
+            count_right = len(filter(lambda x:x=='R', path))
+            count_left = len(filter(lambda x:x=='L', path))
 
-            no_ways = 0
-            if count_right == count_left:  # i.e. already at first element of arr, so cannot move left
-                no_ways += _recurse(path + ['R'])
-            elif count_right - count_left == arrLen:  # i.e. already at left most element of the arr, so cannot move right
-                no_ways += _recurse(path + ['L'])
-            else:  # i.e. not at any arr edge
-                no_ways += _recurse(path + ['L'])
-                no_ways += _recurse(path + ['R'])
+            if len(path) == steps:
+                if count_right == count_left:
+                    ways.append(path)
+                return
 
-            no_ways += _recurse(path + ['S'])  # case for all
-            return no_ways
+            # at start-point i.e. left, so cannot go more left
+            if count_right == count_left:
+                _recurse(path+['R'])
 
-        no_ways = 0
-        for way in ['R', 'S']:  # start from left most, so cannot go more left
-            no_ways += _recurse([way])
+            # at right-most i.e. end of array, so cannot go more right
+            elif count_right-count_left==arrLen:
+                _recurse(path+['L'])
 
-            # print 'no ways = {}'.format(no_ways)
-        return no_ways
+            # not at any corner, so can go in either direction
+            else:
+                _recurse(path+['R'])
+                _recurse(path+['L'])
+
+            # can always stay at the same location
+            _recurse(path+['S'])
+
+        # already at left-most side of array
+        _recurse(['R'])
+        _recurse(['S'])
+
+        print 'Ways=[{}]'.format(ways)
+        return len(ways)
+
 
 
 """

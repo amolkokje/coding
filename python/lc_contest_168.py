@@ -144,6 +144,25 @@ class Solution(object):
 https://leetcode.com/contest/weekly-contest-167/problems/convert-binary-number-in-a-linked-list-to-integer/
 """
 
+# EASY TO UNDERSTAND APPROACH:
+def convert_decimal(root):
+    curr = root
+
+    # store everything in a stack
+    nstack = list()
+    while curr:
+        nstack.append(curr.val)
+        curr = curr.next
+
+    # read from the stack and start accumulating
+    m = 1 # multiplier
+    out = 0 # result
+    while nstack:
+        out += out*m
+        m *= 2
+    return out
+
+
 # Definition for singly-linked list.
 # class ListNode(object):
 #     def __init__(self, x):

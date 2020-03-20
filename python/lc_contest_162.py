@@ -53,7 +53,6 @@ class Solution(object):
 https://leetcode.com/contest/weekly-contest-162/problems/cells-with-odd-values-in-a-matrix/
 """
 
-
 class Solution(object):
     def oddCells(self, n, m, indices):
         """
@@ -67,6 +66,7 @@ class Solution(object):
         x_dict = dict()
         y_dict = dict()
 
+        # get count of rows/cols that need to be updated
         for index in indices:
             if not x_dict.get(index[0]):
                 x_dict[index[0]] = 1
@@ -78,25 +78,22 @@ class Solution(object):
             else:
                 y_dict[index[1]] += 1
 
-        mat = [[0 for _ in range(m)] for _ in range(n)]
-        # print mat
+        mat = [ [0 for _ in range(m)] for _ in range(n) ]
 
-        for x, count in x_dict.iteritems():
-            # print 'x={}, count={}'.format(x, count)
-            mat[x] = [mat[x][k] + count for k in range(m)]
-            # print '*',mat
-        print mat
+        # update the matrix
+        for i in range(n):
+            for j in range(m):
+                if x_dict.get(i):
+                    mat[i][j] += x_dict[i]
+                if y_dict.get(j):
+                    mat[i][j] += y_dict[j]
 
-        for y, count in y_dict.iteritems():
-            # print 'y={}, count={}'.format(y, count)
-            for r in range(n):
-                mat[r][y] += count
-        print mat
-
+        # calculate odd values
         odds = 0
         for r in range(n):
-            odds += len(filter(lambda x: x % 2 != 0, mat[r]))
+            odds += len(filter(lambda x:x%2!=0, mat[r]))
         return odds
+
 
 
 """
