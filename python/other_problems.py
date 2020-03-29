@@ -375,13 +375,13 @@ def find_range(arr, n):
 
 ## Q:: You are given an unsorted array. Write an algorithm to extract the highest 'k' elements from the array.    
 # Python Heap: https://docs.python.org/2/library/heapq.html
+# BEST IMPLEMENTATION -> FB ONSITE
 
 import heapq
-
-
 def get_highest_elements(ip_list, k):
-    # sorted(arr) --> returns a sorted list
-    # arr.sort() --> sorts list in place
+    # APPROACH-1: N.logN+K --> sort, and get first K
+    # APPROACH-2: N.logN+K (Here) --> put in heap, and get first K
+    # APPROACH-3: N.logK (Facebook) --> only store top K elements in heap, and return the heap
 
     n = len(ip_list)
     hlist = []  # to use as a heap
@@ -393,6 +393,7 @@ def get_highest_elements(ip_list, k):
         heapq.heappush(hlist, -1 * ip_list[i])
 
     return [-1 * heapq.heappop(hlist) for _ in range(k)]
+
 
 
 ## Q:: Given an array of elements, find the maximum possible sum of a contiguous subarray
@@ -589,7 +590,6 @@ if __name__ == '__main__':
     ip_paths = [ "/home/", "/../", "/home//foo/", "/a/./b/../../c/", "/a/../../b/../c//.//", "/a//b////c/d//././/.." ]
     for ip in ip_paths:
         print 'input-path=[{}], simplify_path=[{}]'.format(ip, simplify_path(ip))
-    sys.exit()
 
     print '--------------------------------------------------------------'
     ips = [ ('face', 'eacf') ]
