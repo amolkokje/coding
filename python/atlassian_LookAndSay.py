@@ -6,23 +6,23 @@ def look_say(num):
     """
 
     # convert num to list of numbers
-    num_list = [int(s) for s in str(num)]
-    len_num = len(num_list)
+    nums = [int(s) for s in str(num)]
+    n = len(nums)
 
     output = ''  # string to store output
     i = 0
-    while i < len_num:
+    while i < n:
         c = 1  # counter to manage count of duplicates
-        while True:
-            # if array is not out of bound and duplicate exists, increment the count
-            if i + c < len_num and num_list[i] == num_list[i + c]:
-                c += 1
-            else:
-                # if no more duplicates, break the loop
+        j = i + 1
+        while j < n:
+            if nums[j] != nums[i]:
                 break
+            else:
+                c += 1
+                j += 1
 
-        output += '{}{}'.format(c, num_list[i])  # append to output string
-        i += c  # move the index forward
+        output += '{}{}'.format(c, nums[i])
+        i += c
 
     return output
 
@@ -45,10 +45,16 @@ def look_say_depth(num, depth):
 
 
 if __name__ == '__main__':
-    ips = [1, 11, 21, 1211, 111221]
-    for ip in ips:
-        print 'look_say({}) = {}'.format(ip, look_say(ip))
 
-    n = 11
-    d = 2
-    print 'look_say_depth({},{}) = {}'.format(n, d, look_say_depth(n, d))
+    # input as (depth, number)
+    ips = [(1, 1),
+           (1, 11),
+           (1, 21),
+           (1, 1211),
+           (1, 111221),
+           (2, 11)
+           ]
+    for ip in ips:
+        depth, number = ip
+        print '-------------'
+        print 'number=[{}], depth=[{}], LookAndSay=[{}]'.format(number, depth, look_say_depth(number, depth))
