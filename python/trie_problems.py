@@ -169,7 +169,6 @@ class Trie(object):
 
         while node_stack:
             current = node_stack.pop(-1)
-            #print 'curr = {}'.format(current)
 
             if remove_child is not None:
                 #print '---> removing child {}'.format(remove_child)
@@ -300,7 +299,7 @@ def matrix_search_trie(matrix, words_dict):
     print '*****\nTrie Matrix Search ----'
 
     # store all words in a trie
-    words_trie = AmolTrie()
+    words_trie = Trie()
     for word in words_dict.keys():
         words_trie.insert(word)
 
@@ -351,11 +350,17 @@ def matrix_search_trie(matrix, words_dict):
 # driver function
 def main():
     # -------------------------
-    # AMOL
-    keys = ["the", "a", "there", "anaswe", "any", "by", "their"]
+    keys = ["the", "a", "there", "anaswe", "any", "by", "their", "therea", "thereab"]
     test_trie = Trie()
     for k in keys:
         test_trie.insert(k)
+
+    print test_trie.show()
+    test_trie.remove("therea")
+    print test_trie.show()
+    test_trie.remove("thereab")
+    print test_trie.show()
+    sys.exit()
 
     check_keys = ['the', 'these', 'their', 'thaw', 'ana', 'b']
     for ck in check_keys:
