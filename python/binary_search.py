@@ -204,7 +204,7 @@ if __name__ == '__main__':
           'IP={}, Magic Index with repeats={}'.format(sorted_arr_repeats,
                                                       binary_search_magic_index_sorted_arr_with_repeats(
                                                           sorted_arr_repeats))
-    sys.exit()
+
     print '--------------------------------------------------------------'
     alist = [([4, 5, 6, 7, 0, 1, 2], 0), ([4, 5, 6, 7, 8, 1, 2, 3], 8)]
     for arr in alist:

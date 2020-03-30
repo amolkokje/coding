@@ -4,7 +4,31 @@ import sys, os, copy, re
 # Q: Given a sorted array nums, remove the duplicates in-place such that each element appear only once and return
 # the new length.
 
-def removeDuplicates(arr):
+def removeDuplicates(arr):  # -> not sorted
+    n = len(arr)
+    i = 0
+    eledict = dict()
+    while i<n:
+        if eledict.get(arr[i]):
+            # go on until find an element at the end which is also not a duplicate
+            while n>i and eledict.get(arr[n-1]):
+                n -= 1
+
+            # only if able to find an element before n<i, then swap
+            if n-1>i:
+                arr[i], arr[n-1] = arr[n-1], arr[i]
+                n-=1
+            else:
+                break
+        else:
+            eledict[arr[i]] = 1
+            i += 1
+
+    del arr[n:]
+
+
+
+def removeDuplicates2(arr):
     # NOTE: in absence of python set, put them in a dict with values as counts. Return only the dict.keys()
     # PYTHON-1 ---
     #return list(set(arr))
@@ -222,7 +246,7 @@ def move_zeros(arr):
             else:
                 return
         i += 1
-    #del arr[n:]
+    #del arr[n:]   # use this if need to remove all the zeroes
 
     """
     while i < n:
@@ -838,6 +862,7 @@ if __name__ == '__main__':
     ]
     for board in board_list:
         print 'is_sudoku_valid={}'.format(is_sudoku_valid(board))
+    sys.exit()
 
     print '--------------------------------------------------------------'
     arrlist = ["abcabcbb", "bbbbb", "pwwkew"]
