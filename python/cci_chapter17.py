@@ -104,26 +104,25 @@ def find_fact_trailing_zeros(n):
 # 17.5 --> Master Mind game hits and pseudo-hits
 
 def get_hits(actual, guess):
-    # length of actual and guess will always be the same
+    hits = set()
+    phits = set()
     n = len(actual)
-    
-    hits = {}
-    pseudo_hits = {}
     
     # hits
     for i in range(n):
-        if actual[i] == guess[i]:
-            hits[i] = actual[i]
+        if guess[i]==actual[i]:
+            hits.add(i) 
     
-    # guess loop
-    for g in range(n):
-        # actual loop
-        for a in range(n):
-            # pseudo hit --> value equal, but index not; not already hit/pseudo_hit
-            if g != a and guess[g] == actual[a] and a not in hits.keys() and a not in pseudo_hits.keys():
-                pseudo_hits[a] = actual[a]
+    # psuedo hits
+    for i in range(n):
+        for j in range(n):
+            # print("i={}, j={}".format(i, j))
+            if guess[j]==actual[i] and j!=i and i not in hits:
+                phits.add(j)
+                break
                     
-    return 'hits={}, pseudo-hits={}'.format(len(hits), len(pseudo_hits))
+    print("hits={}, psuedo-hits={}".format(hits, phits))
+    
     
 # 17.6 --> Given an array of integers, write a method to find indices m and n such that if you sorted elements m through n, 
 # the entire array would be sorted. Minimize n - m (that is, find the smallest such sequence).
@@ -474,12 +473,8 @@ if __name__ == '__main__':
         print 'Num of trailing zeroes in fact of {} are {}, {}'.format(a, find_fact_trailing_zeros(a), count_num_zeroes_fact(a))
     
     print '---------------------------------------------------'
-    actual = 'RGBY'
-    guess = 'GGRR'
-    print 'MM actual={}, guess={}, {}'.format(actual, guess, get_hits(actual, guess))
-    actual = 'RGGY'
-    guess = 'GGRR'
-    print 'MM actual={}, guess={}, {}'.format(actual, guess, get_hits(actual, guess))
+    get_hits('RGBY', 'GGRR')
+    get_hits('RGGY', 'GGRR')
     
     print '---------------------------------------------------'
     num_list = [3, 24, 23, 123, 223, 3445, 33456, 333456]
