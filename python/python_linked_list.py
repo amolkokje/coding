@@ -7,7 +7,7 @@ class Node(object):
         self.next_node = None
 
     def __repr__(self):
-        return '<Node:{}>'.format(self.value)
+        return "<Node:{}>".format(self.value)
 
 
 class LinkedList(object):
@@ -35,7 +35,7 @@ class LinkedList(object):
                 else:  # for the first node, prev=None
                     self.root = current.next_node
                     del current
-                print 'Node {} deleted.'.format(x)
+                print(f"Node {x} deleted")
                 return
 
             else:
@@ -44,13 +44,13 @@ class LinkedList(object):
                     current = current.next_node
                 else:
                     break
-        print 'Node {} not found!'.format(x)
+        print(f"Node {x} not found!")
 
     def list(self):
-        print 'Listing...'
+        print("Listing...")
         current = self.root
         while current:
-            print current
+            print(current)
             if current.next_node:
                 current = current.next_node
             else:
@@ -59,10 +59,11 @@ class LinkedList(object):
 
 # Q. Write a method to reverse a linked list
 
+
 # METHOD-1: recursion (here) --> New LL
 def reverse_linked_list(ip_ll):
     def _recurse_add(node):
-        """ helper method to recurse through to last node of linked list """
+        """helper method to recurse through to last node of linked list"""
         if node.next_node:
             # get the returned LL from the last node, and append the current value to it, so as to reverse the order
             ll = _recurse_add(node.next_node)
@@ -108,23 +109,31 @@ def reverse_ll_stack(ip_ll):
 # Book: 2.7
 # Q. Implement a function to check if a linked list is a palindrome
 
+
 # METHOD-1: using recursion
 def is_palindrome_recursion(ll):
-    node_list = list()
+    stack = []
 
     def _recurse(node):
-        node_list.append(node.value)
 
-        if node.next_node:
-            i, isp = _recurse(node.next_node)
-            if isp:
-                return (i + 1), node.value == node_list[i]
-            else:
-                return None, False
-        else:
-            return 1, node.value == node_list[0]
+        if node is None:
+            return True
 
-    return _recurse(ll.root)[1]
+        stack.append(node.value)
+        # print(f"s: {stack}, n: {node.value}")
+
+        isp = _recurse(node.next_node)
+        if isp is False:
+            return False
+
+        stack_first = stack.pop(0)
+        # print(f"--> s: {stack}, n: {node.value}, sl: {stack_first}")
+        if stack_first != node.value:
+            return False
+
+        return True
+
+    return _recurse(ll.root)
 
 
 # METHOD-2: using stack
@@ -160,6 +169,7 @@ https://leetcode.com/problems/delete-node-in-a-linked-list/
 #         self.val = x
 #         self.next = None
 
+
 class Solution(object):
     def deleteNode(self, node):
         """
@@ -170,7 +180,7 @@ class Solution(object):
         node.next = node.next.next
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     ll = LinkedList(0)
     for i in range(1, 10):
         ll.append(i)
@@ -180,19 +190,18 @@ if __name__ == '__main__':
     ll.delete(3)
     ll.list()
 
-    print '***********************************************'
+    print("***********************************************")
 
-    print '*** Reverse LL in Place ***'
+    print("*** Reverse LL in Place ***")
     ll.list()
     reverse_ll_stack(ll)
     ll.list()
 
-    print '*** Reverse LL using new LL ***'
+    print("*** Reverse LL using new LL ***")
     reverse_ll = reverse_linked_list(ll)
     reverse_ll.list()
 
-    print '***********************************************'
-
+    print("***********************************************")
 
     def _get_palindome_ll():
         ll = LinkedList(0)
@@ -202,17 +211,16 @@ if __name__ == '__main__':
             ll.append(i)
         return ll
 
-
-    print '*** Is-Palindrome using recursion *** '
+    print("*** Is-Palindrome using recursion *** ")
     ll = _get_palindome_ll()
     ll.list()
-    print is_palindrome_recursion(ll)
+    print(is_palindrome_recursion(ll))
     ll.append(10)
-    print is_palindrome_recursion(ll)
+    print(is_palindrome_recursion(ll))
 
-    print '*** Is-Palindrome using stack *** '
+    print("*** Is-Palindrome using stack *** ")
     ll2 = _get_palindome_ll()
     ll2.list()
-    print is_palindrome_stack(ll2)
+    print(is_palindrome_stack(ll2))
     ll2.append(10)
-    print is_palindrome_stack(ll2)
+    print(is_palindrome_stack(ll2))
