@@ -1,64 +1,121 @@
 import sys, os, copy
+from dataclasses import dataclass
 
 
 class Node:
-    def __init__(self, x):
+    def __init__(self, x: int):
         self.data = x
         self.right = None
         self.left = None
 
     def __repr__(self):
-        return '<Node: {}>'.format(self.data)
+        return "<Node: {}>".format(self.data)
 
 
-class BinarySearchTree:
-    def __init__(self, x):
+class BST:
+    def __init__(self, x: int):
         self.root = Node(x)
 
-    def AddItem(self, x):
-        current = self.root
-        while current:
-            if x >= current.data:
-                if not current.right:
-                    current.right = Node(x)
+    def add(self, x: int):
+        print(f"Add: {x}")
+        curr = self.root
+
+        while curr is not None:
+            if x >= curr.data:
+                if curr.right is None:
+                    curr.right = Node(x)
                     break
                 else:
-                    current = current.right
-            else:
-                if not current.left:
-                    current.left = Node(x)
+                    curr = curr.right
+            elif x < curr.data:
+                if curr.left is None:
+                    curr.left = Node(x)
                     break
                 else:
-                    current = current.left
+                    curr = curr.left
 
-    def FindItem(self, x):
-        current = self.root
-        while current:
-            print 'Reached: {}'.format(current.data)
-            if x == current.data:
-                return current
-            elif x > current.data:
-                current = current.right
+    def find(self, x: int):
+        print(f"Find: {x}")
+        curr = self.root
+        while curr is not None:
+            # print(x, curr.data, curr.right, curr.left)
+            if x == curr.data:
+                return curr
+
+            elif x > curr.data:
+                curr = curr.right
+
+            elif x <= curr.data:
+                curr = curr.left
+
+        print("not found!")
+
+    @classmethod
+    def list(cls, root):
+        output = []
+        queue = [root]
+
+        while len(queue) > 0:
+            curr = queue.pop(0)
+            output.append(curr)
+            if curr.left is not None:
+                queue.append(curr.left)
+            if curr.right is not None:
+                queue.append(curr.right)
+
+        print(f"output = {output}")
+        return output
+
+    # ref: https://www.youtube.com/watch?v=LFzAoJJt92M
+    def delete(self, x):
+        print(f"Delete: {x}")
+
+        def _delete(root, value):
+            if root is None:
+                return None
+
+            # navigate the tree to find the node to be deleted
+            if value < root.data:
+                root.left = _delete(root.left, value)
+            elif value > root.data:
+                root.right = _delete(root.right, value)
             else:
-                current = current.left
+                # found the node to be deleted: value == root.data
+                # if there is only a single child, return the child
+                if root.left is None:
+                    return root.right
+                elif root.right is None:
+                    return root.left
+                else:
+                    # find the minimum value in the right subtree
+                    min_left = root.right
+                    while min_left.left is not None:
+                        min_left = min_left.left
+                    root.data = (
+                        min_left.data
+                    )  # assign this minimum value to the current node
+                    root.right = _delete(
+                        root.right, min_left.data
+                    )  # delete the minimum value node in the right subtree
 
-                # how to implement DeleteItem()?
-                # seems to be tough as it may break the ordering in the structure
-                # one way could be to break the entire tree and then reconstruct
+            return root
+
+        return _delete(self.root, x)
 
 
 ########################################################################
-# Refrence for Depth First --> PreOrder, InOrder, PostOrder: https://www.geeksforgeeks.org/tree-traversals-inorder-preorder-and-postorder/    
+# Refrence for Depth First --> PreOrder, InOrder, PostOrder: https://www.geeksforgeeks.org/tree-traversals-inorder-preorder-and-postorder/
+
 
 def PrintPreOrder(n):
     """
     takes the root node of BST as input and prints BST in Pre Order
     USES:
-    - Used to create a copy of the tree. 
+    - Used to create a copy of the tree.
     - Used to get prefix expression on of an expression tree.
     """
     if n:
-        print n.data
+        print(n.data)
         PrintPreOrder(n.left)
         PrintPreOrder(n.right)
 
@@ -72,7 +129,7 @@ def PrintInOrder(n):
     """
     if n:
         PrintInOrder(n.left)
-        print n.data
+        print(n.data)
         PrintInOrder(n.right)
 
 
@@ -80,20 +137,21 @@ def PrintPostOrder(n):
     """
     takes the root node of BST as input and prints BST in Post Order
     USES:
-    - used for deletion of node or subtree. 
+    - used for deletion of node or subtree.
         - as this goes till the child node of interest, we can delete it there
     - use to get subtree until a node since it starts from the lowest points
     """
     if n:
         PrintPostOrder(n.left)
         PrintPostOrder(n.right)
-        print n.data
+        print(n.data)
 
 
 ########################################################################
 
 
 # Reference for Breadth First/ Level Order: https://www.geeksforgeeks.org/level-order-tree-traversal/
+
 
 def PrintLevelOrder(node):
     """
@@ -106,7 +164,7 @@ def PrintLevelOrder(node):
 
     while queue:
         # Print front of queue and remove it from queue
-        print queue[0].data,
+        print(queue[0].data)
         node = queue.pop(0)
 
         # Enqueue left child
@@ -119,7 +177,8 @@ def PrintLevelOrder(node):
 
 
 ########################################################################
-# Print a particular level in the tree            
+# Print a particular level in the tree
+
 
 def PrintLevel(node, print_height, height=0):
     """
@@ -128,13 +187,14 @@ def PrintLevel(node, print_height, height=0):
     """
     if node:
         if height == print_height:
-            print node.data
+            print(node.data)
             return  # because if you have reached that level, going further will only change the level number
         PrintLevel(node.left, print_height, height + 1)
         PrintLevel(node.right, print_height, height + 1)
 
 
 ########################################################################
+
 
 def get_tree_height(root):
     def _recurse(node, h):
@@ -149,6 +209,7 @@ def get_tree_height(root):
 ########################################################################
 # Binary Tree balanced
 # Balanced Tree - A binary tree is balanced if for each node it holds that the number of inner nodes in the left subtree and the number of inner nodes in the right subtree differ by at most 1
+
 
 def is_tree_balanced(root):
     def _recurse(node):
@@ -193,8 +254,6 @@ def get_lca_binary_search_tree(node, v1, v2):
         # if both values are smaller, then go in left subtree
         if node.data > v1 and node.data > v2:
             return get_lca_binary_search_tree(node.left, v1, v2)
-
-
 
 
 def get_lca_binary_tree(root, v1, v2):
@@ -251,7 +310,8 @@ def GetLCA(node, v1, v2):
 
 
 ########################################################################
-# Binary Tree Comparisons 
+# Binary Tree Comparisons
+
 
 def AreTreesIdentical(n1, n2):
     """
@@ -262,7 +322,9 @@ def AreTreesIdentical(n1, n2):
     elif n1 and n2:
         if n1.data != n2.data:
             return False
-        return AreTreesIdentical(n1.left, n2.left) and AreTreesIdentical(n1.right, n2.right)
+        return AreTreesIdentical(n1.left, n2.left) and AreTreesIdentical(
+            n1.right, n2.right
+        )
     else:
         return False
 
@@ -285,6 +347,7 @@ def ContainsTree(n1, n2):
 # Q. Given a sorted (increasing order) array with unique integer elements, write an algorithm to create a binary
 # search tree with minimal height.
 
+
 def bst_minimal_height(sorted_arr):
     n = len(sorted_arr)
     m = n / 2
@@ -294,12 +357,14 @@ def bst_minimal_height(sorted_arr):
         if l <= r:
             m = (l + r) / 2
             bst.AddItem(sorted_arr[m])
-            _recurse(l, m-1)
-            _recurse(m+1, r)
+            _recurse(l, m - 1)
+            _recurse(m + 1, r)
 
-    _recurse(0, m-1)
-    _recurse(m+1, n-1)
+    _recurse(0, m - 1)
+    _recurse(m + 1, n - 1)
     return bst.root
+
+
 """
 def bst_minimal_height(sorted_arr):
     bst = BST()
@@ -311,7 +376,7 @@ def bst_minimal_height(sorted_arr):
 # Book: 4.4
 # Q. Given a binary tree, design an algorithm which creates a linked list of all the nodes at
 # each depth (e.g., if you have a tree with depth D,you'll have D linked lists).
-
+"""
 from python_linked_list import LinkedList
 
 
@@ -389,80 +454,97 @@ class BstRank(object):
                 else:
                     break
 
+"""
+if __name__ == "__main__":
 
-if __name__ == '__main__':
-
-    bst = BinarySearchTree(3)
-    bst.AddItem(2)
-    bst.AddItem(4)
-    bst.AddItem(5)
-    bst.AddItem(1)
+    # -------------------------------
+    # Test: Add
+    bst = BST(3)
+    bst.add(2)
+    bst.add(4)
+    bst.add(5)
+    bst.add(1)
     # comment down from here to make a balanced tree for testing
-    bst.AddItem(6)
-    bst.AddItem(9)
-    bst.AddItem(0)
-    bst.AddItem(2)
-    bst.AddItem(7)
+    bst.add(6)
+    bst.add(9)
+    bst.add(0)
+    bst.add(2)
+    bst.add(7)
 
+    print(bst)
+
+    # -------------------------------
+    # Test: Find
     find_list = [4, 10, 7]
     for find in find_list:
-        if not bst.FindItem(find):
-            print '-- Not Found {}'.format(find)
+        if not bst.find(find):
+            print("-- Not Found {}".format(find))
         else:
-            print '-- Found {}'.format(find)
+            print("-- Found {}".format(find))
 
-    print "\nPrinting Pre Order ..."
+    print(f"Print Pre-Order:")
     PrintPreOrder(bst.root)
-    print "\nPrinting In Order ..."
+
+    # -------------------------------
+    # Test: Delete
+    bst.delete(5)
+    print(f"Print Pre-Order:")
+    PrintPreOrder(bst.root)
+
+    # -------------------------------
+    # Test: Print
+    print("Printing In Order ...")
     PrintInOrder(bst.root)
-    print "\nPrinting Post Order ..."
+    print("Printing Post Order ...")
     PrintPostOrder(bst.root)
-    print "\nPrinting Level Order ..."
+    print("Printing Level Order ...")
     PrintLevelOrder(bst.root)
 
+    # -------------------------------
+    # Test: Level order print
     level_list = [2, 1, 4]
     for level in level_list:
-        print "\nPrinting Level {}...".format(level)
+        print("Printing Level {}...".format(level))
         PrintLevel(bst.root, level)
-    print "\n"
 
-    print 'Tree Height = {}'.format(get_tree_height(bst.root))
-    print 'Is Tree Balanced = {}'.format(is_tree_balanced(bst.root))
-    sys.exit()
+    # -------------------------------
+    # Test: Height, Is balanced
+    print(f"Tree Height = {get_tree_height(bst.root)}")
+    print(f"Is Tree Balanced = {is_tree_balanced(bst.root)}")
 
-    v1 = 5.5
-    v2 = 7
-    print 'LCA BST of v1={}, v2={} is {}'.format(v1, v2, get_lca_binary_search_tree(bst.root, v1, v2))
-    print 'LCA of v1={}, v2={} is {}'.format(v1, v2, get_lca_binary_tree(bst.root, v1, v2))
-    bst2 = copy.deepcopy(bst)
-    bst3 = copy.deepcopy(bst)
-    bst3.AddItem(99)
+    # v1 = 5.5
+    # v2 = 7
+    # print 'LCA BST of v1={}, v2={} is {}'.format(v1, v2, get_lca_binary_search_tree(bst.root, v1, v2))
+    # print 'LCA of v1={}, v2={} is {}'.format(v1, v2, get_lca_binary_tree(bst.root, v1, v2))
+    # bst2 = copy.deepcopy(bst)
+    # bst3 = copy.deepcopy(bst)
+    # bst3.AddItem(99)
 
-    print 'AreTreesIdentical(bst, bst2)={}'.format(AreTreesIdentical(bst.root, bst2.root))
-    print 'AreTreesIdentical(bst, bst3)={}'.format(AreTreesIdentical(bst.root, bst3.root))
+    # print 'AreTreesIdentical(bst, bst2)={}'.format(AreTreesIdentical(bst.root, bst2.root))
+    # print 'AreTreesIdentical(bst, bst3)={}'.format(AreTreesIdentical(bst.root, bst3.root))
 
-    # TODO - this one is not working
-    bst4 = BinarySearchTree(6)
-    bst4.AddItem(9)
-    bst4.AddItem(7)
-    print 'ContainsTree(bst, bst4)={}'.format(ContainsTree(bst.root, bst4.root))
-    bst4.AddItem(7.5)
-    print 'ContainsTree(bst, bst4)={}'.format(ContainsTree(bst.root, bst4.root))
+    # # TODO - this one is not working
+    # bst4 = BinarySearchTree(6)
+    # bst4.AddItem(9)
+    # bst4.AddItem(7)
+    # print 'ContainsTree(bst, bst4)={}'.format(ContainsTree(bst.root, bst4.root))
+    # bst4.AddItem(7.5)
+    # print 'ContainsTree(bst, bst4)={}'.format(ContainsTree(bst.root, bst4.root))
 
-    print '-------------------------------'
-    ip_sorted_arr = range(10)
-    print 'input sorted arr={}'.format(ip_sorted_arr)
-    root = bst_minimal_height(ip_sorted_arr)
-    print '         bst_minimal_height(): Tree Height={}'.format(get_tree_height(root))
+    # print '-------------------------------'
+    # ip_sorted_arr = range(10)
+    # print 'input sorted arr={}'.format(ip_sorted_arr)
+    # root = bst_minimal_height(ip_sorted_arr)
+    # print '         bst_minimal_height(): Tree Height={}'.format(get_tree_height(root))
 
-    print '-------------------------------'
-    output = binary_tree_list_linked_lists(root)
-    PrintLevelOrder(root)
-    for ll in output:
-        ll.list()
+    # print '-------------------------------'
+    # output = binary_tree_list_linked_lists(root)
+    # PrintLevelOrder(root)
+    # for ll in output:
+    #     ll.list()
 
-    print '-------------------------------'
-    bst = BstRank(0)
-    for a in range(1, 10):
-        bst.insert(a)
-    print 9, bst.get_rank(9)
+    # print '-------------------------------'
+    # bst = BstRank(0)
+    # for a in range(1, 10):
+    #     bst.insert(a)
+    # print 9, bst.get_rank(9)
