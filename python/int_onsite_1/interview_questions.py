@@ -142,6 +142,8 @@ def is_sorted(words, alphabets):
 
 
 """
+https://leetcode.com/problems/dot-product-of-two-sparse-vectors/description/
+
 Q: Find a way to store the vectors in a memory efficient way to be able to calculate the dot product.
 - Calculate the dot product.
 - Input vectors can be small/large and may be input as sparse vectors
