@@ -44,13 +44,48 @@ def knapsack(items, weights, max_capacity):
         else:
             max_weight, max_value = foundw, foundv
 
-    print max_weight, max_value
+    # print max_weight, max_value
 
 
 # Traveling Salesman Problem: (NP complete)
 # Given a set of cities and distance between every pair of cities, the problem is to find the shortest possible
 # route that visits every city exactly once and returns back to the starting point.
 # https://www.geeksforgeeks.org/traveling-salesman-problem-tsp-implementation/
+
+# NOTE: using permutations: 
+# from examples, salesman is able to visit to any city from any other city, so dont need graph
+# since need to cover all cities, can practically start from any node
+from itertools import permutations
+def tsp(cost, start):
+
+    # Number of nodes
+    numNodes = len(cost)
+    nodes = list(range(1, numNodes))
+
+    minCost = float('inf')
+
+    # Generate all permutations of the
+    # remaining nodes
+    for perm in permutations(nodes):
+        currCost = 0
+        currNode = 0
+
+        # Calculate the cost of the current permutation
+        for node in perm:
+            currCost += cost[currNode][node]
+            currNode = node
+
+        # Add the cost to return to the starting node
+        currCost += cost[currNode][0]
+
+        # Update the minimum cost if the current cost 
+        # is lower
+        print(f"perm={perm}, currCost={currCost}")
+        minCost = min(minCost, currCost)
+
+    return minCost
+
+
 
 def get_shortest_distance_to_visit_all_cities(grid, start_city):
     n = len(grid)
@@ -68,7 +103,7 @@ def get_shortest_distance_to_visit_all_cities(grid, start_city):
 
         if city in path:
             if len(path) == n and city == start_city:
-                print 'PATH={}, DISTANCE={}'.format(path, distance)
+                # print 'PATH={}, DISTANCE={}'.format(path, distance)
                 return distance
             else:
                 # works as an alternative to maintaining visited list
@@ -77,7 +112,7 @@ def get_shortest_distance_to_visit_all_cities(grid, start_city):
         min_dist = None
         conndict = get_connections(city)
 
-        for conn, dist in conndict.iteritems():
+        for conn, dist in conndict.items():
             found = _recurse(conn, path + [city], distance + dist)
             if found:
                 if not min_dist:
@@ -102,7 +137,7 @@ def get_shortest_distance_to_visit_all_cities(grid, start_city):
 def hamilton_cycle_exists(grid):
     n = len(grid)  # total pts
     start = 0
-    print 'n={}'.format(n)
+    # print 'n={}'.format(n)
 
     def get_connections(x):
         return [i for i in range(n) if grid[x][i] == 1]
@@ -189,7 +224,7 @@ def place_n_queens(n):
         for k in range(n):
             if is_cell_ok(row=k, col=i):
                 board[k][i] = True
-                print 'Putting Queen: ({},{})'.format(k, i)
+                # print 'Putting Queen: ({},{})'.format(k, i)
                 break
 
     return board
@@ -273,26 +308,26 @@ def color_graph(grid, m):
 
 
 if __name__ == '__main__':
-    print knapsack(items=[60, 100, 120],
-                   weights=[10, 20, 30],
-                   max_capacity=50)
+    # print knapsack(items=[60, 100, 120],
+    #                weights=[10, 20, 30],
+    #                max_capacity=50)
 
-    print '###############################################################'
+    # print '###############################################################'
 
-    grid = [
-        [0, 1, 1, 1],
-        [1, 0, 1, 0],
-        [1, 1, 0, 1],
-        [1, 0, 1, 0]
-    ]
-    m = 3
-    print 'Color Graph = {}'.format(color_graph(grid, m))
+    # grid = [
+    #     [0, 1, 1, 1],
+    #     [1, 0, 1, 0],
+    #     [1, 1, 0, 1],
+    #     [1, 0, 1, 0]
+    # ]
+    # m = 3
+    # print 'Color Graph = {}'.format(color_graph(grid, m))
 
-    print '###############################################################'
+    # print '###############################################################'
 
-    print 'Place N queens in NxN matrix = {}'.format(place_n_queens(4))
+    # print 'Place N queens in NxN matrix = {}'.format(place_n_queens(4))
 
-    print '###############################################################'
+    # print '###############################################################'
 
     grid = [
         [0, 10, 15, 20],
@@ -300,40 +335,42 @@ if __name__ == '__main__':
         [15, 35, 0, 30],
         [20, 25, 30, 0]
     ]
-    print 'Shortest path to visit all cities = {}'.format(get_shortest_distance_to_visit_all_cities(grid, 1))
+    print(f"Shortest path to visit all cities = {get_shortest_distance_to_visit_all_cities(grid, 1)}")
+    print(f"** Shortest path to visit all cities = {tsp(grid, 1)}")
+    # print(f"Shortest path to visit all cities = {get_shortest_distance_to_visit_all_cities2(grid, 1)}")
 
-    print '###############################################################'
+    # print '###############################################################'
 
-    # Hamilton: Undirected graph, with all weights as 1
-    """
-    (0)--(1)--(2)
-     |   / \   |
-     |  /   \  | 
-     | /     \ |
-    (3)-------(4)
-    """
+    # # Hamilton: Undirected graph, with all weights as 1
+    # """
+    # (0)--(1)--(2)
+    #  |   / \   |
+    #  |  /   \  | 
+    #  | /     \ |
+    # (3)-------(4)
+    # """
 
-    grid = [  # grid -> distance/weight matrix
-        [0, 1, 0, 1, 0],
-        [1, 0, 1, 1, 1],
-        [0, 1, 0, 0, 1],
-        [1, 1, 0, 0, 1],
-        [0, 1, 1, 1, 0]
-    ]
-    print 'Hamilton Cycle Exists = {}'.format(hamilton_cycle_exists(grid))
+    # grid = [  # grid -> distance/weight matrix
+    #     [0, 1, 0, 1, 0],
+    #     [1, 0, 1, 1, 1],
+    #     [0, 1, 0, 0, 1],
+    #     [1, 1, 0, 0, 1],
+    #     [0, 1, 1, 1, 0]
+    # ]
+    # print 'Hamilton Cycle Exists = {}'.format(hamilton_cycle_exists(grid))
 
-    """
-    (0)--(1)--(2)
-     |   / \   |
-     |  /   \  | 
-     | /     \ |
-    (3)       (4)
-    """
-    grid = [
-        [0, 1, 0, 1, 0],
-        [1, 0, 1, 1, 1],
-        [0, 1, 0, 0, 1],
-        [1, 1, 0, 0, 0],
-        [0, 1, 1, 0, 0]
-    ]
-    print 'Hamilton Cycle Exists = {}'.format(hamilton_cycle_exists(grid))
+    # """
+    # (0)--(1)--(2)
+    #  |   / \   |
+    #  |  /   \  | 
+    #  | /     \ |
+    # (3)       (4)
+    # """
+    # grid = [
+    #     [0, 1, 0, 1, 0],
+    #     [1, 0, 1, 1, 1],
+    #     [0, 1, 0, 0, 1],
+    #     [1, 1, 0, 0, 0],
+    #     [0, 1, 1, 0, 0]
+    # ]
+    # print 'Hamilton Cycle Exists = {}'.format(hamilton_cycle_exists(grid))
