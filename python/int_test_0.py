@@ -11,6 +11,7 @@ Given A = [1, 2, 3], the function should return 4.
 Given A = [-1, -3], the function should return 1.
 """
 
+
 def return_max_int(A):
     i = 1
     while i < 100000:
@@ -42,13 +43,15 @@ A = [ eva, jqw, tyn, jan ]
 S is: evajqwtyn --> 9
 """
 
+
 def all_letters_distinct(ip_str):
-    #print (ip_str)
+    # print (ip_str)
     return True if len(ip_str) == len(list(set(ip_str))) else False
+
 
 def get_longest_concatenated_str_with_unique_letters(A):
     n = len(A)
-    visited = [ False for _ in range(n) ]
+    visited = [False for _ in range(n)]
     str_with_unique_letters = set()
 
     def _recurse(str_formed, i):
@@ -56,17 +59,17 @@ def get_longest_concatenated_str_with_unique_letters(A):
             return
 
         if all_letters_distinct(str_formed + A[i]):
-            str_with_unique_letters.add(str_formed+A[i])
+            str_with_unique_letters.add(str_formed + A[i])
 
-            for j in range(i+1, n):
+            for j in range(i + 1, n):
                 visited[i] = True
-                _recurse(str_formed +A[i], j)
+                _recurse(str_formed + A[i], j)
                 visited[i] = False
 
     for i in range(n):
-        _recurse('', i)
+        _recurse("", i)
 
-    #print str_with_unique_letters
+    # print str_with_unique_letters
     longest_len = 0
     for str_unique in str_with_unique_letters:
         l = len(str_unique)
@@ -95,33 +98,66 @@ A=[1,4,2,-2,5], B=[7,-2,-2,2,5]
 K = 2 
 """
 
+
 def get_fair_index(A, B):
     n = len(A)
-    for k in range(1,n-1):
-        if sum(A[:k]) == sum(A[k:]) == sum(B[:k]) == sum(B[k:]):
-            return k
-    return 0
+
+    # brute force - slow
+    # for k in range(1,n-1):
+    #     if sum(A[:k]) == sum(A[k:]) == sum(B[:k]) == sum(B[k:]):
+    #         return k
+    # return 0
+
+    # prefix sum - fast
+    aleft = [0] * n
+    aright = [0] * n
+    bleft = [0] * n
+    bright = [0] * n
+
+    # left sum -> 0-(k-1)
+    for i in range(1, n):
+        aleft[i] = aleft[i - 1] + A[i - 1]
+        bleft[i] = bleft[i - 1] + B[i - 1]
+
+    # right sum -> k to n-1
+    aright[-1] = A[-1]
+    bright[-1] = B[-1]
+    for i in range(n - 2, -1, -1):
+        aright[i] = A[i] + aright[i + 1]
+        bright[i] = B[i] + bright[i + 1]
+
+    print(f"a={A}, b={B}")
+    print(f"aleft={aleft}, aright={aright}, bleft={bleft}, bright={bright}")
+    for i in range(1, n - 1):
+        if aleft[i] == aright[i] == bleft[i] == bright[i]:
+            return i
+
+    return -1
 
 
+if __name__ == "__main__":
 
-if __name__ == '__main__':
-
-    iplist = [ [ 'co', 'dil', 'ity' ],
-               [ 'abc', 'yyy', 'def', 'csv' ],
-               [ 'potato', 'kayak', 'banana', 'racecar' ],
-               [ 'eva', 'jqw', 'tyn', 'jan' ]]
+    iplist = [
+        ["co", "dil", "ity"],
+        ["abc", "yyy", "def", "csv"],
+        ["potato", "kayak", "banana", "racecar"],
+        ["eva", "jqw", "tyn", "jan"],
+    ]
     for ip in iplist:
-        print 'A={}, get_longest_concatenated_str_with_unique_letters={}'.format(ip, get_longest_concatenated_str_with_unique_letters(ip))
+        print(
+            f"A={ip}, get_longest_concatenated_str_with_unique_letters={get_longest_concatenated_str_with_unique_letters(ip)}"
+        )
 
-    print '***************************'
-    iplist = [ [1, 3, 6, 4, 1, 2], [1, 2, 3], [-1, -3] ]
+    print("***************************")
+    iplist = [[1, 3, 6, 4, 1, 2], [1, 2, 3], [-1, -3]]
     for ip in iplist:
-        print 'ip={}, return_max_int={}'.format(ip, return_max_int(ip))
+        print(f"ip={ip}, return_max_int={return_max_int(ip)}")
 
-    print '***************************'
-    iplist = [ ([4,-1,0,3], [-2,5,0,3]),
-               ([2,-2,-3,3], [0,0,4,-4]),
-               ([4,-1,-0,3], [-2,6,0,4]),
-               ([1,4,2,-2,5],[7,-2,-2,2,5])]
-    for ip in iplist:
-        print 'A={}, B={}, get_fair_index={}'.format(ip[0], ip[1], get_fair_index(ip[0], ip[1]))
+    print("***************************")
+    for a, b, result in [
+        ([4, -1, 0, 3], [-2, 5, 0, 3], 2),
+        ([2, -2, -3, 3], [0, 0, 4, -4], 2),
+        ([4, -1, -0, 3], [-2, 6, 0, 4], -1),
+        ([1, 4, 2, -2, 5], [7, -2, -2, 2, 5], 2),
+    ]:
+        print(f"A={a}, B={b}, result={result}, get_fair_index={get_fair_index(a, b)}")
