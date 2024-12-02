@@ -1,3 +1,5 @@
+
+# LEETCODE: https://leetcode.com/discuss/interview-question/1453430/amazon-phone-interview
 """
 Q. Write code to find out dependencies of a package and install them
 E.g.
@@ -32,6 +34,44 @@ dependency = {
 }
 
 
+# topology sort to ensure all the dependencies are installed before the package
+# NOTE: the problem is that this approach will install dependecies that are not needed! So just use BFS or DFS
+def install_dependencies_in_order(package):
+
+    # generate dependency graph
+    graph = {}
+    for pkg, deps in dependency.items():
+        for package in [pkg]+deps:
+            if package not in graph:
+                graph[package] = {
+                    'in': 0,
+                    'out': [],
+                }
+                
+    for pkg, deps in dependency.items():
+        for dep in deps:
+            graph[pkg]['in'] += 1
+            graph[deps]['out'].append(dep)
+
+    # create queue to process
+    queue = []
+    for pkg, info in graph.items():
+        if info['in'] == 0:
+            queue.append(pkg)
+
+    # process queue
+    while len(queue) > 0:
+        pkg = queue.pop(0)
+        print(f"Install [pkg={pkg}]")
+        for dep in graph[pkg]['out']:
+            graph[dep]['in'] -= 1
+            if graph[dep]['in'] == 0:
+                queue.append(dep)
+
+
+
+
+
 def install_package_dfs(package):
     installed = list()
 
@@ -48,6 +88,7 @@ def install_package_dfs(package):
         print 'Install [{}]'.format(pkg)
 
     _recurse(package)
+
 
 
 def install_package_bfs(package):
